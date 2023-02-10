@@ -1,0 +1,625 @@
+{
+  "appTitle": "Engelsburg-Planer",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "appDescription": "An app that displays information about Engelsburg High School.\n\nDeveloped by students Paul Huerkamp and Dario Trombello .",
+  "@appDescription": {
+    "description": "The description of the app, shown on the about page"
+  },
+  "events": "Events",
+  "@events": {
+    "description": "The title of the events page"
+  },
+  "cafeteria": "Cafeteria",
+  "@cafeteria": {
+    "description": "The title of the cafeteria page"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "The title of the settings page"
+  },
+  "about": "About",
+  "@about": {
+    "description": "The title of the about page"
+  },
+  "openInBrowser": "Open in browser",
+  "@openInBrowser": {
+    "description": "A tooltip message on the PostDetailPage"
+  },
+  "share": "Share",
+  "@share": {
+    "description": "A tooltip message on the PostDetailPage"
+  },
+  "info": "Info",
+  "@info": {
+    "description": "Used on the AboutSchoolPage"
+  },
+  "location": "Location",
+  "@location": {
+    "description": "Used on the AboutSchoolPage as a title above the Google Map"
+  },
+  "schoolName": "Engelsburg-Gymnasium",
+  "@schoolName": {
+    "description": "Used on the AboutSchoolPage for a marker on the Google Map"
+  },
+  "schoolAddress": "Richardweg 3, 34117 Kassel",
+  "@schoolAddress": {
+    "description": "Used on the AboutSchoolPage for a marker on the Google Map"
+  },
+  "aboutTheSchool": "About the school",
+  "@aboutTheSchool": {
+    "description": "The title of the about school page"
+  },
+  "schoolDescription": "Engelsburg-Gymnasium is a state-approved Catholic high school run by the Order of the Sisters of St. Marie-Madeleine Postel (SMMP). It has been awarded the seal of approval \"Hochbegabtenförderung\" by the state of Hesse. At the school, the G8 and G9 school forms are taught in parallel.\n(Translated from German)",
+  "@schoolDescription": {
+    "description": "The school description on the about school page"
+  },
+  "callPforte": "Call Pforte",
+  "@callPforte": {
+    "description": "The title of a button on the about school page"
+  },
+  "callOffice": "Call the office",
+  "@callOffice": {
+    "description": "The title of a button on the about school page"
+  },
+  "emailOffice": "Email the office",
+  "@emailOffice": {
+    "description": "The title of a button on the about school page"
+  },
+  "colorScheme": "Color scheme",
+  "@colorScheme": {
+    "description": "The title of a button on the settings page"
+  },
+  "systemSetting": "Systemeinstellung",
+  "@systemSetting": {
+    "description": "The title of a radio button on the settings page"
+  },
+  "dark": "Dark",
+  "@dark": {
+    "description": "The title of a radio button on the settings page"
+  },
+  "light": "Light",
+  "@light": {
+    "description": "The title of a radio button on the settings page"
+  },
+  "primaryColor": "Primary color",
+  "@primaryColor": {
+    "description": "The title of a button on the settings page"
+  },
+  "selectPrimaryColor": "Select primary color",
+  "@selectPrimaryColor": {
+    "description": "Title of the color picker dialog in the settings"
+  },
+  "tapHereToChangePrimaryColor": "Tap here to change primary color",
+  "@tapHereToChangePrimaryColor": {
+    "description": "Subtitle of a button on the settings page"
+  },
+  "secondaryColor": "Secondary color",
+  "@secondaryColor": {
+    "description": "The title of a button on the settings page"
+  },
+  "selectSecondaryColor": "Select secondary color",
+  "@selectSecondaryColor": {
+    "description": "Title of the color picker dialog in the settings"
+  },
+  "tapHereToChangeSecondaryColor": "Tap here to change secondary color",
+  "@tapHereToChangeSecondaryColor": {
+    "description": "Subtitle of a button on the settings page"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic title of a button that cancels the current process"
+  },
+  "reset": "Reset",
+  "@reset": {
+    "description": "Generic title of a button that resets a saved value"
+  },
+  "loadingAppName": "Loading app name...",
+  "@loadingAppName": {
+    "description": "Placeholder on the about page for the app name until it finishes loading"
+  },
+  "loadingAppVersion": "Loading app version...",
+  "@loadingAppVersion": {
+    "description": "Placeholder on the about page for the app version until it finishes loading"
+  },
+  "sourceCodeOnGitHub": "Source code on GitHub",
+  "@sourceCodeOnGitHub": {
+    "description": "The title of a button on the about page that redirects the user to this app's GitHub repository"
+  },
+  "rateApp": "Rate the app",
+  "@rateApp": {
+    "description": "The title of a button on the about page that takes the user to the App Store/Play Store to review this app."
+  },
+  "sendDarioAnEmail": "Send Dario an email",
+  "@sendDarioAnEmail": {
+    "description": "The title of a button on the about page that opens the email client"
+  },
+  "openSourceLicenses": "Open source licenses",
+  "@openSourceLicenses": {
+    "description": "The title of a button on the about page that opens a view with all the licenses of the packages used in this app"
+  },
+  "source": "Source",
+  "@source": {
+    "description": "Used on AboutSchoolPage"
+  },
+  "solarPanelData": "Solar panel data",
+  "@solarPanelData": {
+    "description": "Title of the solar panel page"
+  },
+  "date": "Date",
+  "@date": {
+    "description": "Used on the solar panel data page"
+  },
+  "energy": "Energy",
+  "@energy": {
+    "description": "Used on the solar panel data page"
+  },
+  "avoidedCO2": "Avoided CO\u2082",
+  "@avoidedCO2": {
+    "description": "Used on the solar panel data page"
+  },
+  "renumeration": "Renumeration",
+  "@renumeration": {
+    "description": "Used on the solar panel data page"
+  },
+  "signIn": "Log in",
+  "@signIn": {
+    "description": "Used on drawer to login"
+  },
+  "signUp": "Sign up",
+  "@signUp": {
+    "description": "Sign up"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password"
+  },
+  "emailPassword": "Email and password",
+  "@emailPassword": {
+    "description": "Email and password"
+  },
+  "dataDisclaimer": "Your data is securely stored on our server in Kassel. The password is encrypted in such a way that it cannot be read by anyone.",
+  "@dataDisclaimer": {
+    "description": "Data disclaimer"
+  },
+  "substitutesPassword": "Password of substitutes",
+  "@substitutesPassword": {
+    "description": "Password to view substitutes"
+  },
+  "verifyUserIsStudent": "We have to verify that you are a student at the Engelsburg!",
+  "@verifyUserIsStudent": {
+    "description": "Verify user is Engelsburg student"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Generic error"
+  },
+  "notPermittedError": "You don't have the permission to use this feature.",
+  "@notPermittedError": {
+    "description": "Lack of permission"
+  },
+  "needToLoggedInError": "You need be logged in to use this feature.",
+  "@needToLoggedInError": {
+    "description": "Need to be logged in"
+  },
+  "needToVerifiedError": "You need to verify your email to use this feature.",
+  "@needToVerifiedError": {
+    "description": "Need to be verified"
+  },
+  "networkError": "No internet connection! Please check your network connection and try again.",
+  "@networkError": {
+    "description": "Network error message"
+  },
+  "cafeteriaPageNotFoundError": "Cafeteria page not found!",
+  "@cafeteriaPageNotFoundError": {
+    "description": "Cafeteria page not found"
+  },
+  "eventsNotFoundError": "Events not found!",
+  "@eventsNotFoundError": {
+    "description": "Events not found"
+  },
+  "articlesNotFoundError": "Articles not found!",
+  "@articlesNotFoundError": {
+    "description": "Articles not found"
+  },
+  "solarPanelPageNotFoundError": "Solar panel page not found!",
+  "@solarPanelPageNotFoundError": {
+    "description": "Solar panel page not found"
+  },
+  "unexpectedErrorMessage": "An unexpected error occurred. Please try again a little bit later.",
+  "@unexpectedErrorMessage": {
+    "description": "Used for the error widget"
+  },
+  "wrongSubstituteKeyError": "Wrong password for the substitutes!",
+  "@wrongSubstituteKeyError": {
+    "description": "Wrong password for substitutes used"
+  },
+  "invalidEmailError": "Please use a valid email!",
+  "@invalidEmailError": {
+    "description": "Invalid email used on sign up"
+  },
+  "accountAlreadyExistingError": "An account using this email already exists!",
+  "@accountAlreadyExistingError": {
+    "description": "Email already used on sign up"
+  },
+  "fieldCantBeEmptyError": "This field can't be empty",
+  "@fieldCantBeEmptyError": {
+    "description": "A form field can't be empty"
+  },
+  "loggedIn": "Logged in successfully!",
+  "@loggedIn": {
+    "description": "Message on successful login"
+  },
+  "savedArticles": "Saved articles",
+  "@savedArticles": {
+    "description": "Saved articles"
+  },
+  "noArticlesSaved": "You haven't saved any articles yet!",
+  "@noArticlesSaved": {
+    "description": "No articles saved"
+  },
+  "substitutes": "Substitutes",
+  "@substitutes": {
+    "description": "Substitutes"
+  },
+  "timetable": "Timetable",
+  "@timetable": {
+    "description": "Timetable"
+  },
+  "grades": "Grades",
+  "@grades": {
+    "description": "Grades"
+  },
+  "tasks": "Tasks",
+  "@tasks": {
+    "description": "Tasks"
+  },
+  "themeSettings": "Theme settings",
+  "@themeSettings": {
+    "description": "Theme settings"
+  },
+  "notificationSettings": "Notifications",
+  "@notificationSettings": {
+    "description": "Notification settings"
+  },
+  "teacher": "Teacher",
+  "@teacher": {
+    "description": "Teacher"
+  },
+  "class_": "Class",
+  "@class": {
+    "description": "Class"
+  },
+  "filterBy": "Filter by",
+  "@filterBy": {
+    "description": "Filter by"
+  },
+  "add": "Add",
+  "@add": {
+    "description": "Add"
+  },
+  "allowNotifications": "Allow notifications",
+  "@allowNotifications": {
+    "description": "Allow notifications"
+  },
+  "articles": "Articles",
+  "@articles": {
+    "description": "Articles"
+  },
+  "syncWithFilter": "Synchronize with filter",
+  "@syncWithFilter": {
+    "description": "Synchronize with filter"
+  },
+  "substituteMessages": "News",
+  "@substituteMessages": {
+    "description": "News"
+  },
+  "noSubstituteMessages": "No news available",
+  "@noSubstituteMessages": {
+    "description": "No news available"
+  },
+  "noSubstitutes": "No substitutes available",
+  "@noSubstitutes": {
+    "description": "No substitutes available"
+  },
+  "insteadOf": "instead of",
+  "@insteadOf": {
+    "description": "instead of"
+  },
+  "substituteTypeCanceled": "Canceled",
+  "@substituteTypeCanceled": {
+    "description": "Canceled"
+  },
+  "substituteTypeIndependentWork": "Independent work",
+  "@substituteTypeIndependentWork": {
+    "description": "Independent work"
+  },
+  "substituteTypeRoomSubstitute": "Room substitute",
+  "@substituteTypeRoomSubstitute": {
+    "description": "Room substitute"
+  },
+  "substituteTypeCare": "Care",
+  "@substituteTypeCare": {
+    "description": "Care"
+  },
+  "substituteTypeSubstitute": "Substitute",
+  "@substituteTypeSubstitute": {
+    "description": "Substitute"
+  },
+  "lesson": "Lesson",
+  "@lesson": {
+    "description": "Lesson"
+  },
+  "subject": "Subject",
+  "@subject": {
+    "description": "Subject"
+  },
+  "substituteTeacher": "Substitute teacher",
+  "@substituteTeacher": {
+    "description": "Substitute teacher"
+  },
+  "substituteOf": "Substitute of",
+  "@substituteOf": {
+    "description": "Substitute of"
+  },
+  "room": "Room",
+  "@room": {
+    "description": "Room"
+  },
+  "furtherInformation": "Further information",
+  "@furtherInformation": {
+    "description": "Further information"
+  },
+  "absenceTeachers": "Absence teachers",
+  "@absenceTeachers": {
+    "description": "Absence teachers"
+  },
+  "absenceClasses": "Absence classes",
+  "@absenceClasses": {
+    "description": "Absence classes"
+  },
+  "affectedClasses": "Affected classes",
+  "@affectedClasses": {
+    "description": "Affected classes"
+  },
+  "affectedRooms": "Affected rooms",
+  "@affectedRooms": {
+    "description": "Affected rooms"
+  },
+  "blockedRooms": "Blocked rooms",
+  "@blockedRooms": {
+    "description": "Blocked rooms"
+  },
+  "news": "News",
+  "@news": {
+    "description": "News"
+  },
+  "noPasswordSpecified": "A password must be specified",
+  "@noPasswordSpecified": {
+    "description": "A password must be specified"
+  },
+  "passwordMustContainNumber": "Password must contain a number",
+  "@passwordMustContainNumber": {
+    "description": "Password must contain a number"
+  },
+  "passwordMin8Chars": "Password must be 8 or more characters",
+  "@passwordMin8Chars": {
+    "description": "Password must be 8 or more characters"
+  },
+  "loginForAdvancedFeatures": "To use the most features (e.g. substitutes) you need to be logged in.",
+  "@loginForAdvancedFeatures": {
+    "description": "Login for advanced features"
+  },
+  "verifyEmail": "Verify your email address",
+  "@verifyEmail": {
+    "description": "Verify email address"
+  },
+  "emailVerified": "Email address is verified",
+  "@emailVerified": {
+    "description": "Email verified"
+  },
+  "emailNotVerified": "Email address has not been verified yet",
+  "@emailNotVerified": {
+    "description": "Email verified"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout"
+  },
+  "advanced": "Advanced",
+  "@advanced": {
+    "description": "Advanced"
+  },
+  "accountSettings": "Account settings",
+  "@accountSettings": {
+    "description": "Account settings"
+  },
+  "deleteAccount": "Delete your account",
+  "@deleteAccount": {
+    "description": "Delete your account"
+  },
+  "accountData": "Account data",
+  "@accountData": {
+    "description": "Account data"
+  },
+  "requestAccountData": "Request account data",
+  "@requestAccountData": {
+    "description": "Request account data"
+  },
+  "confirmDeleteAccount": "Are you sure you want to delete your account? This action cannot be undone.",
+  "@confirmDeleteAccount": {
+    "description": "Confirm to delete your account"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete"
+  },
+  "userNotFound": "Couldn't find an account with this email address",
+  "@userAlreadyExisting": {
+    "description": "User couldn't be found"
+  },
+  "wrongPassword": "Wrong password",
+  "@wrongPassword": {
+    "description": "Wrong password"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email"
+  },
+  "or": "or",
+  "@or": {
+    "description": "or"
+  },
+  "signUpWithGoogle": "Sign up with Google",
+  "@signUpWithGoogle": {
+    "description": "Sign up with Google"
+  },
+  "logInWithGoogle": "Log in with Google",
+  "@logInWithGoogle": {
+    "description": "Log in with Google"
+  },
+  "errorTooManyRequests": "You send too many requests! Try again in {sec} seconds",
+  "@errorTooManyRequests": {
+    "description": "Too many requests"
+  },
+  "resetPassword": "Reset password",
+  "@resetPassword": {
+    "description": "Reset password"
+  },
+  "code": "Code",
+  "@code": {
+    "description": "Code"
+  },
+  "newPassword": "New password",
+  "@newPassword": {
+    "description": "New password"
+  },
+  "passwordResetRequestEmail": "An email with a code to reset your password was sent.",
+  "@passwordResetRequestEmail": {
+    "description": "Email to reset password was sent"
+  },
+  "passwordResetSuccessful": "Password successfully reset",
+  "@passwordResetSuccessful": {
+    "description": "Password successfully reset"
+  },
+  "emailSuccessfulVerified": "Email was successful verified",
+  "@emailSuccessfulVerified": {
+    "description": "Email was successful verified"
+  },
+  "newSubstitutes": "There are new substitutes",
+  "@newSubstitutes": {
+    "description": "Displayed if new substitutes are available"
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications"
+  },
+  "newArticle": "New Article published!",
+  "@newArticle": {
+    "description": "Notification title of article"
+  },
+  "security": "Security",
+  "@security": {
+    "description": "Security settings of user"
+  },
+  "connectedAccounts": "Connected accounts",
+  "@connectedAccounts": {
+    "description": "Title of connected accounts of user"
+  },
+  "connectedAccountsDescription": "Add third-party accounts to verify your email and log in easily. If you connect your school microsoft account you also don't need to provide the password for the substitutes!",
+  "@connectedAccountsDescription": {
+    "description": "Description of connected accounts of user"
+  },
+  "enterEmail": "Enter email:",
+  "sendEmail": "Send email",
+  "enterCode": "Enter code",
+  "setPassword": "Set password",
+  "wrongCodeError": "Wrong code!",
+  "@wrongCodeError": {
+    "description": "Message to display if this was a wrong code"
+  },
+  "resetPasswordDescription": "If you forgot your password you can reset it with a code that will be sent to your email address.",
+  "@resetPasswordDescription": {
+    "description": "Description to reset your password"
+  },
+  "advancedAccountOptions": "Advanced account options",
+  "advancedAccountOptionsDescription": "To comply the data protection regulations every user has the right to view and delete saved data.",
+  "@advancedAccountOptionsDescription": {
+    "description": "Description advanced account options"
+  },
+  "cannotBeUndone": "Cannot be undone!",
+  "@cannotBeUndone": {
+    "description": "Message to display if an action is not reversible"
+  },
+  "check": "Check",
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "oclock": "o'clock",
+  "calendarWeekAbr": "CW",
+  "@calendarWeekAbr": {
+    "description": "Abbreviation for calendar week"
+  },
+  "noArticles": "No articles found",
+  "@noArticles": {
+    "description": "Message to display if no articles were found"
+  },
+  "break_": "Break",
+  "freeHour": "Free hour",
+  "freeHours": "Free hours",
+  "subjects": "Subjects",
+  "biology": "Biology",
+  "chemistry": "Chemistry",
+  "informatics": "Informatics",
+  "math": "Mathematics",
+  "physics": "Physics",
+  "ethics": "Ethics",
+  "geography": "Geography",
+  "history": "History",
+  "philosophy": "Philosophy",
+  "psychology": "Psychology",
+  "religion": "Religion",
+  "economics": "Politic and economy",
+  "german": "German",
+  "art": "Art",
+  "music": "Music",
+  "english": "English",
+  "french": "French",
+  "greek": "Greek",
+  "italian": "Italian",
+  "latin": "Latin",
+  "spanish": "Spanish",
+  "sport": "Sport",
+  "selectColor": "Select color",
+  "ok": "OK",
+  "pickDate": "Pick date",
+  "pickSubject": "Pick subject",
+  "noTimetable": "No timetable set",
+  "copy": "Copy",
+  "copyTimetable": "Copy timetable",
+  "noSubjects": "No subjects found",
+  "confirmDeleteSubject": "Are you sure you want to delete this subject?",
+  "syncBetweenDevices": "Synchronize between devices",
+  "andALotMore": "...and many more",
+  "developedBy": "Developed by Paul Huerkamp",
+  "welcomeToApp": "Welcome to Engelsburg-Planer",
+  "welcomeAppDescription": "The successor of the Engelsburg-App with a lot of new features...",
+  "newFeatures": "New features",
+  "next": "Next",
+  "done": "Done",
+  "configure": "Configure",
+  "student": "Student",
+  "questionAppType": "How do you want to use this app?",
+  "descriptionAppTypeConfiguration": "Please select what matches the best with you. Please also provide additional information to help configuring the app.",
+  "studentAppTypeDescription": "All relevant features: substitutes, timetable, grades, tasks, articles, etc.",
+  "classNameInputHint": "Classname (e.g. 10c, 13PhyT1Schf)",
+  "teacherAppTypeDescription": "Use the same features as a student but adapted for the use case of a teacher",
+  "teacherAbbreviationInputHint": "Abbreviation (e.g. GRB)",
+  "other": "Other",
+  "otherAppTypeDescription": "Use the app without timetable, grades and tasks. (most suitable for parents)",
+  "invalidClassname": "Invalid classname",
+  "invalidAbbreviation": "Invalid abbreviation",
+  "whatsNext": "What's next?",
+  "noLoginForFewFeatures": "If you only want to view articles, events, solar system data and cafeteria page you don't need to create an account or log in.",
+  "yesterday": "Yesterday"
+}

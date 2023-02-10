@@ -1,0 +1,27 @@
+{
+  "parameters": {
+    "oauth_microsoft": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "Use login with Microsoft",
+      "valueType": "BOOLEAN"
+    },
+    "oauth_apple": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "Use Login with Apple",
+      "valueType": "BOOLEAN"
+    }
+  },
+  "version": {
+    "versionNumber": "2",
+    "updateTime": "2022-11-29T11:15:11.248148Z",
+    "updateUser": {
+      "email": "huerkamp.paul@gmail.com"
+    },
+    "updateOrigin": "CONSOLE",
+    "updateType": "INCREMENTAL_UPDATE"
+  }
+}
