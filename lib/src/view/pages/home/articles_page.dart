@@ -58,7 +58,7 @@ class _ArticlesPageState extends HomeScreenPageState<ArticlesPage> {
         promise: promise,
         scrollController: scrollController,
         itemBuilder: (article, context) => ArticleCard(article: article),
-        separatorBuilder: (context, index) => const Divider(height: 0),
+        separatorBuilder: (context, index) => const Divider(height: 2, thickness: 1),
         errorBuilder: (error, context) => Center(
           child: Padding(
             padding: const EdgeInsets.all(50),

@@ -4,9 +4,9 @@
 
 import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/utils/constants/asset_path_constants.dart';
+import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/utils/oauth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tap_debouncer/tap_debouncer.dart';
@@ -33,7 +33,7 @@ class OAuthButton extends StatelessWidget {
   }) : super(key: key);
 
   /// Google OAuth sign in button
-  factory OAuthButton.googleSignIn(BuildContext context) {
+  factory OAuthButton.google(BuildContext context) {
     return OAuthButton(
       oAuth: OAuth.google(),
       type: OAuthType.signIn,
@@ -41,27 +41,21 @@ class OAuthButton extends StatelessWidget {
       foregroundColor: MaterialStateProperty.all(Colors.black),
       borderColor: Colors.black,
       icon: const Image(image: AssetImage(AssetPaths.googleLogo)),
-      text: AppLocalizations.of(context)!.logInWithGoogle,
+      text: context.l10n.signInWithGoogle,
     );
   }
 
-  /// Google OAuth sign up button
-  factory OAuthButton.googleSignUp(BuildContext context) {
-    return OAuthButton(
-      oAuth: OAuth.google(),
-      type: OAuthType.signUp,
-      backgroundColor: MaterialStateProperty.all(Colors.white),
-      foregroundColor: MaterialStateProperty.all(Colors.black),
-      borderColor: Colors.black,
-      icon: const Image(image: AssetImage(AssetPaths.googleLogo)),
-      text: AppLocalizations.of(context)!.signUpWithGoogle,
-    );
-  }
+  static List<OAuthButton> getAll(BuildContext context) => [
+        OAuthButton.google(context),
+      ];
+
+  static OAuthButton? byProviderId(BuildContext context, String providerId) =>
+      getAll(context).firstNullableWhere((element) => element.oAuth.providerId == providerId);
 
   @override
   Widget build(BuildContext context) {
     return TapDebouncer(
-      onTap: () => type.action(context, oAuth, () => context.go("/")),
+      onTap: () => type.action(oAuth, () => context.go("/")),
       builder: (context, onTap) => ElevatedButton(
         onPressed: onTap,
         style: ButtonStyle(

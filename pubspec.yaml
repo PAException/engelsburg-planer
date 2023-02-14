@@ -46,7 +46,7 @@ dependencies:
   package_info_plus: ^3.0.2
   provider: ^6.0.0
   octo_image: ^1.0.0+1
-  flutter_local_notifications: ^12.0.4
+  flutter_local_notifications: ^13.0.0
   google_sign_in: ^5.2.3
   week_of_year: ^2.0.0
   awesome_extensions: ^2.0.3

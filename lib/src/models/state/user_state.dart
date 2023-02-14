@@ -8,9 +8,22 @@ import 'package:flutter/cupertino.dart';
 
 class UserState extends ChangeNotifier {
   final FirebaseAuth instance = FirebaseAuth.instance;
+  List<String>? _signInMethods;
 
   UserState() {
-    instance.authStateChanges().listen((event) => notifyListeners());
+    addListener(() {
+      print(_signInMethods);
+    });
+
+    instance.userChanges().listen((event) {
+      if (loggedIn) {
+        instance.fetchSignInMethodsForEmail(email!).then((value) {
+          _signInMethods = value;
+          notifyListeners();
+        });
+        notifyListeners();
+      }
+    });
   }
 
   /// Check if any authentication information is present
@@ -35,4 +48,8 @@ class UserState extends ChangeNotifier {
 
   bool hasOAuth(String providerId) =>
       getOAuths()?.any((element) => element.providerId == providerId) ?? false;
+
+  List<String>? get signInMethods => _signInMethods;
+
+  bool get hasPassword => signInMethods?.contains("password") ?? false;
 }

@@ -63,7 +63,7 @@ class UserPath {
 
   String get notification => "$path/notification";
 
-  String get notificationDevice => "$notificationDevice/device";
+  String get notificationDevice => "$notification/device";
 }
 
 class AuthPath {

@@ -11,6 +11,8 @@ import 'package:engelsburg_planer/src/view/pages/home/grades_page.dart';
 import 'package:engelsburg_planer/src/view/pages/home/substitutes_page.dart';
 import 'package:engelsburg_planer/src/view/pages/home/tasks_page.dart';
 import 'package:engelsburg_planer/src/view/pages/home/timetable_page.dart';
+import 'package:engelsburg_planer/src/view/pages/scaffold/account/account_security_page.dart';
+import 'package:engelsburg_planer/src/view/pages/scaffold/account/advanced_account_page.dart';
 import 'package:engelsburg_planer/src/view/pages/scaffold/account_page.dart';
 import 'package:engelsburg_planer/src/view/pages/scaffold/auth_page.dart';
 import 'package:engelsburg_planer/src/view/pages/scaffold/settings_page.dart';
@@ -156,7 +158,6 @@ class Pages {
         subjectSettings,
         about,
         aboutSchool,
-        signUp,
         signIn,
       ];
 
@@ -192,6 +193,16 @@ class Pages {
     path: "/account",
     label: (l10n) => "Account",
     icon: Icons.account_circle_outlined,
+    routes: [
+      GoRoute(
+        path: "security",
+        builder: (context, state) => const AccountSecurityPage(),
+      ),
+      GoRoute(
+        path: "advanced",
+        builder: (context, state) => const AccountAdvancedPage(),
+      ),
+    ],
   );
 
   static final StyledRoute articles = StyledRoute.static(
@@ -319,15 +330,8 @@ class Pages {
     icon: Icons.info,
   );
 
-  static final StyledRoute signUp = StyledRoute.static(
-    page: const AuthenticationPage.signUp(),
-    path: "/signUp",
-    label: (l10n) => l10n.signUp,
-    icon: Icons.login,
-  );
-
   static final StyledRoute signIn = StyledRoute.static(
-    page: const AuthenticationPage.signIn(),
+    page: const SignInPage(),
     path: "/signIn",
     label: (l10n) => l10n.signIn,
     icon: Icons.login,

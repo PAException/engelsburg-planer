@@ -2,6 +2,7 @@ import 'package:engelsburg_planer/src/models/state/user_state.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/switch_expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class LockedScreen extends StatefulWidget {
@@ -70,17 +71,7 @@ class _LockedScreenState extends State<LockedScreen> with SingleTickerProviderSt
           ),
           Container(height: 10),
           OutlinedButton(
-            onPressed: () => Navigator.pushNamed(context, "/signUp"),
-            style: ButtonStyle(
-              fixedSize: MaterialStateProperty.all<Size>(const Size(200, 40)),
-            ),
-            child: Center(
-              child: Text(AppLocalizations.of(context)!.signUp),
-            ),
-          ),
-          Container(height: 10),
-          OutlinedButton(
-            onPressed: () => Navigator.pushNamed(context, "/signIn"),
+            onPressed: () => context.go("/signIn"),
             style: ButtonStyle(
               fixedSize: MaterialStateProperty.all<Size>(const Size(200, 40)),
             ),

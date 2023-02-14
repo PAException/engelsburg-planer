@@ -5,95 +5,101 @@
 import 'dart:async';
 
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/utils/util.dart';
 import 'package:engelsburg_planer/src/view/pages/scaffold/auth_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_platform_interface/src/auth_provider.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-enum OAuthType { signUp, signIn, connect, disconnect }
+enum OAuthType { signIn, link, unlink, reauthenticate }
 
 extension OAuthTypeExt on OAuthType {
   /// Executes the action to the current type which should be performed.
-  Future<void> action(BuildContext context, OAuth oAuth, [VoidCallback? onSuccess]) async {
+  Future<void> action(OAuth oAuth, [VoidCallback? onSuccess]) async {
     try {
-      if (this == OAuthType.connect) {
-        await oAuth.link();
-      } else if (this == OAuthType.disconnect) {
-        await oAuth.unlink();
-      } else {
-        //signIn or signUp
-        await oAuth.signIn();
+      switch (this) {
+        case OAuthType.signIn:
+          await oAuth._signIn();
+          break;
+        case OAuthType.link:
+          await oAuth._link();
+          break;
+        case OAuthType.unlink:
+          await oAuth._unlink();
+          break;
+        case OAuthType.reauthenticate:
+          await oAuth._reauthenticate();
       }
 
       onSuccess?.call();
     } on FirebaseAuthException catch (e) {
-      //TODO check if context is mounted
-      await handleErrorCode(context, oAuth, e);
+      await handleErrorCode(oAuth, e);
     }
   }
 
-  Future<void> handleErrorCode(
-      BuildContext context, OAuth oAuth, FirebaseAuthException error) async {
+  Future<void> handleErrorCode(OAuth oAuth, FirebaseAuthException error) async {
     var code = error.code;
     switch (code) {
       case "account-exists-with-different-credential":
-        //TODO handle account-exists-with-different-credential
-        await showModalBottomSheet(
-          context: context,
-          useRootNavigator: true,
-          isDismissible: false,
-          builder: (context) {
-            return AuthenticationForm(
-              type: SignInAuthentication(() => Navigator.pop(context)),
-              showOAuth: false,
-            );
-          },
-        );
+        List<String> methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(error.email!);
+
+        if (methods.first == "password") {
+          const EmailPasswordBottomSheet().show(globalContext());
+        } else {
+          OAuth.fromId(methods.first)!.signIn();
+        }
 
         FirebaseAuth.instance.currentUser!.linkWithCredential(error.credential!);
         break;
       case "provider-already-linked":
-        //TODO handle provider-already-linked
+        debugPrint("WARNING: OAuth[${oAuth.providerId}]: Already linked");
+        globalContext().showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
         break;
       case "credential-already-in-use":
         //TODO handle credential-already-in-use
         break;
       case "email-already-in-use":
-        //TODO handle email-already-in-use
+        List<String> methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(error.email!);
+
+        if (methods.first == "password") {
+          const EmailPasswordBottomSheet().show(globalContext());
+        } else {
+          OAuth.fromId(methods.first)!.signIn();
+        }
+
+        FirebaseAuth.instance.currentUser!.linkWithCredential(error.credential!);
         break;
       case "no-such-provider":
         debugPrint("WARNING: OAuth[${oAuth.providerId}]: Method not linked with user");
-        context.showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
+        globalContext().showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
         break;
       case "user-aborted":
-        //TODO handle user-aborted
+        debugPrint("INFO: OAuth[${oAuth.providerId}]: User aborted");
         break;
       case "user-disabled":
-        //TODO handle user disabled
         debugPrint("WARNING: OAuth[${oAuth.providerId}]: User is disabled");
-        context.showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
+        globalContext().showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
         break;
       case "user-not-found":
         debugPrint("WARNING: OAuth[${oAuth.providerId}]: User does not exist");
         FirebaseAuth.instance.signOut();
-        context.showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
+        globalContext().showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
         break;
       case "user-mismatch":
         debugPrint("WARNING: OAuth[${oAuth.providerId}]: Credential does not correspond to user");
-        context.showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
+        globalContext().showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
         break;
       case "invalid-credential":
         debugPrint("WARNING: OAuth[${oAuth.providerId}]: Malformed or expired credential");
-        context.showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
+        globalContext().showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
         break;
       case "operation-not-allowed":
         debugPrint("WARNING: OAuth[${oAuth.providerId}]: Method not supported");
-        context.showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
+        globalContext().showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
         break;
       default:
-        context.showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
+        globalContext().showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
         break;
     }
   }
@@ -118,7 +124,9 @@ abstract class OAuth {
   ///   enabled. Enable the account type in the Firebase Console, under the Auth tab.
   /// - user-disabled: Thrown if the user corresponding to the given credential has been disabled.
   /// - user-aborted: Thrown if the user aborted the authentication process.
-  FutureOr<UserCredential> signIn();
+  FutureOr<UserCredential> _signIn();
+
+  Future<void> signIn() => OAuthType.signIn.action(this);
 
   /// Links an OAuth to a user.
   ///
@@ -151,7 +159,9 @@ abstract class OAuth {
   ///   Go to the Firebase Console for your project, in the Auth section and the Sign in Method tab
   ///   and configure the provider.
   /// - user-aborted: Thrown if the user aborted the authentication process.
-  FutureOr<UserCredential> link();
+  FutureOr<UserCredential> _link();
+
+  Future<void> link() => OAuthType.link.action(this);
 
   /// Reauthenticates an user via OAuth.
   ///
@@ -164,7 +174,9 @@ abstract class OAuth {
   ///   has already expired when calling link, or if it used invalid token(s). See the Firebase
   ///   documentation for your provider, and make sure you pass in the correct parameters to the
   ///   credential method.
-  FutureOr<UserCredential> reauthenticate();
+  FutureOr<UserCredential> _reauthenticate();
+
+  Future<void> reauthenticate() => OAuthType.reauthenticate.action(this);
 
   /// Unlinks an OAuth from an user.
   ///
@@ -173,7 +185,9 @@ abstract class OAuth {
   /// Possible error codes are:
   /// - no-such-provider: Thrown if the user does not have this provider linked or when the provider
   ///   ID given does not exist.
-  Future<User> unlink() => FirebaseAuth.instance.currentUser!.unlink(providerId);
+  Future<User> _unlink() => FirebaseAuth.instance.currentUser!.unlink(providerId);
+
+  Future<void> unlink() => OAuthType.unlink.action(this);
 
   factory OAuth.google() {
     return AdvancedOAuth(
@@ -217,7 +231,7 @@ class ProvidedOAuth extends OAuth {
   ProvidedOAuth(this.provider) : super(provider.providerId);
 
   @override
-  Future<UserCredential> link() {
+  Future<UserCredential> _link() {
     if (kIsWeb) {
       return FirebaseAuth.instance.currentUser!.linkWithPopup(provider);
     } else {
@@ -226,7 +240,7 @@ class ProvidedOAuth extends OAuth {
   }
 
   @override
-  Future<UserCredential> reauthenticate() {
+  Future<UserCredential> _reauthenticate() {
     if (kIsWeb) {
       return FirebaseAuth.instance.currentUser!.reauthenticateWithPopup(provider);
     } else {
@@ -235,7 +249,7 @@ class ProvidedOAuth extends OAuth {
   }
 
   @override
-  Future<UserCredential> signIn() {
+  Future<UserCredential> _signIn() {
     if (kIsWeb) {
       return FirebaseAuth.instance.signInWithPopup(provider);
     } else {
@@ -260,14 +274,14 @@ class AdvancedOAuth extends OAuth {
   }
 
   @override
-  Future<UserCredential> link() async =>
+  Future<UserCredential> _link() async =>
       FirebaseAuth.instance.currentUser!.linkWithCredential(await credential);
 
   @override
-  Future<UserCredential> reauthenticate() async =>
+  Future<UserCredential> _reauthenticate() async =>
       FirebaseAuth.instance.currentUser!.reauthenticateWithCredential(await credential);
 
   @override
-  Future<UserCredential> signIn() async =>
+  Future<UserCredential> _signIn() async =>
       FirebaseAuth.instance.signInWithCredential(await credential);
 }

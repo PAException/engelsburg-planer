@@ -381,11 +381,6 @@ class WhatsNextPage extends StatelessWidget {
                     .toCenter(),
                 40.heightBox,
                 ElevatedButton(
-                  onPressed: () => context.go("/signUp"),
-                  child: Text(context.l10n.signUp).paddingSymmetric(vertical: 10, horizontal: 40),
-                ),
-                10.heightBox,
-                ElevatedButton(
                   onPressed: () => context.go("/signIn"),
                   child: Text(context.l10n.signIn).paddingSymmetric(vertical: 10, horizontal: 40),
                 ),

@@ -62,29 +62,18 @@ class ArticleService extends DataService {
 
   /// Saves or un-saves an article
   Future<void> setArticleSave(Article article, bool saved) async {
-    if (context.loggedIn) {
-      //If user is logged in try to write changes to api
-      var res = await requests.saveArticle(article.articleId, saved).build().api((json) => json);
+    //If the user is not logged in update in memory and write in memory to cache
+    _setSaved(article, saved);
 
-      //Also apply changes on specific errors, it will have no impact on the persistence of
-      //the data as the saved ints is a set.
-      if (!res.errorPresent || res.error!.isAlreadyExisting || res.error!.isNotFound) {
-        _setSaved(article, saved);
-      }
-    } else {
-      //If the user is not logged in update in memory and write in memory to cache
-      _setSaved(article, saved);
-
-      List<int> cached =
-          CacheService.getNullableJson<List>("article_saved")?.cast<int>().toList() ?? [];
-      if (saved && !cached.contains(article.articleId)) {
-        cached.add(article.articleId);
-      } else if (cached.contains(article.articleId)) {
-        cached.remove(article.articleId);
-      }
-
-      await CacheService.setJson("article_saved", cached);
+    List<int> cached =
+        CacheService.getNullableJson<List>("article_saved")?.cast<int>().toList() ?? [];
+    if (saved && !cached.contains(article.articleId)) {
+      cached.add(article.articleId);
+    } else if (cached.contains(article.articleId)) {
+      cached.remove(article.articleId);
     }
+
+    await CacheService.setJson("article_saved", cached);
   }
 
   /// Add or remove to/from saved articles

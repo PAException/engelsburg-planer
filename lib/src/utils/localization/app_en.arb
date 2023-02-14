@@ -163,13 +163,9 @@
   "@renumeration": {
     "description": "Used on the solar panel data page"
   },
-  "signIn": "Log in",
+  "signIn": "Sign in",
   "@signIn": {
     "description": "Used on drawer to login"
-  },
-  "signUp": "Sign up",
-  "@signUp": {
-    "description": "Sign up"
   },
   "password": "Password",
   "@password": {
@@ -468,17 +464,7 @@
     "description": "Email"
   },
   "or": "or",
-  "@or": {
-    "description": "or"
-  },
-  "signUpWithGoogle": "Sign up with Google",
-  "@signUpWithGoogle": {
-    "description": "Sign up with Google"
-  },
-  "logInWithGoogle": "Log in with Google",
-  "@logInWithGoogle": {
-    "description": "Log in with Google"
-  },
+  "signInWithGoogle": "Sign in with Google",
   "errorTooManyRequests": "You send too many requests! Try again in {sec} seconds",
   "@errorTooManyRequests": {
     "description": "Too many requests"

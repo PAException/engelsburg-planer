@@ -193,12 +193,10 @@ class HomePageDrawer extends StatelessWidget {
             ),
             Consumer<UserState>(
               builder: (context, user, child) => user.loggedIn
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Pages.account.toDrawerListTile(context),
-                    )
+                  ? Pages.account.toDrawerListTile(context)
                   : const AuthenticationTiles(),
             ),
+            const Divider(height: 8, thickness: 0).paddingSymmetric(horizontal: 4),
             ...Pages.drawerTiles(context),
           ],
         ),
@@ -220,13 +218,6 @@ class AuthenticationTiles extends StatelessWidget {
           Text(
             AppLocalizations.of(context)!.loginForAdvancedFeatures,
             textAlign: TextAlign.center,
-          ),
-          8.0.heightBox,
-          ElevatedButton(
-            onPressed: () {
-              context.go("/signUp");
-            },
-            child: Text(AppLocalizations.of(context)!.signUp),
           ),
           8.0.heightBox,
           ElevatedButton(

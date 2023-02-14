@@ -2,6 +2,8 @@
  * Copyright (c) Paul Huerkamp 2022. All rights reserved.
  */
 
+import 'dart:async';
+
 import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/utils/util.dart';
@@ -16,27 +18,47 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tap_debouncer/tap_debouncer.dart';
 
-void onSuccess() {
+typedef Action = FutureOr<bool> Function(BuildContext context, String email, String password);
+
+FutureOr<bool> signInAction(BuildContext context, String email, String password) async {
+  try {
+    var value = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    if (value.user?.metadata.creationTime == value.user?.metadata.lastSignInTime) {
+      value.user?.sendEmailVerification();
+    }
+    return true;
+  } on FirebaseAuthException catch (e) {
+    switch (e.code) {
+      case "user-not-found":
+        context.showL10nSnackBar((l10n) => l10n.userNotFound);
+        break;
+      case "wrong-password":
+        context.showL10nSnackBar((l10n) => l10n.wrongPassword);
+        break;
+      case "invalid-email":
+        context.showL10nSnackBar((l10n) => l10n.invalidEmailError);
+        break;
+      case "email-already-in-use":
+        context.showL10nSnackBar((l10n) => l10n.accountAlreadyExistingError);
+        break;
+      default:
+        context.showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
+    }
+    return false;
+  }
+}
+
+void defaultOnSuccessCallback() {
   globalContext().showL10nSnackBar((l10n) => l10n.loggedIn);
   globalContext().go("/");
 }
 
-/// Page to sign in or up. Because those pages did not differ that much in the design
-/// but the components this widget was created. It needs to know how to construct the
-/// authentication page on different authentication types. All varying components are defined
-/// in [AuthenticationType] and are retrieved while building if necessary.
-class AuthenticationPage extends StatelessWidget {
-  final AuthenticationType type;
-
-  const AuthenticationPage({Key? key, required this.type}) : super(key: key);
-
-  const AuthenticationPage.signUp({Key? key})
-      : type = const SignUpAuthentication(onSuccess),
-        super(key: key);
-
-  const AuthenticationPage.signIn({Key? key})
-      : type = const SignInAuthentication(onSuccess),
-        super(key: key);
+class SignInPage extends StatelessWidget {
+  const SignInPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,26 +70,80 @@ class AuthenticationPage extends StatelessWidget {
           children: [
             const AnimatedAppName().toCenter().paddingAll(16),
             25.0.heightBox,
-            AuthenticationForm(type: type),
+            AuthenticationForm(),
           ],
         ),
       ),
-      bottomSheet: type.dataDisclaimer(context),
+    );
+  }
+}
+
+class EmailPasswordBottomSheet extends StatelessWidget {
+  final Action action;
+  final VoidCallback onSuccess;
+  final String? email;
+  final bool dismissible;
+
+  const EmailPasswordBottomSheet({
+    super.key,
+    this.dismissible = false,
+    this.email,
+    this.action = signInAction,
+    this.onSuccess = defaultOnSuccessCallback,
+  });
+
+  Future<void> show(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      isDismissible: dismissible,
+      builder: (_) => this,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: MediaQuery.of(context).viewInsets + const EdgeInsets.all(20),
+      child: AuthenticationForm(
+        showOAuth: false,
+        validatePassword: false,
+        autoFocusEmail: true,
+        action: action,
+        onSuccess: onSuccess,
+      ),
     );
   }
 }
 
 /// Sub widget to handle the form area of the authentication page.
 class AuthenticationForm extends StatelessWidget {
-  final AuthenticationType type;
+  final Action action;
+  final VoidCallback onSuccess;
+  final String? email;
   final bool showOAuth;
+  final bool showResetPassword;
+  final bool validatePassword;
+  final bool autoFocusEmail;
 
   final _emailAndPasswordFormKey = GlobalKey<FormState>();
 
-  final _emailTextController = TextEditingController();
+  late final TextEditingController _emailTextController;
   final _passwordTextController = TextEditingController();
 
-  AuthenticationForm({Key? key, required this.type, this.showOAuth = true}) : super(key: key);
+  AuthenticationForm({
+    Key? key,
+    this.showOAuth = true,
+    this.showResetPassword = true,
+    this.validatePassword = true,
+    this.autoFocusEmail = false,
+    this.email,
+    this.action = signInAction,
+    this.onSuccess = defaultOnSuccessCallback,
+  }) : super(key: key) {
+    _emailTextController = TextEditingController(text: email);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +154,7 @@ class AuthenticationForm extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextFormField(
+            autofocus: autoFocusEmail,
             controller: _emailTextController,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
@@ -86,7 +163,7 @@ class AuthenticationForm extends StatelessWidget {
             ),
             validator: (value) {
               if (value == null || value.isBlank) {
-                return AppLocalizations.of(context)!.invalidEmailError;
+                return context.l10n.invalidEmailError;
               }
               return null;
             },
@@ -95,7 +172,7 @@ class AuthenticationForm extends StatelessWidget {
             padding: const EdgeInsets.only(top: 16.0),
             child: PasswordTextFormField(
               controller: _passwordTextController,
-              validator: type.passwordValidator(context),
+              validator: (value) => validatePassword ? passwordValidator(context, value) : null,
             ),
           ),
           Container(
@@ -107,13 +184,13 @@ class AuthenticationForm extends StatelessWidget {
                 if (!_emailAndPasswordFormKey.currentState!.validate()) return;
 
                 //Await action of auth type
-                await type.action(
-                  context,
-                  _emailTextController,
-                  _passwordTextController,
-                );
-                _emailTextController.clear();
-                _passwordTextController.clear();
+                var success = await action.call(
+                    context, _emailTextController.text, _passwordTextController.text);
+                if (success) {
+                  onSuccess.call();
+                  _emailTextController.clear();
+                  _passwordTextController.clear();
+                }
               },
               builder: (context, onTap) => ElevatedButton(
                 onPressed: onTap,
@@ -128,169 +205,46 @@ class AuthenticationForm extends StatelessWidget {
                         ),
                       )
                     : Text(
-                        type.name(context),
+                        context.l10n.signIn,
                         style: const TextStyle(fontSize: 18),
                       ),
               ),
             ),
           ),
-          type.resetPassword(context),
-          const Divider(height: 10, thickness: 3).paddingSymmetric(vertical: 12, horizontal: 0),
-          SizedBox(
-            height: 60,
-            width: 300,
-            child: type is SignUpAuthentication
-                ? OAuthButton.googleSignUp(context)
-                : OAuthButton.googleSignIn(context),
-          ),
+          if (showResetPassword)
+            Container(
+              padding: const EdgeInsets.only(top: 12, right: 8),
+              alignment: Alignment.centerRight,
+              child: InkWell(
+                onTap: () => context.dialog(const RequestPasswordResetDialog.reset()),
+                child: Text(context.l10n.resetPassword).fontSize(16),
+              ),
+            ),
+          if (showOAuth)
+            const Divider(height: 10, thickness: 3).paddingSymmetric(vertical: 12, horizontal: 0),
+          if (showOAuth)
+            ...OAuthButton.getAll(context).map(
+              (oauthButton) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: SizedBox(
+                  height: 60,
+                  width: 300,
+                  child: oauthButton,
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
-}
 
-/// Authentication type to handle specific parts of the page.
-abstract class AuthenticationType {
-  final VoidCallback onSuccess;
-
-  const AuthenticationType(this.onSuccess);
-
-  String name(BuildContext context);
-
-  Widget? dataDisclaimer(BuildContext context);
-
-  FormFieldValidator? passwordValidator(BuildContext context);
-
-  Future<void> action(
-    BuildContext context,
-    TextEditingController email,
-    TextEditingController password,
-  );
-
-  Widget resetPassword(BuildContext context);
-}
-
-/// Used to handle all sign up components on the authentication page
-class SignUpAuthentication extends AuthenticationType {
-  const SignUpAuthentication(super.onSuccess);
-
-  @override
-  String name(BuildContext context) => AppLocalizations.of(context)!.signUp;
-
-  @override
-  Widget? dataDisclaimer(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Divider(height: 0),
-        Row(
-          children: [
-            const Icon(Icons.lock).paddingAll(16),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
-                child: Text(AppLocalizations.of(context)!.dataDisclaimer),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  @override
-  FormFieldValidator? passwordValidator(BuildContext context) => (value) {
-        if (value.length < 8) {
-          return AppLocalizations.of(context)!.passwordMin8Chars;
-        } else if (!value.contains(RegExp(r"([A-ZÄÖÜa-zäöü])+([0-9])+"))) {
-          return AppLocalizations.of(context)!.passwordMustContainNumber;
-        }
-        return null;
-      };
-
-  @override
-  Future<void> action(
-    BuildContext context,
-    TextEditingController email,
-    TextEditingController password,
-  ) async {
-    try {
-      FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-        email: email.text.trim(),
-        password: password.text.trim(),
-      )
-          .then((value) {
-        onSuccess.call();
-      });
-    } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case "email-already-in-use":
-          context.showL10nSnackBar((l10n) => l10n.accountAlreadyExistingError);
-          break;
-        case "invalid-email":
-          context.showL10nSnackBar((l10n) => l10n.invalidEmailError);
-          break;
-        default:
-          context.showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
-      }
+  String? passwordValidator(BuildContext context, String value) {
+    if (value.length < 8) {
+      return context.l10n.passwordMin8Chars;
+    } else if (!value.contains(RegExp(r"([A-ZÄÖÜa-zäöü])+([0-9])+"))) {
+      return context.l10n.passwordMustContainNumber;
     }
-  }
 
-  @override
-  Widget resetPassword(BuildContext context) => Container();
-}
-
-/// Used to handle all the sign in parts of the authentication page
-class SignInAuthentication extends AuthenticationType {
-  const SignInAuthentication(super.onSuccess);
-
-  @override
-  String name(BuildContext context) => AppLocalizations.of(context)!.signIn;
-
-  @override
-  Widget? dataDisclaimer(BuildContext context) => null;
-
-  @override
-  FormFieldValidator? passwordValidator(BuildContext context) => null;
-
-  @override
-  Future<void> action(
-    BuildContext context,
-    TextEditingController email,
-    TextEditingController password,
-  ) async {
-    try {
-      FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-        email: email.text.trim(),
-        password: password.text.trim(),
-      )
-          .then((value) {
-        onSuccess.call();
-      });
-    } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case "user-not-found":
-          context.showL10nSnackBar((l10n) => l10n.userNotFound);
-          break;
-        case "wrong-password":
-          context.showL10nSnackBar((l10n) => l10n.wrongPassword);
-          break;
-        case "invalid-email":
-          context.showL10nSnackBar((l10n) => l10n.invalidEmailError);
-          break;
-        default:
-          context.showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
-      }
-    }
-  }
-
-  @override
-  Widget resetPassword(BuildContext context) {
-    return InkWell(
-      onTap: () => context.dialog(const RequestPasswordResetDialog.reset()),
-      child: Text(AppLocalizations.of(context)!.resetPassword).fontSize(16),
-    ).alignAtCenterRight().paddingOnly(top: 12, right: 8);
+    return null;
   }
 }

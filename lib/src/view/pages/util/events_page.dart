@@ -2,6 +2,7 @@
  * Copyright (c) Paul Huerkamp 2022. All rights reserved.
  */
 
+import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/backend/api/requests.dart' as requests;
 import 'package:engelsburg_planer/src/models/api/events.dart';
 import 'package:engelsburg_planer/src/services/synchronization_service.dart';
@@ -26,7 +27,8 @@ class EventsPage extends StatelessWidget {
         onRefresh: refresh,
         child: ListView.separated(
           itemBuilder: (context, index) => EventListTile(events[index]),
-          separatorBuilder: (context, index) => const Divider(height: 0),
+          separatorBuilder: (context, index) =>
+              const Divider(height: 2).paddingSymmetric(horizontal: 8),
           itemCount: events.length,
         ),
       ),
