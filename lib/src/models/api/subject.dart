@@ -2,25 +2,74 @@
  * Copyright (c) Paul Huerkamp 2022. All rights reserved.
  */
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:engelsburg_planer/src/controller/subject_controller.dart';
+import 'package:engelsburg_planer/src/controller/timetable_controller.dart';
 import 'package:engelsburg_planer/src/services/data_service.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+class Subjects {
+  Subjects();
+
+  static SubjectsSchema get online => SubjectsOnline();
+
+  static SubjectsSchema get offline => SubjectsOffline();
+
+  Map<String, dynamic> toJson() => {};
+
+  factory Subjects.fromJson(Map<String, dynamic> json) => Subjects();
+}
+
+abstract class SubjectsSchema extends Document<Subjects> {
+  Collection<Document<Subject>, Subject> get subjects;
+}
+
+class SubjectsOnline extends OnlineDocument<Subjects> implements SubjectsSchema {
+  SubjectsOnline() : super(documentReference: doc, fromJson: Subjects.fromJson);
+
+  static DocumentReference<Map<String, dynamic>> doc() =>
+      FirebaseFirestore.instance.collection("subjects").doc(FirebaseAuth.instance.currentUser!.uid);
+
+  @override
+  Collection<Document<Subject>, Subject> get subjects =>
+      OnlineCollection<OnlineDocument<Subject>, Subject>(
+        collection: () => document.collection("subjects"),
+        buildType: (doc) => OnlineDocument(
+          documentReference: () => doc,
+          fromJson: Subject.fromJson,
+        ),
+      );
+}
+
+class SubjectsOffline extends OfflineDocument<Subjects> implements SubjectsSchema {
+  SubjectsOffline() : super(key: "subjects", fromJson: Subjects.fromJson);
+
+  @override
+  Collection<Document<Subject>, Subject> get subjects =>
+      OfflineCollection<OfflineDocument<Subject>, Subject>(
+        parent: this,
+        collection: "subjects",
+        buildType: (id) => OfflineDocument(
+          key: id,
+          fromJson: Subject.fromJson,
+        ),
+      );
+}
 
 /// Class that holds all information about a subject.
 class Subject extends Comparable<Subject> {
   static const Color defaultColor = Colors.lightBlueAccent;
   static const String defaultColorString = "#FF40C4FF";
 
-  int? subjectId;
   final String baseSubject;
   String? customName;
   String color;
   bool advancedCourse;
 
   Subject({
-    this.subjectId,
     required this.baseSubject,
     this.customName,
     this.color = defaultColorString, //defaultColor
@@ -43,7 +92,6 @@ class Subject extends Comparable<Subject> {
       baseSubject;
 
   factory Subject.fromJson(dynamic json) => Subject(
-        subjectId: json["subjectId"],
         baseSubject: json["baseSubject"],
         customName: json["customName"],
         color: json["color"] ?? defaultColorString,
@@ -52,7 +100,6 @@ class Subject extends Comparable<Subject> {
       );
 
   dynamic toJson() => {
-        "subjectId": subjectId,
         "baseSubject": baseSubject,
         "customName": customName,
         "color": color,
@@ -64,15 +111,12 @@ class Subject extends Comparable<Subject> {
     if (!advancedCourse && other.advancedCourse) return 1;
     if (advancedCourse && !other.advancedCourse) return -1;
 
-    if (subjectId == null && other.subjectId != null) return 1;
-    if (subjectId != null && other.subjectId == null) return 1;
-
     return 0;
   }
 
   @override
   String toString() {
-    return 'Subject{subjectId: $subjectId, baseSubject: $baseSubject, customName: $customName, color: $color, advancedCourse: $advancedCourse}';
+    return 'Subject{baseSubject: $baseSubject, customName: $customName, color: $color, advancedCourse: $advancedCourse}';
   }
 }
 

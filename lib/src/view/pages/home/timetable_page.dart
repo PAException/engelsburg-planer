@@ -313,7 +313,7 @@ class TimetablePageState extends State<TimetablePage> with DataStateMixin<Timeta
                           child: Text(
                             _getSubtitle(),
                             textScaleFactor: 1.2,
-                            style: Theme.of(context).textTheme.caption,
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ),
                       ],

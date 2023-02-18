@@ -180,7 +180,10 @@ class DatabaseService {
       );
     }
 
-    return (await batch.commit()).expand((e) => e as List).map(table.deserialize.call).toList();
+    return (await batch.commit())
+        .expand((e) => e as List)
+        .map((e) => table.deserialize.call(e))
+        .toList();
   }
 
   /// Deletes rows in a table by given query
@@ -188,5 +191,5 @@ class DatabaseService {
       await _db?.delete(getTable<T>().name, where: where, whereArgs: whereArgs);
 
   /// Deletes all rows in a table
-  static Future<void> deleteAll<T>() async => await delete<T>();
+  static Future<void> deleteAll<T>() => delete<T>();
 }

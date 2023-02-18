@@ -6,10 +6,8 @@ import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/controller/subject_controller.dart';
 import 'package:engelsburg_planer/src/models/api/subject.dart';
 import 'package:engelsburg_planer/src/services/data_service.dart';
-import 'package:engelsburg_planer/src/services/synchronization_service.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/widgets/color_grid.dart';
-import 'package:engelsburg_planer/src/view/widgets/promised.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/switch_expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -25,29 +23,34 @@ class _SubjectSettingsPageState extends State<SubjectSettingsPage>
     with DataStateMixin<SubjectService> {
   @override
   Widget build(BuildContext context) {
-    return Promised<Subject>(
-      promise: Promise<Subject>(
-        fetch: () => dataService.getEditableSubjectList(),
-        dbOrderBy: "baseSubject ASC",
-      ),
-      dataBuilder: (data, refresh, context) => RefreshIndicator(
-        onRefresh: refresh,
-        child: ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          itemCount: data.length,
-          separatorBuilder: (context, index) => const Divider(thickness: 2, height: 2),
-          itemBuilder: (context, index) => SubjectTile(
-            subject: data[index],
-            baseSubject: dataService.getBaseSubject(data[index]),
+    return StreamBuilder<Map<String, Subject>>(
+      stream: Subjects.online.subjects.snapshots,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.connectionState != ConnectionState.done) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(50),
+              child: Text(AppLocalizations.of(context)!.noSubjects),
+            ),
+          );
+        }
+
+        var data = snapshot.requireData.values.toList();
+        return RefreshIndicator(
+          onRefresh: () async => setState(() {}),
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            itemCount: data.length,
+            separatorBuilder: (context, index) => const Divider(thickness: 2, height: 2),
+            itemBuilder: (context, index) => SubjectTile(
+              subject: data[index],
+              baseSubject: dataService.getBaseSubject(data[index]),
+            ),
           ),
-        ),
-      ),
-      errorBuilder: (error, context) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(50),
-          child: Text(AppLocalizations.of(context)!.noSubjects),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -79,7 +82,7 @@ class _SubjectTileState extends State<SubjectTile> with DataStateMixin<SubjectSe
   @override
   void initState() {
     super.initState();
-    _value = widget.subject!.subjectId != null;
+    _value = widget.subject != null;
     _color = ColorUtils.fromHex(widget.subject?.color) ?? Subject.defaultColor;
   }
 
@@ -141,8 +144,14 @@ class _SubjectTileState extends State<SubjectTile> with DataStateMixin<SubjectSe
       activeColor: Theme.of(context).colorScheme.primary,
       onChanged: (bool? value) {
         if (value == null) return;
+
+        if (value) {
+          dataService.addSubject(widget.subject!);
+        } else {
+          //dataService.removeSubject(0);
+        }
+
         setState(() {
-          //TODO
           _value = value;
         });
       },

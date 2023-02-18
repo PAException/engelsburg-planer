@@ -18,7 +18,8 @@ class TimetableDate extends StatelessWidget {
   final bool editing;
 
   @override
-  Widget build(BuildContext context) => Padding(
+  Widget build(BuildContext context) =>
+      Padding(
         padding: const EdgeInsets.only(bottom: 4.0),
         child: Center(
           child: Text(
@@ -34,7 +35,8 @@ class TimetableBreak extends StatelessWidget {
   const TimetableBreak({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => Stack(
+  Widget build(BuildContext context) =>
+      Stack(
         fit: StackFit.passthrough,
         clipBehavior: Clip.hardEdge,
         children: [
@@ -42,11 +44,17 @@ class TimetableBreak extends StatelessWidget {
           Center(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              color: Theme.of(context).backgroundColor,
+              color: Theme
+                  .of(context)
+                  .colorScheme
+                  .background,
               child: Text(
                 AppLocalizations.of(context)!.break_,
                 textScaleFactor: 1.2,
-                style: Theme.of(context).textTheme.caption,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .bodySmall,
               ),
             ),
           ),
@@ -81,7 +89,10 @@ class TimetableFreeHour extends StatelessWidget {
           child: Text(
             "$count $name",
             textScaleFactor: 1.8,
-            style: Theme.of(context).textTheme.caption,
+            style: Theme
+                .of(context)
+                .textTheme
+                .bodySmall,
           ),
         ),
       ),
@@ -96,14 +107,18 @@ class TimetableNoEntries extends StatelessWidget {
   final void Function() editCallback;
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
+  Widget build(BuildContext context) =>
+      GestureDetector(
         onTap: editCallback,
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Center(
             child: Text(
               AppLocalizations.of(context)!.noTimetable,
-              style: Theme.of(context).textTheme.caption,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodySmall,
             ),
           ),
         ),
@@ -129,7 +144,7 @@ class TimetableCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Subject? subject = _getSubject(context, entry.subjectId);
+    Subject? subject =;
     final heroTag = StringUtils.randomAlphaNumeric(16);
 
     return Padding(
@@ -148,12 +163,13 @@ class TimetableCard extends StatelessWidget {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ExtendedTimetableCard(
-                      timetableEntry: entry,
-                      heroTag: heroTag,
-                      date: date,
-                      editing: editing,
-                    ),
+                    builder: (context) =>
+                        ExtendedTimetableCard(
+                          timetableEntry: entry,
+                          heroTag: heroTag,
+                          date: date,
+                          editing: editing,
+                        ),
                   ),
                 );
                 refreshCallback();
@@ -168,9 +184,9 @@ class TimetableCard extends StatelessWidget {
               ),
               title: entry.subjectId != null
                   ? Text(
-                      _subjectName(context, subject),
-                      textScaleFactor: 1.25,
-                    )
+                _subjectName(context, subject),
+                textScaleFactor: 1.25,
+              )
                   : null,
               subtitle: _buildText(
                 context: context,
@@ -203,15 +219,14 @@ class TimetableCard extends StatelessWidget {
       children: [
         Text(
           text,
-          style: Theme.of(context).textTheme.caption,
+          style: Theme
+              .of(context)
+              .textTheme
+              .bodySmall,
         ),
       ],
     );
   }
-}
-
-Subject? _getSubject(BuildContext context, int? subjectId) {
-  return subjectId != null ? context.data<SubjectService>()!.getSubject(subjectId) : null;
 }
 
 String _subjectName(BuildContext context, Subject? subject) {
@@ -222,7 +237,12 @@ String _subjectName(BuildContext context, Subject? subject) {
 }
 
 Color _subjectColor(BuildContext context, Subject? subject) {
-  return subject?.parsedColor ?? Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.15);
+  return subject?.parsedColor ?? Theme
+      .of(context)
+      .textTheme
+      .bodyLarge!
+      .color!
+      .withOpacity(0.15);
 }
 
 class ExtendedTimetableCard extends StatefulWidget {
@@ -267,13 +287,12 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard>
     return "$start - $end $suffix";
   }
 
-  TimetableEntry? saveChanges() {
+  Future<TimetableEntry?> saveChanges() async {
     if (!_editing) return null;
 
     return dataService.updateTimetable(
       day: widget.date.weekday,
       lesson: widget.timetableEntry.lesson,
-      subjectId: _subject?.subjectId,
       className: _classNameController.text.nullIfBlank,
       teacher: _teacherController.text.nullIfBlank,
       room: _roomController.text.nullIfBlank,
@@ -309,7 +328,10 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard>
             child: IconButton(
               icon: Icon(
                 Icons.clear,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .onSurface,
               ),
               onPressed: () {
                 saveChanges();
@@ -321,7 +343,10 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard>
             if (_editing)
               IconButton(
                 icon: const Icon(Icons.delete),
-                color: Theme.of(context).colorScheme.onSurface,
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .onSurface,
                 onPressed: () {
                   _classNameController.clear();
                   _teacherController.clear();
@@ -335,7 +360,10 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard>
               padding: const EdgeInsets.only(right: 8),
               child: IconButton(
                 icon: Icon(_editing ? Icons.done : Icons.edit_outlined),
-                color: Theme.of(context).colorScheme.onSurface,
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .onSurface,
                 onPressed: () {
                   setState(() {
                     //If editing turned off save changes
@@ -381,16 +409,16 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard>
                 subtitle: Text(widget.date.formatEEEEddMMToNow(context)),
                 onTap: _editing
                     ? () async {
-                        Subject? res = await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const SelectSubjectPage()),
-                        );
-                        if (res != null && res.subjectId != _subject?.subjectId) {
-                          setState(() {
-                            _subject = res;
-                          });
-                        }
-                      }
+                  Subject? res = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SelectSubjectPage()),
+                  );
+                  if (res != null) {
+                    setState(() {
+                      _subject = res;
+                    });
+                  }
+                }
                     : null,
               ),
               ListTile(
@@ -445,17 +473,24 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard>
                 Visibility(
                   visible: false, //TODO change to view
                   child: Disabled(
-                    disabled: _subject?.subjectId == null,
+                    disabled: _subject == null,
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 32),
                         child: TextButton(
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all(
-                              Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
+                              Theme
+                                  .of(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withOpacity(0.2),
                             ),
                             foregroundColor: MaterialStateProperty.all(
-                              Theme.of(context).colorScheme.onSurface,
+                              Theme
+                                  .of(context)
+                                  .colorScheme
+                                  .onSurface,
                             ),
                           ),
                           child: Padding(
@@ -487,8 +522,6 @@ class SelectSubjectPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var subjects = context.data<SubjectService>()!.getAllSubjects();
-
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.pickSubject),
@@ -500,32 +533,45 @@ class SelectSubjectPage extends StatelessWidget {
           ),
         ),
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-        itemBuilder: (context, index) => ListTile(
-          leading: Center(
-            widthFactor: 1,
-            child: SizedBox.square(
-              dimension: 24,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: subjects[index].parsedColor,
-                  borderRadius: BorderRadius.circular(8),
+      body: FutureBuilder<List<Subject>>(
+        future: Subjects.online.subjects.loadedItems,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          var subjects = snapshot.data!;
+
+          return ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+            itemBuilder: (context, index) =>
+                ListTile(
+                  leading: Center(
+                    widthFactor: 1,
+                    child: SizedBox.square(
+                      dimension: 24,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: subjects[index].parsedColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  title: Text(
+                    subjects[index].parsedName(context),
+                    textScaleFactor: 1.2,
+                  ),
+                  onTap: () => Navigator.pop(context, subjects[index]),
                 ),
-              ),
+            separatorBuilder: (context, index) =>
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Divider(height: 4, thickness: 2),
             ),
-          ),
-          title: Text(
-            subjects[index].parsedName(context),
-            textScaleFactor: 1.2,
-          ),
-          onTap: () => Navigator.pop(context, subjects[index]),
-        ),
-        separatorBuilder: (context, index) => const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Divider(height: 4, thickness: 2),
-        ),
-        itemCount: subjects.length,
+            itemCount: subjects.length,
+          );
+        },
       ),
     );
   }

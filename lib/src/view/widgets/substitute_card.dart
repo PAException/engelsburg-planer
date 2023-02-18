@@ -307,7 +307,7 @@ class SubstituteMessageCardState extends State<SubstituteMessageCard> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
-          color: Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.15),
+          color: Theme.of(context).textTheme.bodyLarge!.color!.withOpacity(0.15),
         ),
         child: Padding(
           padding: const EdgeInsets.all(10),

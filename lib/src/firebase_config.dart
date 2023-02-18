@@ -27,12 +27,12 @@ class FirebaseConfig {
   }
 
   /// Initialize the dynamic link firebase service to accept to app linking.
-  static Future<void> initializeDynamicLinks() async {
-    //Wait for app to be initialized
-    await Future.doWhile(() => GlobalContext.key.currentContext == null);
-
+  static void initializeDynamicLinks() async {
     //Register listener on any links that are opened in the app.
-    FirebaseDynamicLinks.instance.onLink.listen((linkData) {
+    FirebaseDynamicLinks.instance.onLink.listen((linkData) async {
+      //Wait for app to be initialized
+      await Future.doWhile(() => GlobalContext.key.currentContext == null);
+
       //Push screen after WidgetTree is built.
       WidgetsBinding.instance.addPostFrameCallback((_) {
         globalContext().go(linkData.link.toString());

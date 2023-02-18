@@ -87,7 +87,7 @@ class ArticleImage extends StatelessWidget {
             placeholderBuilder: article.blurHash != null
                 ? OctoPlaceholder.blurHash(article.blurHash!)
                 : (_) => SpinKitCircle(
-                      color: Theme.of(context).backgroundColor,
+                      color: Theme.of(context).colorScheme.background,
                     ),
             height: 200,
             fit: BoxFit.cover,
@@ -151,7 +151,7 @@ class ArticleCardActions extends StatelessWidget {
         children: [
           Text(
             DateTime.fromMillisecondsSinceEpoch(article.date).elapsed(context),
-            style: TextStyle(color: Theme.of(context).textTheme.caption!.color),
+            style: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
           ),
           Expanded(child: Container()),
           ArticleSaveIconButton(article),

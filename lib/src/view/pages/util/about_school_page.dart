@@ -33,7 +33,7 @@ class AboutSchoolPageState extends State<AboutSchoolPage> {
         RichText(
             text: TextSpan(
                 text: '${AppLocalizations.of(context)!.source}: ',
-                style: TextStyle(color: Theme.of(context).textTheme.bodyText1!.color),
+                style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color),
                 children: [
               TextSpan(
                   text: AppConstants.schoolDescriptionSourceDomain,

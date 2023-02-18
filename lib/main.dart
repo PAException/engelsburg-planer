@@ -46,11 +46,11 @@ Future<void> initialize() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Future.wait([
+    Firebase.initializeApp(),
     FirebaseConfig.initialize(),
     CacheService.initialize(),
     DatabaseService.initialize(),
     IsolatedWorker.initialize(),
-    Firebase.initializeApp(),
   ]);
   //if (kDebugMode) await FirebaseAuth.instance.useAuthEmulator('10.0.0.2', 9099);
 }

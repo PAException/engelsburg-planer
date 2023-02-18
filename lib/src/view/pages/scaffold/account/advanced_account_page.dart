@@ -33,12 +33,12 @@ class AccountAdvancedPage extends StatelessWidget {
               children: [
                 Text(
                   context.l10n.advancedAccountOptions,
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 15.heightBox,
                 Text(
                   context.l10n.advancedAccountOptionsDescription,
-                  style: context.theme.textTheme.caption,
+                  style: context.theme.textTheme.bodySmall,
                 ),
               ],
             ),

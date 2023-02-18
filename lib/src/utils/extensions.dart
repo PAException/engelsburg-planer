@@ -188,6 +188,9 @@ extension IteratorUtils<T> on Iterable<T> {
     }
   }
 
+  Future<List<C>> asyncMap<C>(Future<C> Function(T t) toElement) async =>
+      await Future.wait(map(toElement));
+
   int count() => fold(0, (pre, _) => pre + 1);
 }
 

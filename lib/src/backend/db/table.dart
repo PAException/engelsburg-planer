@@ -2,8 +2,10 @@
  * Copyright (c) Paul Huerkamp 2022. All rights reserved.
  */
 
-typedef Serializer<T> = dynamic Function(T t);
-typedef Deserializer<T> = T Function(dynamic map);
+import 'package:engelsburg_planer/src/utils/type_definitions.dart';
+
+typedef Serializer<T> = Json Function(T t);
+typedef Deserializer<T> = T Function(Json map);
 
 /// Provides information how to store structural data.
 ///

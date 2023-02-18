@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:engelsburg_planer/src/backend/api/api_error.dart';
 import 'package:flutter/material.dart';
 
-typedef Json = dynamic;
+typedef Json = Map<String, dynamic>;
 
 typedef Listener<T> = FutureOr<void> Function(T t);
 typedef Wrap<T> = T Function();
