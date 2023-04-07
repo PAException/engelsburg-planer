@@ -11,10 +11,6 @@ class UserState extends ChangeNotifier {
   List<String>? _signInMethods;
 
   UserState() {
-    addListener(() {
-      print(_signInMethods);
-    });
-
     instance.userChanges().listen((event) {
       if (loggedIn) {
         instance.fetchSignInMethodsForEmail(email!).then((value) {

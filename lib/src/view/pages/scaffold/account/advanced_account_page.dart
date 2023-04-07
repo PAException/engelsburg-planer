@@ -5,10 +5,13 @@
 import 'dart:convert';
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/backend/api/request.dart';
-import 'package:engelsburg_planer/src/backend/api/requests.dart';
+import 'package:engelsburg_planer/src/models/db/grades.dart';
+import 'package:engelsburg_planer/src/models/db/subjects.dart';
+import 'package:engelsburg_planer/src/models/db/tasks.dart';
+import 'package:engelsburg_planer/src/models/db/timetable.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/view/widgets/api_future_builder.dart';
+import 'package:engelsburg_planer/src/view/pages/scaffold/auth_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -82,12 +85,11 @@ class AccountDeleteConfirmationDialog extends StatelessWidget {
         TextButton(
           child: Text(context.l10n.delete),
           onPressed: () async {
-            var res = await deleteUser().build().api(ignore);
-            if (res.errorPresent) {
-              context.showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
-            } else {
-              context.popUntil("/");
-            }
+            context.pushPage(const SignInPage()).then((value) {
+              try {
+                FirebaseAuth.instance.currentUser?.delete();
+              } catch (_) {}
+            });
           },
         ),
       ],
@@ -111,36 +113,39 @@ class AccountData extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.copy),
-            onPressed: () => Clipboard.setData(ClipboardData(text: accountData)),
+            onPressed: () {
+              if (accountData == null) return;
+              Clipboard.setData(ClipboardData(text: accountData!));
+            },
           ),
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Center(
-          child: ApiFutureBuilder(
-            request: getUserData().build(),
-            parser: json,
-            dataBuilder: (json, refresh, context) {
-              accountData = encoder.convert(json);
+          child: FutureBuilder<List>(
+            future: Future.wait([
+              //Subjects.get().load(),
+              Subjects.get().entries.loadedItems,
+              Timetable.get().load(),
+              Timetable.get().entries.loadedItems,
+              Grades.get().load(),
+              Grades.get().entries.loadedItems,
+              //Tasks.get().load(),
+              Tasks.get().entries.loadedItems,
+            ]),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              var data = snapshot.data!.where((element) => element is! List || element.isNotEmpty);
+              accountData = encoder.convert(data.toList());
 
-              return RefreshIndicator(
-                onRefresh: refresh,
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: SelectableText(accountData!),
-                ),
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SelectableText(accountData!),
               );
             },
-            errorBuilder: (error, context) => Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: Text(
-                  context.l10n.unexpectedErrorMessage,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
           ),
         ),
       ),

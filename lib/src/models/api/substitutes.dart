@@ -2,8 +2,8 @@
  * Copyright (c) Paul Huerkamp 2022. All rights reserved.
  */
 
+import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 final DateFormat _format = DateFormat("yyyy-MM-dd");
@@ -42,12 +42,12 @@ class Substitute {
   });
 
   static List<Substitute> fromSubstitutes(dynamic json) =>
-      List<Substitute>.from(json["substitutes"].map(Substitute.fromJson));
+      List<Substitute>.from((json is List ? json : json["substitutes"]).map(Substitute.fromJson));
 
   factory Substitute.fromJson(dynamic json) => Substitute(
         date: DateTime.parse(json["date"]),
         className: json["className"],
-        lesson: json["lesson"],
+        lesson: json["lesson"] is String ? int.parse(json["lesson"]) : json["lesson"],
         subject: json["subject"],
         substituteTeacher: json["substituteTeacher"],
         teacher: json["teacher"],
@@ -91,7 +91,8 @@ class SubstituteMessage {
   final String? messages;
 
   static List<SubstituteMessage> fromSubstituteMessages(dynamic json) =>
-      List<SubstituteMessage>.from(json["substituteMessages"].map(SubstituteMessage.fromJson));
+      List<SubstituteMessage>.from(
+          (json is List ? json : json["substituteMessages"]).map(SubstituteMessage.fromJson));
 
   factory SubstituteMessage.fromJson(dynamic json) => SubstituteMessage(
         date: DateTime.parse(json["date"]),
@@ -103,7 +104,7 @@ class SubstituteMessage {
         messages: json['messages'],
       );
 
-  dynamic toMap() => {
+  dynamic toJson() => {
         "date": _format.format(date!),
         "absenceTeachers": absenceTeachers,
         "absenceClasses": absenceClasses,
@@ -118,15 +119,15 @@ extension SubstituteTypeExt on SubstituteType {
   String name(BuildContext context) {
     switch (this) {
       case SubstituteType.canceled:
-        return AppLocalizations.of(context)!.substituteTypeCanceled;
+        return context.l10n.substituteTypeCanceled;
       case SubstituteType.independentWork:
-        return AppLocalizations.of(context)!.substituteTypeIndependentWork;
+        return context.l10n.substituteTypeIndependentWork;
       case SubstituteType.roomSubstitute:
-        return AppLocalizations.of(context)!.substituteTypeRoomSubstitute;
+        return context.l10n.substituteTypeRoomSubstitute;
       case SubstituteType.care:
-        return AppLocalizations.of(context)!.substituteTypeCare;
+        return context.l10n.substituteTypeCare;
       case SubstituteType.substitute:
-        return AppLocalizations.of(context)!.substituteTypeSubstitute;
+        return context.l10n.substituteTypeSubstitute;
     }
   }
 

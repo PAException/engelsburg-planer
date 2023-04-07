@@ -5,11 +5,12 @@
 import 'package:engelsburg_planer/src/backend/api/api_response.dart';
 import 'package:engelsburg_planer/src/backend/api/request.dart';
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
+import 'package:engelsburg_planer/src/models/state/network_state.dart';
 import 'package:engelsburg_planer/src/services/cache_service.dart';
-import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/utils/type_definitions.dart';
 import 'package:engelsburg_planer/src/utils/util.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 const Duration kTimeout = Duration(seconds: 5);
 
@@ -32,15 +33,11 @@ class RequestService {
   /// Will return empty body and status 0 after defined (default 5) timeout
   static Future<http.Response> execute(Request request, {Duration timeout = kTimeout}) async {
     //Set network status loading
-    globalContext().loading();
+    globalContext().read<NetworkState>().update(NetworkStatus.loading);
 
     //Set default headers if api request
     if (request.host == Host.api) request.headers.addAll(defaultApiHeaders);
     //Set authorization header if request is an authenticated one
-    if (request.authenticated) {
-      assert(globalContext().loggedIn);
-      //request.headers["Authorization"] = globalContext().read<UserState>().accessToken!;
-    }
 
     //Append Hash-header if needed (modified check)
     request = CacheService.appendModifiedCheck(request);
@@ -48,13 +45,13 @@ class RequestService {
     //Execute request
     return _request(request).timeout(timeout, onTimeout: () {
       //On timeout set network status as offline and return response with status = 999
-      globalContext().offline();
-      //TODO? create retry service? (callback?)
+      globalContext().read<NetworkState>().update(NetworkStatus.offline);
+      //TODO? create retry service? (callback?), exponential backoff?
       return http.Response("", 999);
     }).then((response) {
       //If request wasn't timed out then set network status as online
       if (response.statusCode != 999) {
-        globalContext().online();
+        globalContext().read<NetworkState>().update(NetworkStatus.online);
       }
 
       return response;

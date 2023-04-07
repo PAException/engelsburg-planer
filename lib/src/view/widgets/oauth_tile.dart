@@ -6,6 +6,7 @@ import 'package:engelsburg_planer/src/models/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/constants/asset_path_constants.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/utils/oauth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -72,7 +73,7 @@ class OAuthTile extends StatelessWidget {
             ],
           ),
           leading: icon,
-          trailing: !connected
+          trailing: !connected || FirebaseAuth.instance.currentUser!.providerData.length < 2
               ? const SizedBox(width: 0)
               : GestureDetector(
                   child: const Icon(Icons.clear_outlined),

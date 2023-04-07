@@ -4,13 +4,11 @@
 
 import 'package:engelsburg_planer/src/backend/api/api_error.dart';
 import 'package:engelsburg_planer/src/backend/api/api_response.dart';
-import 'package:engelsburg_planer/src/backend/api/requests.dart' as requests;
 import 'package:engelsburg_planer/src/backend/db/db_service.dart';
 import 'package:engelsburg_planer/src/models/api/article.dart';
 import 'package:engelsburg_planer/src/services/cache_service.dart';
 import 'package:engelsburg_planer/src/services/data_service.dart';
 import 'package:engelsburg_planer/src/services/synchronization_service.dart';
-import 'package:engelsburg_planer/src/utils/extensions.dart';
 
 class ArticleService extends DataService {
   final Set<int> _saved = {};
@@ -18,30 +16,16 @@ class ArticleService extends DataService {
   /// Set up initial saved article data
   @override
   Future<void> setup() async {
-    await CacheService.remove("article_saved");
-
-    if (context.loggedIn) return;
+    //TODO convert to document database
 
     //If user is not logged in get saved articles from cache
     Iterable<int>? cached = CacheService.getNullableJson<List>("article_saved")?.cast<int>();
     if (cached != null) _saved.addAll(cached);
   }
 
-  /// Only synced data gets refreshed
-  Future<void> refresh() async {
-    if (!context.loggedIn) return;
-
-    //If user is logged in try to get saved articles from api
-    var res =
-        await requests.getSavedArticles().build().api((json) => json["savedArticles"] as List<int>);
-    if (res.dataPresent) _saved.addAll(res.data!);
-  }
-
   /// Get saved articles from db via in memory
   Promise<Article> get promiseSavedArticles => Promise<Article>(
         fetch: () async {
-          await refresh();
-
           if (_saved.isEmpty) {
             return const ApiResponse.error(ApiError(404, "NOT_FOUND", "articles"));
           }

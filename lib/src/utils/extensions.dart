@@ -6,10 +6,12 @@ import 'dart:async';
 import 'dart:math';
 
 import "package:awesome_extensions/awesome_extensions.dart";
-import 'package:engelsburg_planer/src/models/state/network_state.dart';
+import 'package:engelsburg_planer/src/models/db/subjects.dart';
 import 'package:engelsburg_planer/src/models/state/user_state.dart';
+import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart' hide GoRouterHelper;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -34,64 +36,65 @@ extension StringUtils on String {
   String? get nullIfBlank => isBlank ? null : this;
 }
 
+extension NumExtension on num {
+  double roundToPlaces(int places) {
+    num mod = pow(10.0, places);
+    return ((this * mod).round().toDouble() / mod);
+  }
+}
+
 extension DateTimeUtils on DateTime {
   bool isSameDay(DateTime other) => day == other.day && month == other.month && year == other.year;
 
   bool get isTomorrow => isSameDay(DateTime.now().add(const Duration(days: 1)));
 
-  //TODO: AppLocalizations
+  DateTime roundToDay() => copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
+
   String elapsed(BuildContext context) {
     final difference = DateTime.now().difference(this);
 
-    if ((difference.inDays / 365).floor() >= 2) {
-      return 'vor ${(difference.inDays / 365).floor()} Jahren';
-    } else if ((difference.inDays / 365).floor() >= 1) {
-      return 'vor 1 Jahr';
-    } else if ((difference.inDays / 30).floor() >= 2) {
-      return 'vor ${(difference.inDays / 30).floor()} Monaten';
+    if ((difference.inDays / 365).floor() >= 1) {
+      return context.l10n.yearsAgo((difference.inDays / 365).floor());
     } else if ((difference.inDays / 30).floor() >= 1) {
-      return 'vor 1 Monat';
-    } else if ((difference.inDays / 7).floor() >= 2) {
-      return 'vor ${(difference.inDays / 7).floor()} Wochen';
+      return context.l10n.monthsAgo((difference.inDays / 30).floor());
     } else if ((difference.inDays / 7).floor() >= 1) {
-      return 'vor 1 Woche';
-    } else if (difference.inDays >= 2) {
-      return 'vor ${difference.inDays} Tagen';
+      return context.l10n.weeksAgo((difference.inDays / 7).floor());
     } else if (difference.inDays >= 1) {
-      return 'vor 1 Tag';
-    } else if (difference.inHours >= 2) {
-      return 'vor ${difference.inHours} Stunden';
+      return context.l10n.daysAgo((difference.inDays).floor());
     } else if (difference.inHours >= 1) {
-      return 'vor 1 Stunde';
-    } else if (difference.inMinutes >= 2) {
-      return 'vor ${difference.inMinutes} Minuten';
+      return context.l10n.hoursAgo((difference.inHours).floor());
     } else if (difference.inMinutes >= 1) {
-      return 'vor 1 Minute';
-    } else if (difference.inSeconds >= 2) {
-      return 'vor ${difference.inSeconds} Sekunden';
+      return context.l10n.minutesAgo((difference.inMinutes).floor());
     } else {
-      return 'vor einer Sekunde';
+      return context.l10n.secondsAgo((difference.inSeconds).floor());
     }
   }
+
+  operator <(DateTime other) => microsecondsSinceEpoch < other.microsecondsSinceEpoch;
+
+  operator >(DateTime other) => microsecondsSinceEpoch > other.microsecondsSinceEpoch;
+
+  operator <=(DateTime other) => microsecondsSinceEpoch <= other.microsecondsSinceEpoch;
+
+  operator >=(DateTime other) => microsecondsSinceEpoch >= other.microsecondsSinceEpoch;
+
+  String format(BuildContext context, String format) =>
+      DateFormat(format, Localizations.localeOf(context).languageCode).format(this);
 
   String formatEEEEddMMToNow(BuildContext context) {
     String toNow = "";
     if (DateTime.now().subtract(const Duration(days: 1)).isSameDate(this)) {
-      toNow = "${AppLocalizations.of(context)!.yesterday} - ";
+      toNow = "${context.l10n.yesterday} - ";
     }
-    if (isToday) toNow = "${AppLocalizations.of(context)!.today} - ";
-    if (isTomorrow) toNow = "${AppLocalizations.of(context)!.tomorrow} - ";
+    if (isToday) toNow = "${context.l10n.today} - ";
+    if (isTomorrow) toNow = "${context.l10n.tomorrow} - ";
 
     return toNow + formatEEEEddMM(context);
   }
 
-  String formatEEEEddMM(BuildContext context) {
-    return DateFormat('EEEE, dd.MM.', Localizations.localeOf(context).languageCode).format(this);
-  }
+  String formatEEEEddMM(BuildContext context) => format(context, "EEEE, dd.MM.");
 
-  String formatEEEE(BuildContext context) {
-    return DateFormat('EEEE', Localizations.localeOf(context).languageCode).format(this);
-  }
+  String formatEEEE(BuildContext context) => format(context, "EEEE");
 }
 
 extension ColorUtils on Color {
@@ -192,6 +195,11 @@ extension IteratorUtils<T> on Iterable<T> {
       await Future.wait(map(toElement));
 
   int count() => fold(0, (pre, _) => pre + 1);
+
+  Iterable<C> mapIndex<C>(C Function(T element, int index) map) => Iterable.generate(
+        length,
+        (index) => map.call(elementAt(index), index),
+      );
 }
 
 extension BuildContextExt on BuildContext {
@@ -202,21 +210,52 @@ extension BuildContextExt on BuildContext {
         builder: (_) => bottomSheet,
       );
 
-  void showSnackBar(String msg) =>
-      ScaffoldMessenger.of(this).showSnackBar(SnackBar(content: Text(msg)));
-
   AppLocalizations get l10n => AppLocalizations.of(this)!;
 
   void showL10nSnackBar(String Function(AppLocalizations l10n) localized) =>
-      showSnackBar(localized.call(l10n));
-
-  void online() => read<NetworkState>().update(NetworkStatus.online);
-
-  void loading() => read<NetworkState>().update(NetworkStatus.loading);
-
-  void offline() => read<NetworkState>().update(NetworkStatus.offline);
+      ScaffoldMessenger.of(this).showSnackBar(SnackBar(content: Text(localized.call(l10n))));
 
   bool get loggedIn => Provider.of<UserState>(this, listen: false).loggedIn;
+
+  Color subjectColor(Subject? subject) =>
+      subject?.parsedColor ?? Theme.of(this).textTheme.bodyLarge!.color!.withOpacity(0.15);
+
+  /// Navigates to location, pushes all subpages
+  void navigate(String location, {Object? extra}) => GoRouter.of(this).go(location, extra: extra);
+
+  Future<dynamic> pushPage(Widget widget) {
+    if ((widget is CompactStatelessWidget || widget is CompactStatefulWidget) &&
+        isLandscape &&
+        width > 500) {
+      return showDialog(
+        context: this,
+        barrierDismissible: true,
+        builder: (context) {
+          return GestureDetector(
+            onTap: context.pop,
+            child: Container(
+              alignment: Alignment.center,
+              color: Colors.transparent,
+              child: GestureDetector(
+                onTap: () {},
+                child: Container(
+                  width: 500,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.background,
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: widget,
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      return push(widget);
+    }
+  }
 }
 
 extension WidgetExt on Widget {

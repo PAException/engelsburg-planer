@@ -2,10 +2,21 @@
  * Copyright (c) Paul Huerkamp 2022. All rights reserved.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape.dart';
 
 typedef AnimationFunction = AnimatedWidget Function(Animation<double> animation, Widget child);
+
+class DelayedExecution {
+  static final Map<String, Timer> _execs = {};
+
+  static void exec(String key, VoidCallback exec, [Duration delay = const Duration(seconds: 10)]) {
+    _execs[key]?.cancel();
+    _execs[key] = Timer(delay, exec);
+  }
+}
 
 class HtmlUtils {
   static String unescape(text) => HtmlUnescape()

@@ -29,9 +29,7 @@ class ApiError {
     }
   }
 
-  void log() {
-    if (kDebugMode) print(toString());
-  }
+  void log() => debugPrint(toString());
 
   bool get isInvalidParam => status == 400 && messageKey == 'INVALID_PARAM';
 

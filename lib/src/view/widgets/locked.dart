@@ -1,8 +1,12 @@
+/*
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
+ */
+
 import 'package:engelsburg_planer/src/models/state/user_state.dart';
+import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/switch_expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class LockedScreen extends StatefulWidget {
@@ -45,7 +49,7 @@ class _LockedScreenState extends State<LockedScreen> with SingleTickerProviderSt
           SizedBox(
             width: 200,
             child: Text(
-              AppLocalizations.of(context)!.needToLoggedInError,
+              context.l10n.needToLoggedInError,
               textAlign: TextAlign.center,
               textScaleFactor: 1.3,
               softWrap: true,
@@ -71,12 +75,12 @@ class _LockedScreenState extends State<LockedScreen> with SingleTickerProviderSt
           ),
           Container(height: 10),
           OutlinedButton(
-            onPressed: () => context.go("/signIn"),
+            onPressed: () => context.navigate("/signIn"),
             style: ButtonStyle(
               fixedSize: MaterialStateProperty.all<Size>(const Size(200, 40)),
             ),
             child: Center(
-              child: Text(AppLocalizations.of(context)!.signIn),
+              child: Text(context.l10n.signIn),
             ),
           ),
         ],
@@ -101,8 +105,8 @@ class Locked extends StatelessWidget {
       return Tooltip(
         key: key,
         message: !auth.loggedIn
-            ? AppLocalizations.of(context)!.needToLoggedInError
-            : AppLocalizations.of(context)!.needToVerifiedError,
+            ? context.l10n.needToLoggedInError
+            : context.l10n.needToVerifiedError,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () {

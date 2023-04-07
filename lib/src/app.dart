@@ -27,8 +27,8 @@ class EngelsburgPlaner extends StatelessWidget {
     //Execute only once
     _initialize ??= initializeWithContext(context);
 
-    return Consumer2<ThemeState, AppConfigurationState>(
-      builder: (context, theme, config, child) => MaterialApp.router(
+    return Consumer2<ThemeState, AppConfigState>(
+      builder: (context, theme, config, _) => MaterialApp.router(
         builder: NoOverScrollEffect.get,
         debugShowCheckedModeBanner: true,
         onGenerateTitle: (context) => context.l10n.appTitle,

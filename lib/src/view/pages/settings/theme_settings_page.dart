@@ -4,9 +4,9 @@
 
 import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/models/state/theme_state.dart';
+import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/widgets/color_grid.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 /// Settings page to allow user to change the theme of the app.
@@ -19,22 +19,22 @@ class ThemeSettingsPage extends StatelessWidget {
       builder: (context, theme, child) => ListView(
         children: [
           ExpansionTile(
-            title: Text(AppLocalizations.of(context)!.colorScheme),
+            title: Text(context.l10n.colorScheme),
             children: [
               RadioListTile<ThemeMode>(
-                title: Text(AppLocalizations.of(context)!.systemSetting),
+                title: Text(context.l10n.systemSetting),
                 value: ThemeMode.system,
                 groupValue: theme.mode,
                 onChanged: (themeMode) => theme.defaultMode(),
               ),
               RadioListTile<ThemeMode>(
-                title: Text(AppLocalizations.of(context)!.dark),
+                title: Text(context.l10n.dark),
                 value: ThemeMode.dark,
                 groupValue: theme.mode,
                 onChanged: (themeMode) => theme.darkMode(),
               ),
               RadioListTile<ThemeMode>(
-                title: Text(AppLocalizations.of(context)!.light),
+                title: Text(context.l10n.light),
                 value: ThemeMode.light,
                 groupValue: theme.mode,
                 onChanged: (themeMode) => theme.lightMode(),
@@ -43,16 +43,16 @@ class ThemeSettingsPage extends StatelessWidget {
           ),
           ColorChanger(
             color: theme.primaryColor,
-            title: AppLocalizations.of(context)!.primaryColor,
-            subtitle: AppLocalizations.of(context)!.tapHereToChangePrimaryColor,
-            dialogTitle: AppLocalizations.of(context)!.selectPrimaryColor,
+            title: context.l10n.primaryColor,
+            subtitle: context.l10n.tapHereToChangePrimaryColor,
+            dialogTitle: context.l10n.selectPrimaryColor,
             update: (color) => theme.primaryColor = color,
           ),
           ColorChanger(
             color: theme.secondaryColor,
-            title: AppLocalizations.of(context)!.secondaryColor,
-            subtitle: AppLocalizations.of(context)!.tapHereToChangeSecondaryColor,
-            dialogTitle: AppLocalizations.of(context)!.selectSecondaryColor,
+            title: context.l10n.secondaryColor,
+            subtitle: context.l10n.tapHereToChangeSecondaryColor,
+            dialogTitle: context.l10n.selectSecondaryColor,
             update: (color) => theme.secondaryColor = color,
           ),
         ],
@@ -102,14 +102,14 @@ class ColorChanger extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => context.pop(),
-                child: Text(AppLocalizations.of(context)!.cancel),
+                child: Text(context.l10n.cancel),
               ),
               TextButton(
                 onPressed: () {
                   update.call(null);
                   context.pop();
                 },
-                child: Text(AppLocalizations.of(context)!.reset),
+                child: Text(context.l10n.reset),
               ),
             ],
           ),

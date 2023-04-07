@@ -3,10 +3,6 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/backend/api/request.dart';
-import 'package:engelsburg_planer/src/backend/api/requests.dart';
-import 'package:engelsburg_planer/src/models/api/dto/auth_response_dto.dart';
-import 'package:engelsburg_planer/src/models/api/dto/reset_password_request_dto.dart';
 import 'package:engelsburg_planer/src/models/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/widgets/obscured_text_form.dart';
@@ -77,6 +73,9 @@ class RequestPasswordResetDialog extends StatelessWidget {
           child: Text(context.l10n.sendEmail),
           onPressed: () async {
             //Set or reset password request
+
+            //TODO
+            /*
             RequestBuilder rb = set
                 ? requestPasswordSet(emailController.text)
                 : requestPasswordReset(emailController.text);
@@ -92,6 +91,7 @@ class RequestPasswordResetDialog extends StatelessWidget {
                 ..pop()
                 ..dialog(ResetPasswordDialog(set: set));
             }
+            */
           },
         ),
       ],
@@ -146,20 +146,7 @@ class ResetPasswordDialog extends StatelessWidget {
           onPressed: () async {
             if (codeController.text.isEmpty) return;
 
-            var res = await resetPassword(ResetPasswordRequestDTO(
-              passwordController.text,
-              codeController.text,
-            )).build().api(ignore);
-
-            if (res.errorPresent) {
-              context.showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
-            } else {
-              codeController.clear();
-              //await refreshAccessToken();
-              context
-                ..showL10nSnackBar((l10n) => l10n.passwordResetSuccessful)
-                ..pop();
-            }
+            //TODO RESET PASSWORD
           },
         ),
       ],
@@ -205,6 +192,7 @@ class VerifyEmailDialog extends StatelessWidget {
             onPressed: () async {
               if (codeController.text.isEmpty) return;
 
+              /*
               final res = await verifyEmail(codeController.text.trim())
                   .build()
                   .api(AuthResponseDTO.fromJson);
@@ -216,6 +204,7 @@ class VerifyEmailDialog extends StatelessWidget {
               } else {
                 context.showL10nSnackBar((l10n) => l10n.unexpectedErrorMessage);
               }
+               */
             },
           ),
         ),

@@ -4,9 +4,9 @@
 
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
 import 'package:engelsburg_planer/src/models/api/solar_panel.dart';
+import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/widgets/api_future_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 class SolarPanelPage extends StatelessWidget {
@@ -21,22 +21,22 @@ class SolarPanelPage extends StatelessWidget {
         final boxes = [
           SolarPanelInfoBox(
             icon: Icons.calendar_today,
-            title: AppLocalizations.of(context)!.date,
+            title: context.l10n.date,
             value: system.date!,
           ),
           SolarPanelInfoBox(
             icon: Icons.lightbulb_outline,
-            title: AppLocalizations.of(context)!.energy,
+            title: context.l10n.energy,
             value: system.energy!,
           ),
           SolarPanelInfoBox(
             icon: Icons.landscape,
-            title: AppLocalizations.of(context)!.avoidedCO2,
+            title: context.l10n.avoidedCO2,
             value: system.co2Avoidance!,
           ),
           SolarPanelInfoBox(
             icon: Icons.monetization_on,
-            title: AppLocalizations.of(context)!.renumeration,
+            title: context.l10n.renumeration,
             value: system.payment!,
           ),
         ];
@@ -84,7 +84,7 @@ class SolarPanelPage extends StatelessWidget {
         );
       },
       errorBuilder: (_, context) => Center(
-        child: Text(AppLocalizations.of(context)!.solarPanelPageNotFoundError),
+        child: Text(context.l10n.solarPanelPageNotFoundError),
       ),
     );
   }

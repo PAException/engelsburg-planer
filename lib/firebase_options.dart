@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -49,6 +46,16 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDrghnJovUpGkw3js_TY7hW8J7J7vo7ujE',
+    appId: '1:853078574479:web:c4d0131828a515e3ae37fa',
+    messagingSenderId: '853078574479',
+    projectId: 'engelsburg-planer',
+    authDomain: 'engelsburg-planer.firebaseapp.com',
+    storageBucket: 'engelsburg-planer.appspot.com',
+    measurementId: 'G-TSVPF424WQ',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBd5O42ck_pCWRwd_waIGM-fFSrfLeAwOk',
     appId: '1:853078574479:android:12e0ba425aec822bae37fa',
@@ -63,6 +70,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '853078574479',
     projectId: 'engelsburg-planer',
     storageBucket: 'engelsburg-planer.appspot.com',
+    androidClientId: '853078574479-6bf1i30frvolp6b6dp7gkveo0akl8f1s.apps.googleusercontent.com',
     iosClientId: '853078574479-fhlrio4gcipej5l0jodsu7j9l0cg7kn7.apps.googleusercontent.com',
     iosBundleId: 'de.paulhuerkamp.engelsburgPlaner',
   );

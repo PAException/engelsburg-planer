@@ -3,7 +3,6 @@
  */
 
 import 'package:engelsburg_planer/src/backend/db/table.dart';
-import 'package:engelsburg_planer/src/backend/db/tables.dart' as tables;
 import 'package:engelsburg_planer/src/backend/util/paging.dart';
 import 'package:engelsburg_planer/src/utils/type_definitions.dart';
 import 'package:path/path.dart';
@@ -29,7 +28,7 @@ class DatabaseService {
   /// Init db service
   static Future<void> initialize() async {
     //Init tables
-    _tables = {tables.article, tables.timetable, tables.task, tables.subject};
+    _tables = {article};
 
     //Open database
     _db = await openDatabase(

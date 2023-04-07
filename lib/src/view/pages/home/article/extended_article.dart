@@ -8,12 +8,12 @@ import 'package:engelsburg_planer/src/backend/api/requests.dart';
 import 'package:engelsburg_planer/src/backend/db/db_service.dart';
 import 'package:engelsburg_planer/src/models/api/article.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/view/widgets/article_card.dart';
+import 'package:engelsburg_planer/src/view/pages/home/article/article_card.dart';
 import 'package:engelsburg_planer/src/view/widgets/network_status.dart';
+import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/wrap_if.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:octo_image/octo_image.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
@@ -26,10 +26,15 @@ class ExtendedArticle extends StatefulWidget {
   final String? hero;
   final int? articleId;
 
+  final VoidCallback? popCallback;
+  final bool statusBar;
+
   const ExtendedArticle({
     this.article,
     this.hero,
     this.articleId,
+    this.popCallback,
+    this.statusBar = true,
     Key? key,
   })  : assert(articleId != null || article != null),
         super(key: key);
@@ -39,7 +44,7 @@ class ExtendedArticle extends StatefulWidget {
 }
 
 class ExtendedArticleState extends State<ExtendedArticle> {
-  late final Future<Article?> fetchArticle;
+  late Future<Article?> fetchArticle;
 
   @override
   void initState() {
@@ -60,6 +65,14 @@ class ExtendedArticleState extends State<ExtendedArticle> {
   }
 
   @override
+  void didUpdateWidget(ExtendedArticle oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.article != widget.article && widget.article != null) {
+      fetchArticle = Future.value(widget.article!);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<Article?>(
       future: fetchArticle,
@@ -76,7 +89,9 @@ class ExtendedArticleState extends State<ExtendedArticle> {
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_outlined),
-              onPressed: () => context.go("/article"),
+              onPressed: () => widget.popCallback != null
+                  ? widget.popCallback!.call()
+                  : context.navigate("/article"),
             ),
             actions: [
               ArticleSaveIconButton(article),
@@ -84,13 +99,14 @@ class ExtendedArticleState extends State<ExtendedArticle> {
               ShareIconButton(article.link),
             ],
           ),
-          body: NetworkStatusBar(
+          body: WrapIf(
+            condition: widget.statusBar,
+            wrap: (child, context) => NetworkStatusBar(child: child),
             child: ListView(
               children: [
                 if (article.mediaUrl != null)
-                  WrapIf(
-                    condition: widget.hero != null,
-                    wrap: (child, context) => Hero(tag: widget.hero!, child: child),
+                  OptionalHero(
+                    tag: widget.hero,
                     child: CachedNetworkImage(
                       height: 250,
                       fit: BoxFit.cover,

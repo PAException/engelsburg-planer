@@ -43,6 +43,12 @@ class SwitchExpandableState extends State<SwitchExpandable> with SingleTickerPro
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     !widget.switchListTile.value ^ widget.invert ? controller.reverse() : controller.forward();
 

@@ -1,10 +1,7 @@
 import 'package:engelsburg_planer/src/introduction.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/page.dart';
-import 'package:engelsburg_planer/src/view/widgets/locked.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:go_router/go_router.dart';
 
 /// Landing page to let the user change several settings.
 class SettingsPage extends StatelessWidget {
@@ -19,17 +16,8 @@ class SettingsPage extends StatelessWidget {
         onTap: () => showConfigure(context),
       ),
       Pages.subjectSettings.toDrawerListTile(context),
-      Locked(
-        enforceVerified: false,
-        child: Pages.substituteSettings.toDrawerListTile(context),
-      ),
-      Locked(
-        child: ListTile(
-          leading: const Icon(Icons.notifications_outlined),
-          title: Text(AppLocalizations.of(context)!.notificationSettings),
-          onTap: () => context.go("/settings/notifications"),
-        ),
-      ),
+      Pages.substituteSettings.toDrawerListTile(context),
+      Pages.notificationSettings.toDrawerListTile(context),
       Pages.themeSettings.toDrawerListTile(context),
     ];
 

@@ -38,23 +38,19 @@ class Promised<T> extends StatefulWidget {
 }
 
 class _PromisedState<T> extends State<Promised<T>> {
-  late Future<void> current;
+  Future? current;
 
-  void _load() => current = widget.promise.load();
+  void load() => current = widget.promise.load();
 
   Future<void> _refresh() async {
-    _load();
+    load();
     setState(() {});
   }
 
   @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    if (current == null) load();
+
     return FutureBuilder(
       future: current,
       builder: (context, snapshot) {

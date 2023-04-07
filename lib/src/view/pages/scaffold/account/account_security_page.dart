@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';

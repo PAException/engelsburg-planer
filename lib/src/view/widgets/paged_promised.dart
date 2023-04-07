@@ -5,6 +5,7 @@
 import 'package:engelsburg_planer/src/backend/api/api_error.dart';
 import 'package:engelsburg_planer/src/services/synchronization_service.dart';
 import 'package:engelsburg_planer/src/utils/type_definitions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 typedef ItemBuilder<T> = Widget Function(T t, BuildContext context);
@@ -83,7 +84,8 @@ class PagedPromisedState<T> extends State<PagedPromised<T>> {
 
           if (snapshot.hasError) {
             error = ApiError(-1, snapshot.error.toString());
-            Error.throwWithStackTrace(snapshot.error!, snapshot.stackTrace!);
+            if (kDebugMode) print(snapshot.error!);
+            if (kDebugMode) print(snapshot.stackTrace!);
           }
           if (error != null) {
             return RefreshIndicator(

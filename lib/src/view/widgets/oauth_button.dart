@@ -55,7 +55,7 @@ class OAuthButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TapDebouncer(
-      onTap: () => type.action(oAuth, () => context.go("/")),
+      onTap: () => type.action(oAuth, () => context.navigate("/")),
       builder: (context, onTap) => ElevatedButton(
         onPressed: onTap,
         style: ButtonStyle(

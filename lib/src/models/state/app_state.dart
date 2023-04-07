@@ -35,14 +35,18 @@ extension AppTypeExt on AppType {
   }
 }
 
-class AppConfigurationState extends NullableStorableChangeNotifier<AppConfiguration> {
-  AppConfigurationState() : super("app_configuration", AppConfiguration.fromJson) {
+class AppConfigState extends NullableStorableChangeNotifier<AppConfiguration> {
+  AppConfigState() : super("app_configuration", AppConfiguration.fromJson) {
     if (isConfigured) Pages.appType = appType!;
   }
 
   bool get isConfigured => current != null;
 
   AppType? get appType => current?.appType;
+
+  String? get extra => current?.extra;
+
+  bool get isLowerGrade => appType == AppType.student && (extra?.startsWith("[0-9]") ?? false);
 
   Future<void> configure(AppConfiguration config) async {
     /// Extra has to be set of appType is student or teacher

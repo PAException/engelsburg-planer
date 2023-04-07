@@ -3,7 +3,7 @@
   "@appTitle": {
     "description": "The title of the application"
   },
-  "appDescription": "An app that displays information about Engelsburg High School.\n\nDeveloped by students Paul Huerkamp and Dario Trombello .",
+  "appDescription": "An app that displays information about the Engelsburg-Gymnasium and can be used for managing grades, timetable and tasks.\n\nDeveloped by student Paul Huerkamp.",
   "@appDescription": {
     "description": "The description of the app, shown on the about page"
   },
@@ -31,29 +31,9 @@
   "@share": {
     "description": "A tooltip message on the PostDetailPage"
   },
-  "info": "Info",
-  "@info": {
-    "description": "Used on the AboutSchoolPage"
-  },
-  "location": "Location",
-  "@location": {
-    "description": "Used on the AboutSchoolPage as a title above the Google Map"
-  },
   "schoolName": "Engelsburg-Gymnasium",
   "@schoolName": {
     "description": "Used on the AboutSchoolPage for a marker on the Google Map"
-  },
-  "schoolAddress": "Richardweg 3, 34117 Kassel",
-  "@schoolAddress": {
-    "description": "Used on the AboutSchoolPage for a marker on the Google Map"
-  },
-  "aboutTheSchool": "About the school",
-  "@aboutTheSchool": {
-    "description": "The title of the about school page"
-  },
-  "schoolDescription": "Engelsburg-Gymnasium is a state-approved Catholic high school run by the Order of the Sisters of St. Marie-Madeleine Postel (SMMP). It has been awarded the seal of approval \"Hochbegabtenförderung\" by the state of Hesse. At the school, the G8 and G9 school forms are taught in parallel.\n(Translated from German)",
-  "@schoolDescription": {
-    "description": "The school description on the about school page"
   },
   "callPforte": "Call Pforte",
   "@callPforte": {
@@ -71,7 +51,7 @@
   "@colorScheme": {
     "description": "The title of a button on the settings page"
   },
-  "systemSetting": "Systemeinstellung",
+  "systemSetting": "System settings",
   "@systemSetting": {
     "description": "The title of a radio button on the settings page"
   },
@@ -123,25 +103,17 @@
   "@loadingAppVersion": {
     "description": "Placeholder on the about page for the app version until it finishes loading"
   },
-  "sourceCodeOnGitHub": "Source code on GitHub",
-  "@sourceCodeOnGitHub": {
-    "description": "The title of a button on the about page that redirects the user to this app's GitHub repository"
-  },
   "rateApp": "Rate the app",
   "@rateApp": {
     "description": "The title of a button on the about page that takes the user to the App Store/Play Store to review this app."
   },
-  "sendDarioAnEmail": "Send Dario an email",
-  "@sendDarioAnEmail": {
+  "sendAnEmail": "Send me an email",
+  "@sendAnEmail": {
     "description": "The title of a button on the about page that opens the email client"
   },
   "openSourceLicenses": "Open source licenses",
   "@openSourceLicenses": {
     "description": "The title of a button on the about page that opens a view with all the licenses of the packages used in this app"
-  },
-  "source": "Source",
-  "@source": {
-    "description": "Used on AboutSchoolPage"
   },
   "solarPanelData": "Solar panel data",
   "@solarPanelData": {
@@ -174,10 +146,6 @@
   "emailPassword": "Email and password",
   "@emailPassword": {
     "description": "Email and password"
-  },
-  "dataDisclaimer": "Your data is securely stored on our server in Kassel. The password is encrypted in such a way that it cannot be read by anyone.",
-  "@dataDisclaimer": {
-    "description": "Data disclaimer"
   },
   "substitutesPassword": "Password of substitutes",
   "@substitutesPassword": {
@@ -598,7 +566,7 @@
   "questionAppType": "How do you want to use this app?",
   "descriptionAppTypeConfiguration": "Please select what matches the best with you. Please also provide additional information to help configuring the app.",
   "studentAppTypeDescription": "All relevant features: substitutes, timetable, grades, tasks, articles, etc.",
-  "classNameInputHint": "Classname (e.g. 10c, 13PhyT1Schf)",
+  "classNameInputHint": "Classname (e.g. 10c, Q4)",
   "teacherAppTypeDescription": "Use the same features as a student but adapted for the use case of a teacher",
   "teacherAbbreviationInputHint": "Abbreviation (e.g. GRB)",
   "other": "Other",
@@ -607,5 +575,100 @@
   "invalidAbbreviation": "Invalid abbreviation",
   "whatsNext": "What's next?",
   "noLoginForFewFeatures": "If you only want to view articles, events, solar system data and cafeteria page you don't need to create an account or log in.",
-  "yesterday": "Yesterday"
+  "yesterday": "Yesterday",
+  "exam": "exam",
+  "oralGrade": "oral grade",
+  "science": "Science",
+  "socialScience": "Social science",
+  "linguisticallyLiterary": "Linguistically literary",
+  "foreignLanguage": "Foreign language",
+  "secondsAgo": "{count, plural, =1{1 second ago} other{{count} seconds ago}}",
+  "@secondsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "minutesAgo": "{count, plural, =1{1 minute ago} other{{count} minutes ago}}",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "hoursAgo": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "daysAgo": "{count, plural, =1{1 day ago} other{{count} days ago}}",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "weeksAgo": "{count, plural, =1{1 week ago} other{{count} weeks ago}}",
+  "@weeksAgo": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "monthsAgo": "{count, plural, =1{1 month ago} other{{count} months ago}}",
+  "@monthsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "yearsAgo": "{count, plural, =1{1 year ago} other{{count} years ago}}",
+  "@yearsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "selectGradeType": "Select type",
+  "title": "Title",
+  "noSubjectSelected": "No subject selected",
+  "due": "Due",
+  "description": "Description",
+  "fromDate": "from {date}",
+  "@fromDate": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "03.03."
+      }
+    }
+  },
+  "toDate": "to {date}",
+  "@toDate": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "03.03."
+      }
+    }
+  },
+  "noTasksFound": "No tasks found",
+  "otherParticipation": "Other participation",
+  "addTypeOfGrade": "Add type of grade"
 }

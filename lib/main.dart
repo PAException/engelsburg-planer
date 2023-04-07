@@ -8,7 +8,6 @@ import 'package:engelsburg_planer/src/firebase_config.dart';
 import 'package:engelsburg_planer/src/models/state/app_state.dart';
 import 'package:engelsburg_planer/src/models/state/network_state.dart';
 import 'package:engelsburg_planer/src/models/state/semester_state.dart';
-import 'package:engelsburg_planer/src/models/state/substitute_state.dart';
 import 'package:engelsburg_planer/src/models/state/theme_state.dart';
 import 'package:engelsburg_planer/src/models/state/user_state.dart';
 import 'package:engelsburg_planer/src/services/cache_service.dart';
@@ -16,7 +15,10 @@ import 'package:engelsburg_planer/src/services/data_service.dart';
 import 'package:engelsburg_planer/src/services/isolated_worker.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+
+const bool storeOnline = false;
 
 /// Initialize and run app
 void main() async {
@@ -31,11 +33,9 @@ Widget wrapProvider(Widget app) {
     providers: [
       ChangeNotifierProvider(create: (_) => ThemeState()),
       ChangeNotifierProvider(create: (_) => UserState()),
-      ChangeNotifierProvider(create: (_) => SubstituteSettingsState()),
-      //ChangeNotifierProvider(create: (_) => NotificationSettings()),
       ChangeNotifierProvider(create: (_) => NetworkState()),
       ChangeNotifierProvider(create: (_) => SemesterState()),
-      ChangeNotifierProvider(create: (_) => AppConfigurationState()),
+      ChangeNotifierProvider(create: (_) => AppConfigState()),
     ],
     child: app,
   );
@@ -51,6 +51,7 @@ Future<void> initialize() async {
     CacheService.initialize(),
     DatabaseService.initialize(),
     IsolatedWorker.initialize(),
+    Hive.initFlutter(),
   ]);
   //if (kDebugMode) await FirebaseAuth.instance.useAuthEmulator('10.0.0.2', 9099);
 }

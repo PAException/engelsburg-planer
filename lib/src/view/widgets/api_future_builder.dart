@@ -2,12 +2,13 @@
  * Copyright (c) Paul Huerkamp 2022. All rights reserved.
  */
 
-import 'package:engelsburg_planer/src/backend/api/api_error.dart';
 import 'package:engelsburg_planer/src/backend/api/api_response.dart';
 import 'package:engelsburg_planer/src/backend/api/request.dart';
-import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/models/state/network_state.dart';
 import 'package:engelsburg_planer/src/utils/type_definitions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart' hide ErrorBuilder;
 
 const Widget kLoadingWidget = Center(child: CircularProgressIndicator());
 
@@ -49,14 +50,18 @@ class _ApiFutureBuilderState<T> extends State<ApiFutureBuilder<T>> {
         //Request was performed, response is available
         if (snapshot.connectionState == ConnectionState.done) {
           //Should never happen
-          if (snapshot.hasError) return widget.errorBuilder.call(const ApiError(0), context);
+          if (snapshot.hasError) {
+            if (kDebugMode) print(snapshot.error!);
+            if (kDebugMode) print(snapshot.stackTrace!);
+          }
 
           //Snapshot has data
           if (snapshot.hasData) {
             var apiResponse = snapshot.data!;
             if (apiResponse.errorPresent) {
               //If error is timed out dispatch offline notification
-              if (apiResponse.error!.isTimedOut) context.offline();
+              if (apiResponse.error!.isTimedOut)
+                context.read<NetworkState>().update(NetworkStatus.offline);
 
               return widget.errorBuilder.call(apiResponse.error!, context);
             }

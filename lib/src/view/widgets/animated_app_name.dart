@@ -1,6 +1,6 @@
 import 'package:engelsburg_planer/src/utils/constants/asset_path_constants.dart';
+import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AnimatedAppName extends StatefulWidget {
   const AnimatedAppName({
@@ -65,7 +65,7 @@ class AnimatedAppNameState extends State<AnimatedAppName> with SingleTickerProvi
             padding: const EdgeInsets.only(left: 16.0),
             child: FittedBox(
               fit: BoxFit.fitWidth,
-              child: Text(AppLocalizations.of(context)!.appTitle, style: widget.textStyle),
+              child: Text(context.l10n.appTitle, style: widget.textStyle),
             ),
           ),
         ),

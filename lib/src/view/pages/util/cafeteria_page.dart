@@ -4,8 +4,8 @@
 
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
 import 'package:engelsburg_planer/src/models/api/cafeteria.dart';
+import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 import '../../widgets/api_future_builder.dart';
@@ -28,7 +28,7 @@ class CafeteriaPage extends StatelessWidget {
         ),
       ),
       errorBuilder: (_, context) => Center(
-        child: Text(AppLocalizations.of(context)!.cafeteriaPageNotFoundError),
+        child: Text(context.l10n.cafeteriaPageNotFoundError),
       ),
     );
   }

@@ -2,50 +2,60 @@
  * Copyright (c) Paul Huerkamp 2022. All rights reserved.
  */
 
+import 'package:engelsburg_planer/src/introduction.dart';
+import 'package:engelsburg_planer/src/models/api/article.dart';
 import 'package:engelsburg_planer/src/models/state/app_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/view/pages/home/article/article_page.dart';
 import 'package:engelsburg_planer/src/view/pages/home/article/extended_article.dart';
-import 'package:engelsburg_planer/src/view/pages/home/article/saved_articles_page.dart';
-import 'package:engelsburg_planer/src/view/pages/home/articles_page.dart';
-import 'package:engelsburg_planer/src/view/pages/home/grades_page.dart';
-import 'package:engelsburg_planer/src/view/pages/home/substitutes_page.dart';
-import 'package:engelsburg_planer/src/view/pages/home/tasks_page.dart';
-import 'package:engelsburg_planer/src/view/pages/home/timetable_page.dart';
+import 'package:engelsburg_planer/src/view/pages/home/article/saved_article_page.dart';
+import 'package:engelsburg_planer/src/view/pages/home/grade/grade_page.dart';
+import 'package:engelsburg_planer/src/view/pages/home/substitute/substitute_page.dart';
+import 'package:engelsburg_planer/src/view/pages/home/task/task_page.dart';
+import 'package:engelsburg_planer/src/view/pages/home/timetable/timetable_page.dart';
 import 'package:engelsburg_planer/src/view/pages/scaffold/account/account_security_page.dart';
 import 'package:engelsburg_planer/src/view/pages/scaffold/account/advanced_account_page.dart';
 import 'package:engelsburg_planer/src/view/pages/scaffold/account_page.dart';
 import 'package:engelsburg_planer/src/view/pages/scaffold/auth_page.dart';
 import 'package:engelsburg_planer/src/view/pages/scaffold/settings_page.dart';
-import 'package:engelsburg_planer/src/view/pages/settings/subject_settings_page.dart';
+import 'package:engelsburg_planer/src/view/pages/settings/notifications_settings_page.dart';
+import 'package:engelsburg_planer/src/view/pages/settings/subject/subject_settings_page.dart';
+import 'package:engelsburg_planer/src/view/pages/settings/substitute_settings_page.dart';
 import 'package:engelsburg_planer/src/view/pages/settings/theme_settings_page.dart';
 import 'package:engelsburg_planer/src/view/pages/util/about_page.dart';
-import 'package:engelsburg_planer/src/view/pages/util/about_school_page.dart';
 import 'package:engelsburg_planer/src/view/pages/util/cafeteria_page.dart';
 import 'package:engelsburg_planer/src/view/pages/util/events_page.dart';
 import 'package:engelsburg_planer/src/view/pages/util/solar_panel_page.dart';
-import 'package:engelsburg_planer/src/view/widgets/locked.dart';
 import 'package:engelsburg_planer/src/view/widgets/network_status.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../models/api/article.dart';
-
 typedef L10n = String Function(AppLocalizations l10n);
 
-extension GoRouteExtension on GoRoute {
-  GoRoute removeBuilders() {
-    return GoRoute(
-      path: path,
-      name: name,
-      redirect: (context, state) => path,
-      parentNavigatorKey: parentNavigatorKey,
-      routes: routes,
-    );
-  }
+class NamedRoute extends GoRoute {
+  NamedRoute({
+    required super.path,
+    super.builder,
+    super.pageBuilder,
+    super.parentNavigatorKey,
+    super.routes,
+    super.redirect,
+    String? name,
+  }) : super(name: name ?? path);
+
+  NamedRoute.static({
+    required super.path,
+    required Widget page,
+    super.parentNavigatorKey,
+    super.routes,
+    super.redirect,
+    String? name,
+  }) : super(name: name ?? path, builder: (context, state) => page);
 }
 
-class StyledRoute extends GoRoute {
+class StyledRoute extends NamedRoute {
   late final GoRouterWidgetBuilder? widgetBuilder;
   final IconData icon;
   final L10n label;
@@ -63,7 +73,9 @@ class StyledRoute extends GoRoute {
     required this.label,
     this.actions = const [],
     this.appBar,
-  }) : super(builder: (context, state) => buildPage(null, label, (_, __) => page, context, state)) {
+  }) : super(
+          builder: (context, state) => buildPage(null, label, (_, __) => page, context, state),
+        ) {
     widgetBuilder = (_, __) => page;
   }
 
@@ -105,7 +117,7 @@ class StyledRoute extends GoRoute {
                 var route = ModalRoute.of(context)!.settings.name!;
                 var goTo = route.substring(0, route.lastIndexOf("/"));
 
-                context.go(goTo == "" ? "/" : goTo);
+                context.navigate(goTo == "" ? "/" : goTo);
               },
             ),
           ),
@@ -129,18 +141,29 @@ class StyledRoute extends GoRoute {
   ListTile toDrawerListTile(BuildContext context) => ListTile(
         leading: Icon(icon),
         title: Text(getLabel(context.l10n)),
-        onTap: () => context.go(super.path),
+        onTap: () {
+          if (Scaffold.of(context).isDrawerOpen) context.pop();
+          context.navigate(super.path);
+        },
+      );
+
+  NavigationRailDestination toNavigationRailDestination(BuildContext context) =>
+      NavigationRailDestination(
+        icon: Icon(icon),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        label: Text(getLabel(context.l10n)),
       );
 }
 
 class Pages {
-  /// State managed appType [AppConfigurationState]
+  /// State managed appType [AppConfigState]
   static AppType appType = AppType.other;
 
   /// Count of pages that will be located in the navigation bar
   static const int navigationBarCount = 5;
 
   static List<GoRoute> get all => [
+        introduction,
         account,
         articles,
         savedArticles,
@@ -156,9 +179,9 @@ class Pages {
         substituteSettings,
         themeSettings,
         subjectSettings,
+        notificationSettings,
         about,
-        aboutSchool,
-        signIn,
+        if (FirebaseRemoteConfig.instance.getBool("enable_firebase")) signIn,
       ];
 
   /// Pages that are located in the bottom navigation bar or the drawer
@@ -185,8 +208,19 @@ class Pages {
   static List<BottomNavigationBarItem> navBarItems(BuildContext context) =>
       navBar.map((e) => e.toBottomNavigationBarItem(context)).toList();
 
+  static List<NavigationRailDestination> navRailItems(BuildContext context) =>
+      navBar.map((e) => e.toNavigationRailDestination(context)).toList();
+
+  static List<NavigationRailDestination> extendedNavRailItems(BuildContext context) =>
+      drawer.map((e) => e.toNavigationRailDestination(context)).toList();
+
   static List<ListTile> drawerTiles(BuildContext context) =>
       drawer.map((e) => e.toDrawerListTile(context)).toList();
+
+  static final GoRoute introduction = NamedRoute.static(
+    path: "/introduction",
+    page: const IntroductionPage(),
+  );
 
   static final StyledRoute account = StyledRoute.static(
     page: const AccountPage(),
@@ -206,13 +240,13 @@ class Pages {
   );
 
   static final StyledRoute articles = StyledRoute.static(
-    page: const ArticlesPage(),
+    page: const ArticlePage(),
     path: "/article",
     label: (l10n) => l10n.articles,
     icon: Icons.library_books,
   );
 
-  static final GoRoute extendedArticle = GoRoute(
+  static final GoRoute extendedArticle = NamedRoute(
     path: "/article/:articleId",
     builder: (context, state) => ExtendedArticle(
       articleId: state.params["articleId"] == null ? null : int.parse(state.params["articleId"]!),
@@ -222,7 +256,7 @@ class Pages {
   );
 
   static final StyledRoute savedArticles = StyledRoute.static(
-    page: const SavedArticlesPage(),
+    page: const SavedArticlePage(),
     path: "/article/saved",
     label: (l10n) => l10n.savedArticles,
     icon: Icons.bookmark_outlined,
@@ -235,12 +269,9 @@ class Pages {
     icon: Icons.dashboard,
     actions: [
       Builder(builder: (context) {
-        return Locked(
-          enforceVerified: false,
-          child: IconButton(
-            onPressed: () => context.go(substituteSettings.path),
-            icon: const Icon(Icons.settings),
-          ),
+        return IconButton(
+          onPressed: () => context.pushPage(const SubstituteSettingsPage()),
+          icon: const Icon(Icons.settings),
         );
       }),
     ],
@@ -257,11 +288,19 @@ class Pages {
     page: const GradesPage(),
     path: "/grades",
     label: (l10n) => l10n.grades,
-    icon: Icons.assessment,
+    icon: Icons.bar_chart,
+    actions: [
+      Builder(builder: (context) {
+        return IconButton(
+          onPressed: () => context.push(subjectSettings.path),
+          icon: const Icon(Icons.settings),
+        );
+      }),
+    ],
   );
 
   static final StyledRoute tasks = StyledRoute.static(
-    page: const TasksPage(),
+    page: const TaskPage(),
     path: "/tasks",
     label: (l10n) => l10n.tasks,
     icon: Icons.assignment,
@@ -303,10 +342,17 @@ class Pages {
   );
 
   static final StyledRoute substituteSettings = StyledRoute.static(
-    page: const SubstitutesPage(), //TODO!!!!!!!
+    page: const SubstituteSettingsPage(),
     path: "/settings/substitute",
     label: (l10n) => l10n.substitutes,
     icon: Icons.dashboard,
+  );
+
+  static final StyledRoute notificationSettings = StyledRoute.static(
+    page: const NotificationSettingsPage(),
+    path: "/settings/notification",
+    icon: Icons.notifications_outlined,
+    label: (l10n) => l10n.notificationSettings,
   );
 
   static final StyledRoute subjectSettings = StyledRoute.static(
@@ -320,13 +366,6 @@ class Pages {
     page: const AboutPage(),
     path: "/about",
     label: (l10n) => l10n.about,
-    icon: Icons.info,
-  );
-
-  static final StyledRoute aboutSchool = StyledRoute.static(
-    page: const AboutSchoolPage(),
-    path: "/about/school",
-    label: (l10n) => l10n.aboutTheSchool,
     icon: Icons.info,
   );
 

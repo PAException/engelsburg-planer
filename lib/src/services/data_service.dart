@@ -3,8 +3,6 @@
  */
 
 import 'package:engelsburg_planer/src/controller/article_controller.dart';
-import 'package:engelsburg_planer/src/controller/subject_controller.dart';
-import 'package:engelsburg_planer/src/controller/timetable_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -32,12 +30,7 @@ class DataService {
 
   /// Parse all services in a map with types
   static Map<Type, DataService> _initServices() {
-    final List<DataService> services = [
-      ArticleService(),
-      //TODO SubstituteService(),
-      TimetableService(),
-      SubjectService(),
-    ];
+    final List<DataService> services = [ArticleService()];
 
     return services.asMap().map((_, service) => MapEntry(service.runtimeType, service));
   }

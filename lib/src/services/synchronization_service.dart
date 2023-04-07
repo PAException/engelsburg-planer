@@ -14,7 +14,6 @@ import 'package:engelsburg_planer/src/utils/type_definitions.dart';
 typedef Fetch<T> = FutureOr<ApiResponse<T>> Function();
 typedef PagingFetch<T> = FutureOr<ApiResponse<List<T>>> Function(Paging paging);
 
-//TODO implement active updates by server
 class SyncService {
   static Promise<T> promise<T>({
     required Request request,

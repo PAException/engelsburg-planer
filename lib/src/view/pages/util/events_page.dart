@@ -6,9 +6,9 @@ import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/backend/api/requests.dart' as requests;
 import 'package:engelsburg_planer/src/models/api/events.dart';
 import 'package:engelsburg_planer/src/services/synchronization_service.dart';
+import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/widgets/promised.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 final _dateFormat = DateFormat('dd.MM.yyyy');
@@ -33,7 +33,7 @@ class EventsPage extends StatelessWidget {
         ),
       ),
       errorBuilder: (_, context) => Center(
-        child: Text(AppLocalizations.of(context)!.eventsNotFoundError),
+        child: Text(context.l10n.eventsNotFoundError),
       ),
     );
   }

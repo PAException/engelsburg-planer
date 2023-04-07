@@ -2,6 +2,7 @@
  * Copyright (c) Paul Huerkamp 2022. All rights reserved.
  */
 
+import 'package:engelsburg_planer/src/models/api/article.dart';
 import 'package:engelsburg_planer/src/utils/type_definitions.dart';
 
 typedef Serializer<T> = Json Function(T t);
@@ -19,3 +20,10 @@ class Table<T> {
 
   const Table(this.name, this.structure, this.serialize, this.deserialize);
 }
+
+Table<Article> article = Table<Article>(
+  "article",
+  "articleId INTEGER PRIMARY KEY, date INTEGER, link TEXT, title TEXT, content TEXT, contentHash TEXT, mediaUrl TEXT, blurHash TEXT",
+  (t) => t.toJson(),
+  Article.fromJson,
+);

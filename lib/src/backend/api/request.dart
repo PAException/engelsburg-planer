@@ -59,9 +59,6 @@ class Request {
   /// Headers of request
   final Map<String, String> headers;
 
-  /// Whether this is an authenticated api request or not; forces https=true and host=Host.api
-  final bool authenticated;
-
   /// Use https or http
   final bool https;
 
@@ -75,7 +72,6 @@ class Request {
     this.params,
     this.body,
     this.headers,
-    this.authenticated,
     this.https,
     this.cacheId,
   );
@@ -88,7 +84,6 @@ class Request {
         json["params"],
         json["body"],
         json["headers"],
-        json["authenticated"] == 1,
         json["https"] == 1,
         json["cacheId"],
       );
@@ -101,8 +96,7 @@ class Request {
         "params": params,
         "body": body,
         "headers": headers,
-        "authenticated": authenticated ? 1 : 0, //Sqflite doesn't support bool
-        "https": https ? 1 : 0,
+        "https": https ? 1 : 0, //Sqflite doesn't support bool
         "cacheId": cacheId,
       };
 
@@ -135,7 +129,6 @@ class RequestBuilder {
   Object? _body;
   Map<String, String> _headers = {};
   bool _https = false;
-  bool _authenticated = false;
   String? _cacheId;
 
   /// Build the actual request
@@ -152,7 +145,6 @@ class RequestBuilder {
       _params,
       _body,
       _headers,
-      _authenticated,
       _https,
       _cacheId,
     );
@@ -220,13 +212,6 @@ class RequestBuilder {
   RequestBuilder header(String key, String value) {
     _headers[key] = value;
     return this;
-  }
-
-  /// Set the request as an authenticated api request
-  RequestBuilder get authenticated {
-    _authenticated = true;
-    if (!Host.enforceHttpForDebug) _https = true; //Enforce https on authenticated
-    return api; //Set api url
   }
 
   /// Set https

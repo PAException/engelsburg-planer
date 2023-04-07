@@ -2,10 +2,11 @@
  * Copyright (c) Paul Huerkamp 2022. All rights reserved.
  */
 
-import 'package:engelsburg_planer/src/models/api/semester.dart';
+import 'package:engelsburg_planer/src/models/db/semester.dart';
 import 'package:engelsburg_planer/src/models/state/storable_change_notifier.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 
+//TODO
 class SemesterState extends StorableChangeNotifier<SemesterSettings> {
   SemesterState() : super("semester", SemesterSettings.fromJson, SemesterSettings());
 

@@ -6,16 +6,18 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:awesome_extensions/awesome_extensions.dart';
+import 'package:engelsburg_planer/src/models/db/settings/notification_settings.dart';
 import 'package:engelsburg_planer/src/models/state/app_state.dart';
 import 'package:engelsburg_planer/src/models/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/constants/asset_path_constants.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/page.dart';
+import 'package:engelsburg_planer/src/view/pages/scaffold/auth_page.dart';
 import 'package:engelsburg_planer/src/view/widgets/network_status.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/updatable.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart' hide Router;
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart' hide GoRouterHelper;
 import 'package:provider/provider.dart';
 
 /// Default page of the app.
@@ -55,6 +57,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   late final PageController _pageController;
   int _currentPage = 0;
   Future? _animatingPage;
+  bool extended = false;
 
   List<StyledRoute> pages = Pages.navBar.toList();
 
@@ -90,6 +93,22 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
     });
   }
 
+  void updateIndex(int index) {
+    //If the current icon is tapped don't switch and send update to screen
+    setState(() => extended = false);
+    if (index == _currentPage) {
+      sendUpdate(widget.state.location, {"resetView": true});
+
+      return;
+    }
+
+    if (index > pages.length - 1) {
+      context.navigate(Pages.drawer.toList()[index - pages.length].path);
+    } else {
+      context.navigate(pages[index].path);
+    }
+  }
+
   @override
   void didUpdateWidget(covariant HomePage oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -112,48 +131,83 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
 
-    return Consumer<AppConfigurationState>(
+    return Consumer<AppConfigState>(
       builder: (context, config, _) {
         List<Widget> builtPages = pages.map((page) {
           //Build the page and pass the stream as argument
           return page.build(context, widget.state, standalone: false);
         }).toList();
+        NotificationSettingsHelper.init();
 
-        return Scaffold(
-          drawer: const HomePageDrawer(),
-          appBar: AppBar(
-            title: Text(context.l10n.appTitle),
-            actions: pages.elementAt(_currentPage).actions,
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            showSelectedLabels: true,
-            showUnselectedLabels: false,
-            currentIndex: _currentPage,
-            items: Pages.navBarItems(context),
-            onTap: (index) {
-              //If the current icon is tapped don't switch and send update to screen
-              if (index == _currentPage) {
-                sendUpdate(widget.state.location, {"resetView": true});
+        final appBar = AppBar(
+          title: Text(context.l10n.appTitle),
+          actions: pages.elementAt(_currentPage).actions,
+        );
 
-                return;
-              }
+        final content = NetworkStatusBar(
+          child: PageView(
+            allowImplicitScrolling: false,
+            controller: _pageController,
+            onPageChanged: (index) {
+              if (_animatingPage != null) return;
 
-              context.go(pages[index].path);
+              context.navigate(pages[index].path);
             },
+            children: builtPages,
           ),
-          body: NetworkStatusBar(
-            child: PageView(
-              allowImplicitScrolling: false,
-              controller: _pageController,
-              onPageChanged: (index) {
-                if (_animatingPage != null) return;
+        );
 
-                context.go(pages[index].path);
-              },
-              children: builtPages,
-            ),
-          ),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            if (context.isLandscape && constraints.maxWidth > 500) {
+              return Scaffold(
+                appBar: AppBar(
+                  title: appBar.title,
+                  actions: appBar.actions,
+                  automaticallyImplyLeading: false,
+                ),
+                drawer: const HomePageDrawer(includeBottomNavItems: true),
+                body: Row(
+                  children: [
+                    StatefulBuilder(builder: (context, setState) {
+                      return NavigationRail(
+                        labelType: extended
+                            ? NavigationRailLabelType.none
+                            : NavigationRailLabelType.selected,
+                        destinations: Pages.navRailItems(context),
+                        extended: extended,
+                        onDestinationSelected: updateIndex,
+                        selectedIndex: _currentPage,
+                        trailing: IconButton(
+                          icon: const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20.0),
+                            child: Icon(Icons.more_horiz),
+                          ),
+                          onPressed: () => Scaffold.of(context).openDrawer(),
+                        ),
+                      );
+                    }),
+                    const VerticalDivider(),
+                    Expanded(child: content),
+                  ],
+                ),
+              );
+            }
+
+            return Scaffold(
+              drawer: const HomePageDrawer(),
+              appBar: appBar,
+              bottomNavigationBar: BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                showSelectedLabels: true,
+                showUnselectedLabels: false,
+                currentIndex: _currentPage,
+                items: Pages.navBarItems(context),
+                onTap: updateIndex,
+              ),
+              body: content,
+            );
+          },
         );
       },
     );
@@ -167,12 +221,14 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
 /// Includes AppLogo, title, motivation to signIn/Up, profile and other pages.
 /// Order and visibility are dependent on the auth state and the app configuration.
 class HomePageDrawer extends StatelessWidget {
-  const HomePageDrawer({Key? key}) : super(key: key);
+  const HomePageDrawer({Key? key, this.includeBottomNavItems = false}) : super(key: key);
+
+  final bool includeBottomNavItems;
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: Consumer<AppConfigurationState>(
+      child: Consumer<AppConfigState>(
         builder: (context, config, _) => ListView(
           children: [
             Container(
@@ -183,7 +239,7 @@ class HomePageDrawer extends StatelessWidget {
                   Image.asset(AssetPaths.appLogo),
                   Expanded(
                     child: Text(
-                      AppLocalizations.of(context)!.appTitle,
+                      context.l10n.appTitle,
                       textScaleFactor: 1.5,
                       textAlign: TextAlign.center,
                     ),
@@ -191,12 +247,16 @@ class HomePageDrawer extends StatelessWidget {
                 ],
               ),
             ),
-            Consumer<UserState>(
-              builder: (context, user, child) => user.loggedIn
-                  ? Pages.account.toDrawerListTile(context)
-                  : const AuthenticationTiles(),
-            ),
+            if (FirebaseRemoteConfig.instance.getBool("enable_firebase"))
+              Consumer<UserState>(
+                builder: (context, user, child) => user.loggedIn
+                    ? Pages.account.toDrawerListTile(context)
+                    : const AuthenticationTiles(),
+              ),
             const Divider(height: 8, thickness: 0).paddingSymmetric(horizontal: 4),
+            if (includeBottomNavItems) ...Pages.navBar.map((e) => e.toDrawerListTile(context)),
+            if (includeBottomNavItems)
+              const Divider(height: 8, thickness: 0).paddingSymmetric(horizontal: 4),
             ...Pages.drawerTiles(context),
           ],
         ),
@@ -216,15 +276,16 @@ class AuthenticationTiles extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            AppLocalizations.of(context)!.loginForAdvancedFeatures,
+            context.l10n.loginForAdvancedFeatures,
             textAlign: TextAlign.center,
           ),
           8.0.heightBox,
           ElevatedButton(
             onPressed: () {
-              context.go("/signIn");
+              context.pop();
+              context.pushPage(const SignInPage());
             },
-            child: Text(AppLocalizations.of(context)!.signIn),
+            child: Text(context.l10n.signIn),
           ),
         ],
       ),

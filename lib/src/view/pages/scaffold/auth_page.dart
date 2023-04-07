@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
 import 'dart:async';
@@ -11,6 +11,7 @@ import 'package:engelsburg_planer/src/view/pages/scaffold/account/account_securi
 import 'package:engelsburg_planer/src/view/widgets/animated_app_name.dart';
 import 'package:engelsburg_planer/src/view/widgets/oauth_button.dart';
 import 'package:engelsburg_planer/src/view/widgets/obscured_text_form.dart';
+import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -57,7 +58,7 @@ void defaultOnSuccessCallback() {
   globalContext().go("/");
 }
 
-class SignInPage extends StatelessWidget {
+class SignInPage extends CompactStatelessWidget {
   const SignInPage({Key? key}) : super(key: key);
 
   @override
@@ -158,7 +159,7 @@ class AuthenticationForm extends StatelessWidget {
             controller: _emailTextController,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
-              labelText: AppLocalizations.of(context)!.email,
+              labelText: context.l10n.email,
               prefixIcon: const Icon(Icons.mail),
             ),
             validator: (value) {
@@ -241,7 +242,7 @@ class AuthenticationForm extends StatelessWidget {
   String? passwordValidator(BuildContext context, String value) {
     if (value.length < 8) {
       return context.l10n.passwordMin8Chars;
-    } else if (!value.contains(RegExp(r"([A-ZÄÖÜa-zäöü])+([0-9])+"))) {
+    } else if (!value.contains(RegExp(r"([A-ZÄÖÜa-zäöü])+(\d)+"))) {
       return context.l10n.passwordMustContainNumber;
     }
 

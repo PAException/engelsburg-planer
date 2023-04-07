@@ -13,34 +13,18 @@ class Query {
   /// Some default queries which are often used
   factory Query.date(int? date) => Query(date != null ? {"date": date} : {});
 
-  factory Query.email(String? email) => Query({if (email != null) "email": email});
-
-  factory Query.accessToken(String? accessToken) =>
-      Query({if (accessToken != null) "accessToken": accessToken});
-
-  factory Query.token(String? token) => Query({if (token != null) "token": token});
-
   factory Query.paging(Paging? paging) =>
       Query(paging != null ? {"page": paging.page, "size": paging.size} : {});
 
-  factory Query.substitutes({
-    int? date,
-    int? lesson,
-    String? className,
-    String? substituteTeacher,
-    String? teacher,
+  factory Query.substitutes(
+    String substituteKey, {
+    List<String>? classes,
+    List<String>? teacher,
   }) =>
       Query({
-        if (date != null) "date": date,
-        if (lesson != null) "lesson": lesson,
-        if (className != null) "className": className,
-        if (substituteTeacher != null) "substituteTeacher": substituteTeacher,
-        if (teacher != null) "teacher": teacher,
-      });
-
-  factory Query.timetable(int? day, int? lesson) => Query({
-        if (day != null) "day": day,
-        if (lesson != null) "lesson": lesson,
+        "substituteKey": substituteKey,
+        if (classes != null && classes.isNotEmpty) "classes": classes,
+        if (teacher != null && teacher.isNotEmpty) "teacher": teacher,
       });
 
   /// Parse Query to actual string in request

@@ -1,11 +1,14 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
+import 'package:engelsburg_planer/src/backend/api/request.dart';
+import 'package:engelsburg_planer/src/backend/api/requests.dart';
 import 'package:engelsburg_planer/src/models/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/scaffold/account/account_security_dialogs.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -22,7 +25,7 @@ class AccountPage extends StatelessWidget {
         builder: (context, user, child) => ListView(
           children: [
             GestureDetector(
-              onDoubleTap: () => context.go("/account/advanced"),
+              onDoubleTap: () => context.navigate("/account/advanced"),
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Column(
@@ -62,8 +65,8 @@ class AccountPage extends StatelessWidget {
                                     ),
                                     Text(
                                       user.isVerified
-                                          ? AppLocalizations.of(context)!.emailVerified
-                                          : AppLocalizations.of(context)!.emailNotVerified,
+                                          ? context.l10n.emailVerified
+                                          : context.l10n.emailNotVerified,
                                       style: const TextStyle(fontSize: 16),
                                     ),
                                   ],
@@ -78,7 +81,7 @@ class AccountPage extends StatelessWidget {
                       ListTile(
                         onTap: () => context.dialog(const VerifyEmailDialog()),
                         leading: const Icon(Icons.email),
-                        title: Text(AppLocalizations.of(context)!.verifyEmail),
+                        title: Text(context.l10n.verifyEmail),
                       ),
                   ],
                 ),
@@ -87,16 +90,18 @@ class AccountPage extends StatelessWidget {
             const Divider(height: 10, thickness: 3),
             ListTile(
               leading: const Icon(Icons.vpn_key),
-              title: Text(AppLocalizations.of(context)!.security),
-              onTap: () => context.go("/account/security"),
+              title: Text(context.l10n.security),
+              onTap: () => context.navigate("/account/security"),
             ),
             ListTile(
               leading: const Icon(Icons.logout),
-              title: Text(AppLocalizations.of(context)!.logout),
-              onTap: () {
+              title: Text(context.l10n.logout),
+              onTap: () async {
                 user.instance.signOut();
-                //TODO: remove device from notifications
-                context.go("/");
+                context.navigate("/");
+
+                var token = await FirebaseMessaging.instance.getToken();
+                if (token != null) deleteNotificationSettings(token).build().api(ignore);
               },
             ),
           ],

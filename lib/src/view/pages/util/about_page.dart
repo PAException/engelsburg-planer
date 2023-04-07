@@ -2,9 +2,9 @@ import 'dart:io' show Platform;
 
 import 'package:engelsburg_planer/src/utils/constants/app_constants.dart';
 import 'package:engelsburg_planer/src/utils/constants/asset_path_constants.dart';
+import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
@@ -17,40 +17,41 @@ class AboutPage extends StatelessWidget {
       future: PackageInfo.fromPlatform(),
       builder: (context, snapshot) {
         final packageInfo = snapshot.data;
+        var appStoreUrl = FirebaseRemoteConfig.instance.getString("app_store_url");
+        var playStoreUrl = FirebaseRemoteConfig.instance.getString("play_store_url");
+        var supportEmail = FirebaseRemoteConfig.instance.getString("support_email");
+
         return ListView(
           children: <Widget>[
             ListTile(
               leading: Image.asset(AssetPaths.appLogo),
               title: Text(
-                packageInfo?.appName ?? AppLocalizations.of(context)!.loadingAppName,
+                packageInfo?.appName ?? context.l10n.loadingAppName,
               ),
               subtitle: Text(
-                packageInfo?.version ?? AppLocalizations.of(context)!.loadingAppVersion,
+                packageInfo?.version ?? context.l10n.loadingAppVersion,
               ),
             ),
             ListTile(
-              title: Text(AppLocalizations.of(context)!.appDescription),
+              title: Text(context.l10n.appDescription),
             ),
             const Divider(),
-            ListTile(
-              leading: const Icon(Icons.star_half),
-              title: Text(AppLocalizations.of(context)!.rateApp),
-              onTap: () => url_launcher.launchUrl(
-                  Uri.parse(Platform.isIOS ? AppConstants.appStoreUrl : AppConstants.playStoreUrl)),
-            ),
-            ListTile(
-              leading: const Icon(Icons.code),
-              title: Text(AppLocalizations.of(context)!.sourceCodeOnGitHub),
-              onTap: () => url_launcher.launchUrl(Uri.parse(AppConstants.githubUrl)),
-            ),
+            if (appStoreUrl.isNotEmpty && playStoreUrl.isNotEmpty)
+              ListTile(
+                leading: const Icon(Icons.star_half),
+                title: Text(context.l10n.rateApp),
+                onTap: () => url_launcher.launchUrl(
+                  Uri.parse(Platform.isIOS ? appStoreUrl : playStoreUrl),
+                ),
+              ),
             ListTile(
               leading: const Icon(Icons.mail),
-              title: Text(AppLocalizations.of(context)!.sendDarioAnEmail),
-              onTap: () => url_launcher.launchUrl(Uri.parse('mailto:${AppConstants.darioEmail}')),
+              title: Text(context.l10n.sendAnEmail),
+              onTap: () => url_launcher.launchUrl(Uri.parse('mailto:$supportEmail')),
             ),
             ListTile(
               leading: const Icon(Icons.info),
-              title: Text(AppLocalizations.of(context)!.openSourceLicenses),
+              title: Text(context.l10n.openSourceLicenses),
               onTap: () => showLicensePage(
                 applicationIcon: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -66,9 +67,22 @@ class AboutPage extends StatelessWidget {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.school),
-              title: Text(AppLocalizations.of(context)!.aboutTheSchool),
-              onTap: () => context.go("/about/school"),
+                leading: const Icon(Icons.phone),
+                title: Text(context.l10n.callPforte),
+                onTap: () => url_launcher.launchUrl(Uri.parse('tel:${AppConstants.pforteNumber}'))),
+            ListTile(
+              leading: const Icon(Icons.phone),
+              title: Text(context.l10n.callOffice),
+              onTap: () => url_launcher.launchUrl(
+                Uri.parse('tel:${AppConstants.sekretariatNumber}'),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.mail),
+              title: Text(context.l10n.emailOffice),
+              onTap: () => url_launcher.launchUrl(
+                Uri.parse('mailto:${AppConstants.sekretariatEmail}'),
+              ),
             ),
           ],
         );

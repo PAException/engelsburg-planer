@@ -34,7 +34,7 @@ class PasswordTextFormFieldState extends State<PasswordTextFormField> {
       },
       validator: (value) {
         if (value == null || value.isBlank) {
-          return AppLocalizations.of(context)!.noPasswordSpecified;
+          return context.l10n.noPasswordSpecified;
         }
 
         if (widget.validator != null) return widget.validator!(value);
@@ -42,7 +42,7 @@ class PasswordTextFormFieldState extends State<PasswordTextFormField> {
       },
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
-        labelText: AppLocalizations.of(context)!.password,
+        labelText: context.l10n.password,
         prefixIcon: const Icon(Icons.lock),
         suffixIcon: Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
