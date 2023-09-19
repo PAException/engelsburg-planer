@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
+ */
+
 import 'package:flutter/material.dart';
 
 class ColorGrid extends StatelessWidget {

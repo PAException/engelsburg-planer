@@ -12,6 +12,7 @@ import 'package:engelsburg_planer/src/models/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/constants/asset_path_constants.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/page.dart';
+import 'package:engelsburg_planer/src/view/routing/route_modifier.dart';
 import 'package:engelsburg_planer/src/view/pages/scaffold/auth_page.dart';
 import 'package:engelsburg_planer/src/view/widgets/network_status.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/updatable.dart';
@@ -131,85 +132,87 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
 
-    return Consumer<AppConfigState>(
-      builder: (context, config, _) {
-        List<Widget> builtPages = pages.map((page) {
-          //Build the page and pass the stream as argument
-          return page.build(context, widget.state, standalone: false);
-        }).toList();
-        NotificationSettingsHelper.init();
+    return RouteModifier(
+      child: Consumer<AppConfigState>(
+        builder: (context, config, _) {
+          List<Widget> builtPages = pages.map((page) {
+            //Build the page and pass the stream as argument
+            return page.build(context, widget.state, standalone: false);
+          }).toList();
+          NotificationSettingsHelper.init();
 
-        final appBar = AppBar(
-          title: Text(context.l10n.appTitle),
-          actions: pages.elementAt(_currentPage).actions,
-        );
+          final appBar = AppBar(
+            title: Text(context.l10n.appTitle),
+            actions: pages.elementAt(_currentPage).actions,
+          );
 
-        final content = NetworkStatusBar(
-          child: PageView(
-            allowImplicitScrolling: false,
-            controller: _pageController,
-            onPageChanged: (index) {
-              if (_animatingPage != null) return;
+          final content = NetworkStatusBar(
+            child: PageView(
+              allowImplicitScrolling: false,
+              controller: _pageController,
+              onPageChanged: (index) {
+                if (_animatingPage != null) return;
 
-              context.navigate(pages[index].path);
-            },
-            children: builtPages,
-          ),
-        );
+                context.navigate(pages[index].path);
+              },
+              children: builtPages,
+            ),
+          );
 
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            if (context.isLandscape && constraints.maxWidth > 500) {
-              return Scaffold(
-                appBar: AppBar(
-                  title: appBar.title,
-                  actions: appBar.actions,
-                  automaticallyImplyLeading: false,
-                ),
-                drawer: const HomePageDrawer(includeBottomNavItems: true),
-                body: Row(
-                  children: [
-                    StatefulBuilder(builder: (context, setState) {
-                      return NavigationRail(
-                        labelType: extended
-                            ? NavigationRailLabelType.none
-                            : NavigationRailLabelType.selected,
-                        destinations: Pages.navRailItems(context),
-                        extended: extended,
-                        onDestinationSelected: updateIndex,
-                        selectedIndex: _currentPage,
-                        trailing: IconButton(
-                          icon: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20.0),
-                            child: Icon(Icons.more_horiz),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              if (context.isLandscape && constraints.maxWidth > 500) {
+                return Scaffold(
+                  appBar: AppBar(
+                    title: appBar.title,
+                    actions: appBar.actions,
+                    automaticallyImplyLeading: false,
+                  ),
+                  drawer: const HomePageDrawer(includeBottomNavItems: true),
+                  body: Row(
+                    children: [
+                      StatefulBuilder(builder: (context, setState) {
+                        return NavigationRail(
+                          labelType: extended
+                              ? NavigationRailLabelType.none
+                              : NavigationRailLabelType.selected,
+                          destinations: Pages.navRailItems(context),
+                          extended: extended,
+                          onDestinationSelected: updateIndex,
+                          selectedIndex: _currentPage,
+                          trailing: IconButton(
+                            icon: const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Icon(Icons.more_horiz),
+                            ),
+                            onPressed: () => Scaffold.of(context).openDrawer(),
                           ),
-                          onPressed: () => Scaffold.of(context).openDrawer(),
-                        ),
-                      );
-                    }),
-                    const VerticalDivider(),
-                    Expanded(child: content),
-                  ],
-                ),
-              );
-            }
+                        );
+                      }),
+                      const VerticalDivider(),
+                      Expanded(child: content),
+                    ],
+                  ),
+                );
+              }
 
-            return Scaffold(
-              drawer: const HomePageDrawer(),
-              appBar: appBar,
-              bottomNavigationBar: BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                showSelectedLabels: true,
-                showUnselectedLabels: false,
-                currentIndex: _currentPage,
-                items: Pages.navBarItems(context),
-                onTap: updateIndex,
-              ),
-              body: content,
-            );
-          },
-        );
-      },
+              return Scaffold(
+                drawer: const HomePageDrawer(),
+                appBar: appBar,
+                bottomNavigationBar: BottomNavigationBar(
+                  type: BottomNavigationBarType.fixed,
+                  showSelectedLabels: true,
+                  showUnselectedLabels: false,
+                  currentIndex: _currentPage,
+                  items: Pages.navBarItems(context),
+                  onTap: updateIndex,
+                ),
+                body: content,
+              );
+            },
+          );
+        },
+      ),
     );
   }
 

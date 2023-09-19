@@ -200,6 +200,9 @@ extension IteratorUtils<T> on Iterable<T> {
         length,
         (index) => map.call(elementAt(index), index),
       );
+
+  Map<K, V> toMap<K, V>({required K Function(T) key, required V Function(T) value}) =>
+      Map.fromEntries(map((e) => MapEntry(key.call(e), value.call(e))));
 }
 
 extension BuildContextExt on BuildContext {

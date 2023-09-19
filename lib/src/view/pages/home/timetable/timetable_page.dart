@@ -3,7 +3,7 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/models/api/dto/substitute_dto.dart';
+import 'package:engelsburg_planer/src/models/api/substitutes.dart';
 import 'package:engelsburg_planer/src/models/db/timetable.dart';
 import 'package:engelsburg_planer/src/models/storage.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
@@ -536,8 +536,8 @@ class TimetablePageState extends State<TimetablePage> {
       //If index is break insert TimetableBreak
       var lessonDiff = entry.lesson - lastLesson;
       if (lessonDiff > 1 && lastLesson != -1) {
-        String start = SubstituteDTO.lessonEnd(lastLesson);
-        String end = SubstituteDTO.lessonStart(entry.lesson);
+        String start = Substitute.lessonEnd(lastLesson);
+        String end = Substitute.lessonStart(entry.lesson);
 
         var card = TimetableFreeHour(
           freeHours: lessonDiff - 1,

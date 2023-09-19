@@ -6,7 +6,7 @@ import 'package:engelsburg_planer/main.dart';
 import 'package:engelsburg_planer/src/models/state/theme_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/utils/util.dart';
-import 'package:engelsburg_planer/src/view/route_generator.dart';
+import 'package:engelsburg_planer/src/view/routing/route_generator.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/material.dart' hide Router;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

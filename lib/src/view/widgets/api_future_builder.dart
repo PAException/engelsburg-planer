@@ -60,8 +60,9 @@ class _ApiFutureBuilderState<T> extends State<ApiFutureBuilder<T>> {
             var apiResponse = snapshot.data!;
             if (apiResponse.errorPresent) {
               //If error is timed out dispatch offline notification
-              if (apiResponse.error!.isTimedOut)
+              if (apiResponse.error!.isTimedOut) {
                 context.read<NetworkState>().update(NetworkStatus.offline);
+              }
 
               return widget.errorBuilder.call(apiResponse.error!, context);
             }

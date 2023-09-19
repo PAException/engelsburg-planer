@@ -3,7 +3,7 @@
   "@appTitle": {
     "description": "The title of the application"
   },
-  "appDescription": "An app that displays information about the Engelsburg-Gymnasium and can be used for managing grades, timetable and tasks.\n\nDeveloped by student Paul Huerkamp.",
+  "appDescription": "An app that displays information about the Engelsburg-Gymnasium and can be used for managing grades, timetable and tasks.\n\nDeveloped by former student Paul Huerkamp.",
   "@appDescription": {
     "description": "The description of the app, shown on the about page"
   },
@@ -576,8 +576,8 @@
   "whatsNext": "What's next?",
   "noLoginForFewFeatures": "If you only want to view articles, events, solar system data and cafeteria page you don't need to create an account or log in.",
   "yesterday": "Yesterday",
-  "exam": "exam",
-  "oralGrade": "oral grade",
+  "exam": "Exam",
+  "oralGrade": "Oral grade",
   "science": "Science",
   "socialScience": "Social science",
   "linguisticallyLiterary": "Linguistically literary",

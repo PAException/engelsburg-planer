@@ -1,6 +1,9 @@
+/*
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
+ */
+
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 typedef Validator = String? Function(String value);
 

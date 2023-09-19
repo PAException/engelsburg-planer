@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
+ */
+
 import 'dart:io' show Platform;
 
 import 'package:engelsburg_planer/src/utils/constants/app_constants.dart';

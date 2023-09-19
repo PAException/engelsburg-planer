@@ -6,10 +6,8 @@ import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/models/db/subjects.dart';
 import 'package:engelsburg_planer/src/models/storage.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/view/pages/page.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart' show GoRouter;
 
 /// Select a subject from a list. Returns document of subject or null of aborted.
 class SelectSubjectPage extends CompactStatelessWidget {
@@ -27,19 +25,13 @@ class SelectSubjectPage extends CompactStatelessWidget {
             color: Colors.grey,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => GoRouter.of(context).go(Pages.subjectSettings.path),
-          ),
-        ],
       ),
       body: StreamBuilder<List<Document<Subject>>>(
         stream: Subjects.get().entries.snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          } else if (!snapshot.hasData) {
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(50),

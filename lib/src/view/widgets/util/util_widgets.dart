@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
+ */
+
 import 'package:engelsburg_planer/src/view/widgets/util/wrap_if.dart';
 import 'package:flutter/material.dart';
 

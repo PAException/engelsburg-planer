@@ -5,6 +5,7 @@
 import 'package:engelsburg_planer/src/app.dart';
 import 'package:engelsburg_planer/src/backend/db/db_service.dart';
 import 'package:engelsburg_planer/src/firebase_config.dart';
+import 'package:engelsburg_planer/src/models/local_storage.dart';
 import 'package:engelsburg_planer/src/models/state/app_state.dart';
 import 'package:engelsburg_planer/src/models/state/network_state.dart';
 import 'package:engelsburg_planer/src/models/state/semester_state.dart';
@@ -22,6 +23,12 @@ const bool storeOnline = false;
 
 /// Initialize and run app
 void main() async {
+  await LocalStorage.instance.setDocument("test/doc19", {"testData": 15});
+  print(await LocalStorage.instance.getDocument("test/doc19"));
+  print(await LocalStorage.instance
+      .documentsOfCollection("test")
+      .then((value) => value.map((e) => e.path)));
+
   await initialize();
 
   runApp(wrapProvider(const EngelsburgPlaner()));

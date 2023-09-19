@@ -1,14 +1,16 @@
-import 'package:engelsburg_planer/src/models/api/dto/substitute_dto.dart';
+/*
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
+ */
+
 import 'package:engelsburg_planer/src/models/api/substitutes.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SubstituteCard extends StatefulWidget {
   const SubstituteCard({Key? key, required this.substitute}) : super(key: key);
 
-  final SubstituteDTO substitute;
+  final Substitute substitute;
 
   @override
   State<StatefulWidget> createState() => _SubstituteCardState();
@@ -38,7 +40,7 @@ class _SubstituteCardState extends State<SubstituteCard> {
             leading: Center(
               widthFactor: 1,
               child: Text(
-                widget.substitute.lesson!,
+                widget.substitute.lesson!.toString(),
                 textScaleFactor: 1.8,
               ),
             ),
@@ -130,7 +132,7 @@ class ExtendedSubstituteCard extends CompactStatefulWidget {
     required this.heroTag,
   }) : super(key: key);
 
-  final SubstituteDTO substitute;
+  final Substitute substitute;
   final String heroTag;
 
   @override
@@ -140,17 +142,9 @@ class ExtendedSubstituteCard extends CompactStatefulWidget {
 class ExtendedSubstituteCardState extends State<ExtendedSubstituteCard> {
   @override
   Widget build(BuildContext context) {
-    String timeOfLessons;
-    if (widget.substitute.lesson!.contains("-")) {
-      var split = widget.substitute.lesson!.replaceAll(" ", "").split("-");
-      timeOfLessons = SubstituteDTO.lessonStart(int.parse(split[0]));
-      timeOfLessons += " - ${SubstituteDTO.lessonEnd(int.parse(split[1]))}";
-    } else {
-      var lesson = int.parse(widget.substitute.lesson!);
-      timeOfLessons = SubstituteDTO.lessonStart(lesson);
-      timeOfLessons += " - ${SubstituteDTO.lessonEnd(lesson)}";
-    }
-    timeOfLessons += " ${context.l10n.oclock}";
+    var start = Substitute.lessonStart(widget.substitute.lesson!);
+    var end = Substitute.lessonEnd(widget.substitute.lesson!);
+    String timeOfLessons = "$start - $end ${context.l10n.oclock}";
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -197,7 +191,7 @@ class ExtendedSubstituteCardState extends State<ExtendedSubstituteCard> {
               leading: const Icon(Icons.access_time),
               dense: true,
               title: Text(
-                widget.substitute.lesson!,
+                widget.substitute.lesson!.toString(),
                 style: const TextStyle(fontSize: 18),
               ),
               subtitle: Text(timeOfLessons),

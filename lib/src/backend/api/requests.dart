@@ -21,7 +21,7 @@ class Host {
   static String get productionApi => "engelsburg-api.de";
 
   static String get debugApi =>
-      "${Platform.isIOS || Platform.isAndroid ? "10.0.2.2" : "localhost"}:8080";
+      "${Platform.isIOS || Platform.isAndroid ? "10.0.2.2" : "localhost"}:80";
 }
 
 ///

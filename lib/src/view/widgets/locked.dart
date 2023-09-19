@@ -6,7 +6,6 @@ import 'package:engelsburg_planer/src/models/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/switch_expandable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class LockedScreen extends StatefulWidget {
@@ -104,9 +103,8 @@ class Locked extends StatelessWidget {
     if (!auth.loggedIn || (!auth.isVerified && enforceVerified)) {
       return Tooltip(
         key: key,
-        message: !auth.loggedIn
-            ? context.l10n.needToLoggedInError
-            : context.l10n.needToVerifiedError,
+        message:
+            !auth.loggedIn ? context.l10n.needToLoggedInError : context.l10n.needToVerifiedError,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () {

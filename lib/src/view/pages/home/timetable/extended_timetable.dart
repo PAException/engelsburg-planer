@@ -3,7 +3,7 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/models/api/dto/substitute_dto.dart';
+import 'package:engelsburg_planer/src/models/api/substitutes.dart';
 import 'package:engelsburg_planer/src/models/db/settings/notification_settings.dart';
 import 'package:engelsburg_planer/src/models/db/subjects.dart';
 import 'package:engelsburg_planer/src/models/db/timetable.dart';
@@ -54,8 +54,8 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard> {
   }
 
   String _timeOfLessons() {
-    String start = SubstituteDTO.lessonStart(widget.entry.lesson);
-    String end = SubstituteDTO.lessonEnd(widget.entry.lesson);
+    String start = Substitute.lessonStart(widget.entry.lesson);
+    String end = Substitute.lessonEnd(widget.entry.lesson);
     String suffix = context.l10n.oclock;
 
     return "$start - $end $suffix";

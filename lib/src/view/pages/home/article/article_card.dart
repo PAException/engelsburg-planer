@@ -10,7 +10,6 @@ import 'package:engelsburg_planer/src/utils/util.dart';
 import 'package:engelsburg_planer/src/view/pages/home/article/article_page.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_image/flutter_image.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:octo_image/octo_image.dart';

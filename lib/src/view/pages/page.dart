@@ -270,7 +270,7 @@ class Pages {
     actions: [
       Builder(builder: (context) {
         return IconButton(
-          onPressed: () => context.pushPage(const SubstituteSettingsPage()),
+          onPressed: () => context.push("${substituteSettings.path}?callbackUrl=/substitutes"),
           icon: const Icon(Icons.settings),
         );
       }),
@@ -292,7 +292,7 @@ class Pages {
     actions: [
       Builder(builder: (context) {
         return IconButton(
-          onPressed: () => context.push(subjectSettings.path),
+          onPressed: () => context.push("${subjectSettings.path}?callbackUrl=/grades"),
           icon: const Icon(Icons.settings),
         );
       }),

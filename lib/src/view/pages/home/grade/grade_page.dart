@@ -119,7 +119,7 @@ class _GradesPageState extends State<GradesPage> {
                   child: child,
                 ),
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: 200),
+                  constraints: const BoxConstraints(maxHeight: 200),
                   child: AverageGradeCircle(
                     average: globalAverage,
                     percent: globalPercent,
@@ -297,19 +297,17 @@ class _GradesPageState extends State<GradesPage> {
               );
             }
 
-            return Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400, minHeight: 200),
-                child: ListView(
-                  padding: const EdgeInsets.all(16),
-                  shrinkWrap: true,
-                  children: [
-                    averageCircle,
-                    subjectList,
-                    averageSubjectChart,
-                    subjectDevelopmentChart,
-                  ],
-                ),
+            return ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 500, minHeight: 200),
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                shrinkWrap: true,
+                children: [
+                  averageCircle,
+                  subjectList,
+                  averageSubjectChart,
+                  subjectDevelopmentChart,
+                ],
               ),
             );
           }),

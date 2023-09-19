@@ -85,6 +85,7 @@ dev_dependencies:
   auto_route_generator: ^6.0.0
   hive_generator: ^2.0.0
   build_runner: ^2.3.3
+  flutter_launcher_icons: ^0.13.1
 
   dependency_validator: ^3.2.2
 
@@ -140,3 +141,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "icon.png"
+  adaptive_icon_background: "#ffffff"

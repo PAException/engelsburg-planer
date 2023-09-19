@@ -9,7 +9,6 @@ import 'package:engelsburg_planer/src/models/storage.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Subjects {
   Subjects();

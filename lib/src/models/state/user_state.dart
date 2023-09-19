@@ -6,6 +6,8 @@ import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
+/// Keeps track of the account of the user.
+/// All information should be treated as null if [loggedIn] is false.
 class UserState extends ChangeNotifier {
   final FirebaseAuth instance = FirebaseAuth.instance;
   List<String>? _signInMethods;

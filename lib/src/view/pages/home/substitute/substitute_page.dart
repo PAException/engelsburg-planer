@@ -7,7 +7,6 @@ import 'dart:convert';
 import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:crypto/crypto.dart';
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
-import 'package:engelsburg_planer/src/models/api/dto/substitute_dto.dart';
 import 'package:engelsburg_planer/src/models/api/substitutes.dart';
 import 'package:engelsburg_planer/src/models/db/settings/notification_settings.dart';
 import 'package:engelsburg_planer/src/models/db/settings/substitute_settings.dart';
@@ -16,7 +15,6 @@ import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/home/substitute/substitute_card.dart';
 import 'package:engelsburg_planer/src/view/widgets/api_future_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SubstitutesPage extends StatelessWidget {
   const SubstitutesPage({Key? key}) : super(key: key);
@@ -32,19 +30,25 @@ class SubstitutesPage extends StatelessWidget {
   }
 }
 
+Future? fetchingKeyHash;
+String? substituteKeyHash;
+
 class SubstituteKeyPage extends StatelessWidget {
   const SubstituteKeyPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    String? substituteKeyHash;
-    getSubstituteKeyHash().build().api<String>((json) {
+    fetchingKeyHash ??= getSubstituteKeyHash().build().api<String>((json) {
       if (json is String) return json;
       if (json is List) return json[0];
 
       return json["sha1"];
     }).then((value) {
-      if (value.dataPresent) substituteKeyHash = value.data;
+      if (value.dataPresent) {
+        substituteKeyHash = value.data;
+      } else {
+        fetchingKeyHash = null;
+      }
     });
 
     var keyController = TextEditingController();
@@ -215,12 +219,9 @@ class _SubstituteTabState extends State<SubstituteTab> {
       builder: (context, doc, substituteSettings) {
         return RefreshIndicator(
           onRefresh: () async => setState(() {}),
-          child: ApiFutureBuilder<List<SubstituteDTO>>(
+          child: ApiFutureBuilder<List<Substitute>>(
             request: getSubstitutes(substituteSettings.password!).build(),
-            parser: (json) => Substitute.fromSubstitutes(json)
-                .map((e) => SubstituteDTO.fromSubstitute(e))
-                .toList()
-              ..sort(),
+            parser: (json) => Substitute.fromSubstitutes(json).toList()..sort(),
             dataBuilder: (substitutes, refresh, context) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),

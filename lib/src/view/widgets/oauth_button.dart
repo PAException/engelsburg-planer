@@ -8,7 +8,6 @@ import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/utils/oauth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:go_router/go_router.dart';
 import 'package:tap_debouncer/tap_debouncer.dart';
 
 /// Button to wrap OAuth design and behavior.
