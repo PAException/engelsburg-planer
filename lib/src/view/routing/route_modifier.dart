@@ -18,6 +18,7 @@ class RouteModifier extends StatefulWidget {
 class _RouteModifierState extends State<RouteModifier> {
   String? callbackUrl;
   late GoRouter router;
+  late GoRouterState routerState;
 
   @override
   Widget build(BuildContext context) => widget.child;
@@ -26,16 +27,17 @@ class _RouteModifierState extends State<RouteModifier> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     router = GoRouter.of(context);
+    routerState = GoRouterState.of(context);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      router.removeListener(routerListener);
-      router.addListener(routerListener);
+      router.routerDelegate.removeListener(routerListener);
+      router.routerDelegate.addListener(routerListener);
     });
   }
 
   @override
   void dispose() {
     super.dispose();
-    router.removeListener(routerListener);
+    router.routerDelegate.removeListener(routerListener);
   }
 
   void routerListener() {
@@ -44,12 +46,17 @@ class _RouteModifierState extends State<RouteModifier> {
       callbackUrl = null;
     } else {
       //Get params from url string as map
-      Map<String, String> params =
-          router.location.split("?").nullableAt(1)?.split("&").asMap().map((_, param) {
-                var keyAndValue = param.split("=");
-                return MapEntry(keyAndValue[0], keyAndValue[1]);
-              }) ??
-              {};
+      Map<String, String> params = routerState.uri
+              .toString()
+              .split("?")
+              .nullableAt(1)
+              ?.split("&")
+              .asMap()
+              .map((_, param) {
+            var keyAndValue = param.split("=");
+            return MapEntry(keyAndValue[0], keyAndValue[1]);
+          }) ??
+          {};
 
       //Actions for each param
       params.forEach((key, value) {

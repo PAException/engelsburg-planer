@@ -12,8 +12,8 @@ import 'package:engelsburg_planer/src/models/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/constants/asset_path_constants.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/page.dart';
-import 'package:engelsburg_planer/src/view/routing/route_modifier.dart';
 import 'package:engelsburg_planer/src/view/pages/scaffold/auth_page.dart';
+import 'package:engelsburg_planer/src/view/routing/route_modifier.dart';
 import 'package:engelsburg_planer/src/view/widgets/network_status.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/updatable.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -83,14 +83,14 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   void evaluateRouterState() {
     //Execute after building the tree
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      var path = widget.state.location;
+      var path = widget.state.uri.toString();
       if (path == "") return;
 
       //Push (switch to) requested page
       page(max(0, pages.indexWhere((e) => e.path == path)));
 
       //Update page with given arguments
-      sendUpdate(path, widget.state.queryParams);
+      sendUpdate(path, widget.state.uri.queryParameters);
     });
   }
 
@@ -98,7 +98,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
     //If the current icon is tapped don't switch and send update to screen
     setState(() => extended = false);
     if (index == _currentPage) {
-      sendUpdate(widget.state.location, {"resetView": true});
+      sendUpdate(widget.state.uri.toString(), {"resetView": true});
 
       return;
     }
@@ -224,7 +224,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
 /// Includes AppLogo, title, motivation to signIn/Up, profile and other pages.
 /// Order and visibility are dependent on the auth state and the app configuration.
 class HomePageDrawer extends StatelessWidget {
-  const HomePageDrawer({Key? key, this.includeBottomNavItems = false}) : super(key: key);
+  const HomePageDrawer({Key? key, this.includeBottomNavItems = false})
+      : super(key: key);
 
   final bool includeBottomNavItems;
 
@@ -256,10 +257,13 @@ class HomePageDrawer extends StatelessWidget {
                     ? Pages.account.toDrawerListTile(context)
                     : const AuthenticationTiles(),
               ),
-            const Divider(height: 8, thickness: 0).paddingSymmetric(horizontal: 4),
-            if (includeBottomNavItems) ...Pages.navBar.map((e) => e.toDrawerListTile(context)),
+            const Divider(height: 8, thickness: 0)
+                .paddingSymmetric(horizontal: 4),
             if (includeBottomNavItems)
-              const Divider(height: 8, thickness: 0).paddingSymmetric(horizontal: 4),
+              ...Pages.navBar.map((e) => e.toDrawerListTile(context)),
+            if (includeBottomNavItems)
+              const Divider(height: 8, thickness: 0)
+                  .paddingSymmetric(horizontal: 4),
             ...Pages.drawerTiles(context),
           ],
         ),

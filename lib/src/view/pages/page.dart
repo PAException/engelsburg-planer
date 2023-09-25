@@ -249,8 +249,8 @@ class Pages {
   static final GoRoute extendedArticle = NamedRoute(
     path: "/article/:articleId",
     builder: (context, state) => ExtendedArticle(
-      articleId: state.params["articleId"] == null ? null : int.parse(state.params["articleId"]!),
-      hero: state.queryParams["hero"],
+      articleId: state.pathParameters["articleId"] == null ? null : int.parse(state.pathParameters["articleId"]!),
+      hero: state.uri.queryParameters["hero"],
       article: state.extra as Article?,
     ),
   );

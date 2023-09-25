@@ -11,6 +11,7 @@ import 'package:engelsburg_planer/src/models/state/network_state.dart';
 import 'package:engelsburg_planer/src/models/state/semester_state.dart';
 import 'package:engelsburg_planer/src/models/state/theme_state.dart';
 import 'package:engelsburg_planer/src/models/state/user_state.dart';
+import 'package:engelsburg_planer/src/models/storage_adapter.dart';
 import 'package:engelsburg_planer/src/services/cache_service.dart';
 import 'package:engelsburg_planer/src/services/data_service.dart';
 import 'package:engelsburg_planer/src/services/isolated_worker.dart';
@@ -23,10 +24,20 @@ const bool storeOnline = false;
 
 /// Initialize and run app
 void main() async {
+  Storage.copyAll(
+    refs: [
+      Grades.ref(),
+      Grades.entries(),
+    ],
+    from: Storage.offline,
+    to: Storage.online,
+  );
+  Grades.ref().storage(Storage.online);
+
   await LocalStorage.instance.setDocument("test/doc19", {"testData": 15});
   print(await LocalStorage.instance.getDocument("test/doc19"));
   print(await LocalStorage.instance
-      .documentsOfCollection("test")
+      .getCollection("test")
       .then((value) => value.map((e) => e.path)));
 
   await initialize();
