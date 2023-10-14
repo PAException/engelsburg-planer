@@ -2,27 +2,12 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:engelsburg_planer/main.dart';
 import 'package:engelsburg_planer/src/models/db/timetable.dart';
 import 'package:engelsburg_planer/src/models/state/app_state.dart';
-import 'package:engelsburg_planer/src/models/storage.dart';
+import 'package:engelsburg_planer/src/models/state/user_state.dart';
+import 'package:engelsburg_planer/src/models/storage_adapter.dart';
 import 'package:engelsburg_planer/src/utils/util.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-
-class OnlineSubstituteSettings extends OnlineDocument<SubstituteSettings> {
-  OnlineSubstituteSettings() : super(documentReference: doc, fromJson: SubstituteSettings.fromJson);
-
-  static DocumentReference<Map<String, dynamic>> doc() => FirebaseFirestore.instance
-      .collection("substituteSettings")
-      .doc(FirebaseAuth.instance.currentUser!.uid);
-}
-
-class OfflineSubstituteSettings extends OfflineDocument<SubstituteSettings> {
-  OfflineSubstituteSettings()
-      : super(key: "substituteSettings", fromJson: SubstituteSettings.fromJson);
-}
 
 class SubstituteSettings {
   String? password;
@@ -44,6 +29,9 @@ class SubstituteSettings {
     required this.byTimetable,
   });
 
+  /// Creates new substitute settings.
+  /// If app type student or teacher is specified, the settings
+  /// will be customized by default.
   factory SubstituteSettings.empty() {
     var config = globalContext().read<AppConfigState>();
     bool byClasses = false;
@@ -52,11 +40,11 @@ class SubstituteSettings {
     List<String> teacher = [];
     bool byTimetable = false;
 
-    if (config.appType! == AppType.student) {
+    if (config.userType == UserType.student) {
       byClasses = true;
       classes.add(config.extra!);
       byTimetable = true;
-    } else if (config.appType! == AppType.teacher) {
+    } else if (config.userType == UserType.teacher) {
       byTeacher = true;
       teacher.add(config.extra!);
       byTimetable = true;
@@ -71,30 +59,40 @@ class SubstituteSettings {
     );
   }
 
+  /// Get priority topics to send notification settings to API if enabled.
   Future<List<String>> priorityTopics() async {
-    return [
+    var priorityTopics = [
       if (byClasses) ...classes.map((className) => "substitute.class.$className"),
       if (byTeacher) ...teacher.map((teacher) => "substitute.teacher.$teacher"),
-      if (byTimetable)
-        ...await Timetable.get().entries.loadedItems.then((e) => e.map((entry) {
-              var day = entry.day;
-              var lesson = entry.lesson;
-              var teacher = entry.teacher?.toUpperCase();
-              var className = entry.className?.toUpperCase();
-
-              if (teacher != null && teacher.isNotEmpty) {
-                return "substitute.timetable.$day.$lesson.$teacher";
-              } else if (className != null && className.isNotEmpty) {
-                return "substitute.timetable.$day.$lesson.$className";
-              } else {
-                return "";
-              }
-            }).where((e) => e != "")),
     ];
+
+    if (byTimetable) {
+      var entries = await Timetable.entries().defaultStorage(globalContext()).documents();
+      var timetableTopics = entries.map((entry) {
+        var day = entry.data!.day;
+        var lesson = entry.data!.lesson;
+        var teacher = entry.data!.teacher?.toUpperCase();
+        var className = entry.data!.className?.toUpperCase();
+
+        if (teacher != null && teacher.isNotEmpty) {
+          return "substitute.timetable.$day.$lesson.$teacher";
+        } else if (className != null && className.isNotEmpty) {
+          return "substitute.timetable.$day.$lesson.$className";
+        } else {
+          return "";
+        }
+      });
+
+      //Remove empty entries
+      priorityTopics.addAll(timetableTopics.where((e) => e != ""));
+    }
+
+    if (priorityTopics.isEmpty) priorityTopics.add("substitute");
+    return priorityTopics;
   }
 
-  static Document<SubstituteSettings> get([bool online = storeOnline]) =>
-      online ? OnlineSubstituteSettings() : OfflineSubstituteSettings();
+  static DocumentReference<SubstituteSettings> ref() =>
+      const DocumentReference<SubstituteSettings>("substitute_settings", SubstituteSettings.fromJson);
 
   factory SubstituteSettings.fromJson(Map<String, dynamic> json) => json.isEmpty
       ? SubstituteSettings.empty()

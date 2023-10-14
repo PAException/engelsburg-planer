@@ -1,31 +1,34 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
 import 'package:engelsburg_planer/src/models/state/storable_change_notifier.dart';
-import 'package:engelsburg_planer/src/view/pages/page.dart';
+import 'package:engelsburg_planer/src/utils/firebase/analytics.dart';
+import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/view/routing/page.dart';
 
 /// Basic configuration of the app.
 /// Defines the appearance and the order of all the sections of the app.
 class AppConfigState extends NullableStorableChangeNotifier<AppConfiguration> {
   AppConfigState() : super("app_configuration", AppConfiguration.fromJson) {
-    if (isConfigured) Pages.appType = appType!;
+    if (isConfigured) Pages.userType = userType!;
   }
 
   bool get isConfigured => current != null;
 
-  AppType? get appType => current?.appType;
+  UserType? get userType => current?.userType;
 
   String? get extra => current?.extra;
 
-  bool get isLowerGrade => appType == AppType.student && (extra?.startsWith("[0-9]") ?? false);
+  bool get isLowerGrade => userType == UserType.student && (extra?[0].isNumeric ?? false);
 
   Future<void> configure(AppConfiguration config) async {
     /// Extra has to be set of appType is student or teacher
-    assert(config.appType == AppType.other || config.extra != null);
+    assert(config.userType == UserType.other || config.extra != null);
 
+    Analytics.user.setAppConfig(config);
     current = config;
-    await save(() => Pages.appType = appType!);
+    await save(() => Pages.userType = userType!);
   }
 }
 
@@ -36,54 +39,54 @@ class AppConfigState extends NullableStorableChangeNotifier<AppConfiguration> {
 /// If the user is someone else [extra] is null.
 class AppConfiguration {
   /// The type of the app
-  AppType appType;
+  UserType userType;
 
   /// Extra information about the app type. Only nullable on AppType.other!
   String? extra;
 
   AppConfiguration({
-    required this.appType,
+    required this.userType,
     required this.extra,
   });
 
   factory AppConfiguration.fromJson(dynamic json) => AppConfiguration(
-        appType: AppTypeExt.parse(json["appType"]),
+        userType: AppTypeExt.parse(json["appType"]),
         extra: json["extra"],
       );
 
   dynamic toJson() => {
-        "appType": appType.name,
+        "appType": userType.name,
         "extra": extra,
       };
 }
 
 /// Enum for [AppConfiguration]
-enum AppType {
+enum UserType {
   student,
   teacher,
   other,
 }
 
-extension AppTypeExt on AppType {
+extension AppTypeExt on UserType {
   String get name {
     switch (this) {
-      case AppType.student:
+      case UserType.student:
         return "student";
-      case AppType.teacher:
+      case UserType.teacher:
         return "teacher";
-      case AppType.other:
+      case UserType.other:
         return "other";
     }
   }
 
-  static AppType parse(String name) {
+  static UserType parse(String name) {
     switch (name) {
       case "student":
-        return AppType.student;
+        return UserType.student;
       case "teacher":
-        return AppType.teacher;
+        return UserType.teacher;
       default:
-        return AppType.other;
+        return UserType.other;
     }
   }
 }

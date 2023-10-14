@@ -2,13 +2,9 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:engelsburg_planer/main.dart';
 import 'package:engelsburg_planer/src/models/db/subjects.dart';
-import 'package:engelsburg_planer/src/models/storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-import '../../utils/type_definitions.dart';
+import 'package:engelsburg_planer/src/models/storage_adapter.dart';
+import 'package:engelsburg_planer/src/utils/type_definitions.dart';
 
 class Timetable {
   bool shared;
@@ -17,59 +13,16 @@ class Timetable {
     this.shared = false,
   });
 
-  static TimetableSchema get([bool online = storeOnline]) =>
-      online ? TimetableOnline() : TimetableOffline();
+  static DocumentReference<Timetable> ref() =>
+      const DocumentReference<Timetable>("timetable", Timetable.fromJson);
 
-  Json toJson() => {
-        "shared": shared,
-      };
+  static CollectionReference<TimetableEntry> entries() =>
+      ref().collection<TimetableEntry>("entries", TimetableEntry.fromJson);
+
+  Json toJson() => {"shared": shared};
 
   factory Timetable.fromJson(Json json) => Timetable(
         shared: json["shared"] ?? false,
-      );
-}
-
-abstract class TimetableSchema extends Document<Timetable> {
-  Collection<Document<TimetableEntry>, TimetableEntry> get entries;
-}
-
-class TimetableOnline extends OnlineDocument<Timetable> implements TimetableSchema {
-  TimetableOnline() : super(documentReference: doc, fromJson: Timetable.fromJson);
-
-  static DocumentReference<Json> doc() => FirebaseFirestore.instance
-      .collection("timetable")
-      .doc(FirebaseAuth.instance.currentUser!.uid);
-
-  @override
-  Future<void> copyTo(covariant TimetableSchema to) async {
-    await super.copyTo(to);
-    await entries.copyTo(to.entries);
-  }
-
-  @override
-  Collection<Document<TimetableEntry>, TimetableEntry> get entries =>
-      OnlineCollection<OnlineDocument<TimetableEntry>, TimetableEntry>(
-        collection: () => document.collection("entries"),
-        buildType: (doc) => OnlineDocument<TimetableEntry>(
-          documentReference: () => doc,
-          fromJson: TimetableEntry.fromJson,
-        ),
-      );
-}
-
-class TimetableOffline extends OfflineDocument<Timetable> implements TimetableSchema {
-  TimetableOffline() : super(key: "timetable", fromJson: Timetable.fromJson);
-
-  @override
-  Collection<Document<TimetableEntry>, TimetableEntry> get entries =>
-      OfflineCollection<OfflineDocument<TimetableEntry>, TimetableEntry>(
-        parent: this,
-        collection: "entries",
-        buildType: (id, parent) => OfflineDocument(
-          parent: parent,
-          key: id,
-          fromJson: TimetableEntry.fromJson,
-        ),
       );
 }
 
@@ -79,7 +32,7 @@ class TimetableEntry implements Comparable<TimetableEntry> {
   String? teacher;
   String? className;
   String? room;
-  Document<Subject>? subject;
+  DocumentReference<Subject>? subject;
 
   TimetableEntry({
     required this.day,
@@ -96,7 +49,7 @@ class TimetableEntry implements Comparable<TimetableEntry> {
         teacher: json["teacher"],
         className: json["className"],
         room: json["room"],
-        subject: json["subject"] != null ? Subjects.get().entries[json["subject"]] : null,
+        subject: json["subject"] != null ? Subjects.entries().doc(json["subject"]) : null,
       );
 
   Json toJson() => {
@@ -108,12 +61,15 @@ class TimetableEntry implements Comparable<TimetableEntry> {
         "subject": subject?.id,
       };
 
-  bool equalData(TimetableEntry? other) =>
+  bool get isEmpty => (teacher?.isEmpty ?? true)
+      && (className?.isEmpty ?? true)
+      && (room?.isEmpty ?? true)
+      && subject == null;
+
+  bool sameTime(TimetableEntry? other) =>
       other != null &&
-      other.teacher == teacher &&
-      other.className == className &&
-      other.room == room &&
-      other.subject == subject;
+      other.day == day &&
+      other.lesson == lesson;
 
   @override
   int compareTo(TimetableEntry other) {

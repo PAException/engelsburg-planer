@@ -4,13 +4,10 @@
 
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:engelsburg_planer/main.dart';
 import 'package:engelsburg_planer/src/models/db/subjects.dart';
 import 'package:engelsburg_planer/src/models/state/app_state.dart';
-import 'package:engelsburg_planer/src/models/storage.dart';
+import 'package:engelsburg_planer/src/models/storage_adapter.dart';
 import 'package:engelsburg_planer/src/utils/util.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 class Grades {
@@ -22,80 +19,48 @@ class Grades {
   bool usePoints; // Default if className starts not with number
   bool roundEachType; // Default false
 
-  static GradesSchema get([bool online = storeOnline]) => online ? OnlineGrades() : OfflineGrades();
+  static DocumentReference<Grades> ref() =>
+      const DocumentReference<Grades>("grades", Grades.fromJson);
 
-  factory Grades.fromJson(Map<String, dynamic> json) => Grades(
-        usePoints:
-            json["usePoints"] ?? !globalContext().read<AppConfigState>().isLowerGrade ?? false,
-        roundEachType: json["roundEachType"] ?? false,
-      );
+  static CollectionReference<Grade> entries() =>
+      ref().collection<Grade>("entries", Grade.fromJson);
+
+  factory Grades.fromJson(Map<String, dynamic> json) => json.isEmpty ? Grades.empty() : Grades(
+    usePoints: json["usePoints"] ?? false,
+    roundEachType: json["roundEachType"] ?? false,
+  );
+
+  factory Grades.empty() {
+    var appConfig = globalContext().read<AppConfigState>();
+
+    return Grades(usePoints: !appConfig.isLowerGrade, roundEachType: false);
+  }
 
   Map<String, dynamic> toJson() => {
-        "usePoints": usePoints,
-        "roundEachType": roundEachType,
-      };
-}
-
-abstract class GradesSchema extends Document<Grades> {
-  GradesSchema();
-
-  Collection<Document<Grade>, Grade> get entries;
-}
-
-class OnlineGrades extends OnlineDocument<Grades> implements GradesSchema {
-  OnlineGrades() : super(documentReference: doc, fromJson: Grades.fromJson);
-
-  static DocumentReference<Map<String, dynamic>> doc() =>
-      FirebaseFirestore.instance.collection("grades").doc(FirebaseAuth.instance.currentUser!.uid);
-
-  @override
-  Collection<Document<Grade>, Grade> get entries => OnlineCollection<OnlineDocument<Grade>, Grade>(
-        collection: () => document.collection("entries"),
-        buildType: (doc) => OnlineDocument(
-          documentReference: () => doc,
-          fromJson: Grade.fromJson,
-        ),
-      );
-}
-
-class OfflineGrades extends OfflineDocument<Grades> implements GradesSchema {
-  OfflineGrades() : super(key: "grades", fromJson: Grades.fromJson);
-
-  @override
-  Collection<Document<Grade>, Grade> get entries =>
-      OfflineCollection<OfflineDocument<Grade>, Grade>(
-        parent: this,
-        collection: "entries",
-        buildType: (id, parent) => OfflineDocument(
-          parent: parent,
-          key: id,
-          fromJson: Grade.fromJson,
-        ),
-      );
+    "usePoints": usePoints,
+    "roundEachType": false,
+  };
 }
 
 class Grade {
-  Document<Subject> subject;
+  DocumentReference<Subject> subject;
   int gradeType;
   DateTime created;
-  int? points;
-  int? grade;
+  int points;
   String? name;
 
   Grade({
     required this.subject,
     required this.gradeType,
     required this.created,
-    this.points,
-    this.grade,
+    required this.points,
     this.name,
-  }) : assert((grade != null) ^ (points != null));
+  });
 
   int value([bool? usePoints]) {
     usePoints ??= true;
-    if (points != null) return usePoints ? points! : pointsToGrade(points!);
 
-    return usePoints ? gradeToPoints(grade!) : grade!;
+    return usePoints ? points : pointsToGrade(points);
   }
 
   static int pointsToGrade(int points) => ((points / 3).ceil() * -1).round() + 6;
@@ -103,7 +68,7 @@ class Grade {
   static int gradeToPoints(int grade) => max(0, (((grade - 6) * -1) * 3) - 1);
 
   factory Grade.fromJson(Map<String, dynamic> json) => Grade(
-        subject: Subjects.get().entries[json["subject"]],
+        subject: Subjects.entries().doc(json["subject"]),
         gradeType: json["gradeType"],
         created: DateTime.fromMillisecondsSinceEpoch(json["timestamp"]),
         points: json["points"],

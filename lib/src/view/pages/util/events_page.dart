@@ -1,13 +1,12 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/backend/api/requests.dart' as requests;
+import 'package:engelsburg_planer/src/backend/api/requests.dart';
 import 'package:engelsburg_planer/src/models/api/events.dart';
-import 'package:engelsburg_planer/src/services/synchronization_service.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/view/widgets/promised.dart';
+import 'package:engelsburg_planer/src/view/widgets/api_future_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -18,11 +17,7 @@ class EventsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Promised<Event>(
-      promise: SyncService.promise(
-        request: requests.getEvents().build(),
-        parse: (e) => Event.fromEvents(e),
-      ),
+    return ApiFutureBuilder<List<Event>>(request: getEvents().build(), parser: Event.fromEvents,
       dataBuilder: (events, refresh, context) => RefreshIndicator(
         onRefresh: refresh,
         child: ListView.separated(

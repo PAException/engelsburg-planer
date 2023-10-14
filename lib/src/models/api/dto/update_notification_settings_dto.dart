@@ -4,7 +4,7 @@
 
 class UpdateNotificationSettingsDTO {
   final String token;
-  final List<String> priorityTopics;
+  final Iterable<String> priorityTopics;
 
   UpdateNotificationSettingsDTO({
     required this.token,
@@ -13,13 +13,6 @@ class UpdateNotificationSettingsDTO {
 
   Map<String, dynamic> toJson() => {
         "token": token,
-        "priorityTopics": priorityTopics,
+        "priorityTopics": priorityTopics.toList(),
       };
-
-  factory UpdateNotificationSettingsDTO.fromJson(Map<String, dynamic> json) =>
-      UpdateNotificationSettingsDTO(
-        token: json["token"],
-        priorityTopics: json["priorityTopics"].cast<String>(),
-      );
-//
 }

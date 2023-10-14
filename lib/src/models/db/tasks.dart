@@ -1,67 +1,29 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:engelsburg_planer/main.dart';
 import 'package:engelsburg_planer/src/models/db/subjects.dart';
-import 'package:engelsburg_planer/src/models/storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:engelsburg_planer/src/models/storage_adapter.dart';
 
 class Tasks {
   Tasks();
 
-  static TasksSchema get([bool online = storeOnline]) => online ? TasksOnline() : TasksOffline();
+  static DocumentReference<Tasks> ref() =>
+      const DocumentReference<Tasks>("tasks", Tasks.fromJson);
 
-  factory Tasks.fromJson(Map<String, dynamic> json) {
-    return Tasks();
-  }
+  static CollectionReference<Task> entries() =>
+      ref().collection("entries", Task.fromJson);
 
-  Map<String, dynamic> toJson() {
-    return {};
-  }
-}
+  factory Tasks.fromJson(Map<String, dynamic> json) => Tasks();
 
-abstract class TasksSchema extends Document<Tasks> {
-  Collection<Document<Task>, Task> get entries;
-}
-
-class TasksOnline extends OnlineDocument<Tasks> implements TasksSchema {
-  TasksOnline() : super(documentReference: doc, fromJson: Tasks.fromJson);
-
-  static DocumentReference<Map<String, dynamic>> doc() =>
-      FirebaseFirestore.instance.collection("tasks").doc(FirebaseAuth.instance.currentUser!.uid);
-
-  @override
-  Collection<Document<Task>, Task> get entries => OnlineCollection<OnlineDocument<Task>, Task>(
-        collection: () => document.collection("entries"),
-        buildType: (doc) => OnlineDocument(
-          documentReference: () => doc,
-          fromJson: Task.fromJson,
-        ),
-      );
-}
-
-class TasksOffline extends OfflineDocument<Tasks> implements TasksSchema {
-  TasksOffline() : super(key: "tasks", fromJson: Tasks.fromJson);
-
-  @override
-  Collection<Document<Task>, Task> get entries => OfflineCollection<OfflineDocument<Task>, Task>(
-        parent: this,
-        collection: "entries",
-        buildType: (id, parent) => OfflineDocument(
-          parent: parent,
-          key: id,
-          fromJson: Task.fromJson,
-        ),
-      );
+  Map<String, dynamic> toJson() => {};
 }
 
 class Task {
   String title;
   DateTime created;
   DateTime? due;
-  Document<Subject>? subject;
+  DocumentReference<Subject>? subject;
   String? content;
   bool done;
 
@@ -74,16 +36,16 @@ class Task {
     this.done = false,
   });
 
-  factory Task.fromJson(dynamic json) => Task(
+  factory Task.fromJson(Map<String, dynamic> json) => Task(
         title: json["title"],
         created: DateTime.fromMillisecondsSinceEpoch(json["created"]),
         due: json["due"] == null ? null : DateTime.fromMillisecondsSinceEpoch(json["due"]),
-        subject: json["subject"] == null ? null : Subjects.get().entries[json["subject"]],
+        subject: json["subject"] == null ? null : Subjects.entries().doc(json["subject"]),
         content: json["content"],
         done: json["done"],
       );
 
-  dynamic toJson() => {
+  Map<String, dynamic> toJson() => {
         "title": title,
         "created": created.millisecondsSinceEpoch,
         "due": due?.millisecondsSinceEpoch,

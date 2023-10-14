@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
 import 'package:engelsburg_planer/src/utils/extensions.dart';
@@ -57,7 +57,7 @@ class Substitute extends Comparable {
         text: json['text'],
       );
 
-  dynamic toMap() => {
+  dynamic toJson() => {
         "date": _format.format(date!),
         "className": className,
         "lesson": lesson,

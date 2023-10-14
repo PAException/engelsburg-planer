@@ -1,17 +1,15 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
 import 'package:engelsburg_planer/src/app.dart';
 import 'package:engelsburg_planer/src/backend/db/db_service.dart';
-import 'package:engelsburg_planer/src/firebase_config.dart';
-import 'package:engelsburg_planer/src/models/local_storage.dart';
+import 'package:engelsburg_planer/src/utils/firebase/firebase_config.dart';
 import 'package:engelsburg_planer/src/models/state/app_state.dart';
 import 'package:engelsburg_planer/src/models/state/network_state.dart';
 import 'package:engelsburg_planer/src/models/state/semester_state.dart';
 import 'package:engelsburg_planer/src/models/state/theme_state.dart';
 import 'package:engelsburg_planer/src/models/state/user_state.dart';
-import 'package:engelsburg_planer/src/models/storage_adapter.dart';
 import 'package:engelsburg_planer/src/services/cache_service.dart';
 import 'package:engelsburg_planer/src/services/data_service.dart';
 import 'package:engelsburg_planer/src/services/isolated_worker.dart';
@@ -20,26 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
-const bool storeOnline = false;
-
 /// Initialize and run app
 void main() async {
-  Storage.copyAll(
-    refs: [
-      Grades.ref(),
-      Grades.entries(),
-    ],
-    from: Storage.offline,
-    to: Storage.online,
-  );
-  Grades.ref().storage(Storage.online);
-
-  await LocalStorage.instance.setDocument("test/doc19", {"testData": 15});
-  print(await LocalStorage.instance.getDocument("test/doc19"));
-  print(await LocalStorage.instance
-      .getCollection("test")
-      .then((value) => value.map((e) => e.path)));
-
   await initialize();
 
   runApp(wrapProvider(const EngelsburgPlaner()));
@@ -76,5 +56,6 @@ Future<void> initialize() async {
 
 /// Initialize various services/instances which need a context
 Future<void> initializeWithContext(BuildContext context) async {
+  FirebaseConfig.initializeWithContext();
   DataService.initialize(context);
 }

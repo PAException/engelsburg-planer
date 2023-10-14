@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
 import 'package:engelsburg_planer/src/backend/api/api_response.dart';
@@ -40,12 +40,16 @@ class ApiFutureBuilder<T> extends StatefulWidget {
 }
 
 class _ApiFutureBuilderState<T> extends State<ApiFutureBuilder<T>> {
+  late Future<ApiResponse<T>> pendingRequest;
+  
+  Future<ApiResponse<T>> _performRequest() => widget.request.api(widget.parser);
+
   @override
   Widget build(BuildContext context) {
-    var future = widget.request.api(widget.parser);
+    var pendingRequest = _performRequest();
 
     return FutureBuilder<ApiResponse<T>>(
-      future: future,
+      future: pendingRequest,
       builder: (context, snapshot) {
         //Request was performed, response is available
         if (snapshot.connectionState == ConnectionState.done) {
@@ -69,7 +73,9 @@ class _ApiFutureBuilderState<T> extends State<ApiFutureBuilder<T>> {
             if (apiResponse.dataPresent) {
               return widget.dataBuilder.call(
                 apiResponse.data as T,
-                () async => setState(() {}),
+                () async => setState(() {
+                  pendingRequest = _performRequest();
+                }),
                 context,
               );
             }

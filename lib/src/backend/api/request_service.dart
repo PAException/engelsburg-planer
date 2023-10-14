@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
 import 'package:engelsburg_planer/src/backend/api/api_response.dart';
@@ -52,6 +52,7 @@ class RequestService {
       //If request wasn't timed out then set network status as online
       if (response.statusCode != 999) {
         globalContext().read<NetworkState>().update(NetworkStatus.online);
+        request.analytics?.call();
       }
 
       return response;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
 import 'package:engelsburg_planer/src/backend/util/paging.dart';
@@ -23,8 +23,8 @@ class Query {
   }) =>
       Query({
         "substituteKey": substituteKey,
-        if (classes != null && classes.isNotEmpty) "classes": classes,
-        if (teacher != null && teacher.isNotEmpty) "teacher": teacher,
+        if (classes != null && classes.isNotEmpty) "classes": classes.join(","),
+        if (teacher != null && teacher.isNotEmpty) "teacher": teacher.join(","),
       });
 
   /// Parse Query to actual string in request

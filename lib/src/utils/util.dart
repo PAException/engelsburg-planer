@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
 import 'dart:async';
@@ -12,7 +12,7 @@ typedef AnimationFunction = AnimatedWidget Function(Animation<double> animation,
 class DelayedExecution {
   static final Map<String, Timer> _execs = {};
 
-  static void exec(String key, VoidCallback exec, [Duration delay = const Duration(seconds: 10)]) {
+  static void exec(String key, FutureOr<void> Function() exec, [Duration delay = const Duration(seconds: 10)]) async {
     _execs[key]?.cancel();
     _execs[key] = Timer(delay, exec);
   }

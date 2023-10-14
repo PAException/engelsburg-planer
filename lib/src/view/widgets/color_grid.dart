@@ -21,7 +21,6 @@ class ColorGrid extends StatelessWidget {
         ...Colors.primaries,
         Colors.grey,
         Colors.white,
-        Colors.black,
         ...Colors.accents,
       ]
           .map(

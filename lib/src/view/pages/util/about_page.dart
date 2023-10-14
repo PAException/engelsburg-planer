@@ -4,8 +4,7 @@
 
 import 'dart:io' show Platform;
 
-import 'package:engelsburg_planer/src/utils/constants/app_constants.dart';
-import 'package:engelsburg_planer/src/utils/constants/asset_path_constants.dart';
+import 'package:engelsburg_planer/src/utils/constants.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';

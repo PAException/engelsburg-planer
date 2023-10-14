@@ -222,5 +222,6 @@
   "toDate": "bis {date}",
   "noTasksFound": "Keine Aufgaben gefunden",
   "otherParticipation": "Sonstige Mitarbeit",
-  "addTypeOfGrade": "Notenart hinzufügen"
+  "addTypeOfGrade": "Notenart hinzufügen",
+  "useTeacherAbbreviation": "Benutze die Abkürzung damit wir danach filtern können"
 }

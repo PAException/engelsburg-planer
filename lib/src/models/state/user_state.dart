@@ -1,10 +1,12 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
+import 'package:engelsburg_planer/src/models/storage_adapter.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
 /// Keeps track of the account of the user.
 /// All information should be treated as null if [loggedIn] is false.
@@ -50,4 +52,17 @@ class UserState extends ChangeNotifier {
   List<String>? get signInMethods => _signInMethods;
 
   bool get hasPassword => signInMethods?.contains("password") ?? false;
+}
+
+Storage chooseDefaultStorage(BuildContext context) =>
+    context.read<UserState>().loggedIn ? Storage.online : Storage.offline;
+
+extension DocumentExt<T> on DocumentReference<T> {
+  Document<T> defaultStorage(BuildContext context) =>
+      storage(chooseDefaultStorage(context));
+}
+
+extension CollectionExt<T> on CollectionReference<T> {
+  Collection<T> defaultStorage(BuildContext context) =>
+      storage(chooseDefaultStorage(context));
 }

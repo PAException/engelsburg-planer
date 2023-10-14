@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
 import 'dart:convert';
@@ -65,6 +65,8 @@ class Request {
   /// Key to cache response of request
   final String? cacheId;
 
+  final VoidCallback? analytics;
+
   const Request(
     this.method,
     this.host,
@@ -74,6 +76,7 @@ class Request {
     this.headers,
     this.https,
     this.cacheId,
+    this.analytics,
   );
 
   /// Deserialize request
@@ -86,6 +89,7 @@ class Request {
         json["headers"],
         json["https"] == 1,
         json["cacheId"],
+        json["analytics"],
       );
 
   /// Serialize request
@@ -98,6 +102,7 @@ class Request {
         "headers": headers,
         "https": https ? 1 : 0, //Sqflite doesn't support bool
         "cacheId": cacheId,
+        "analytics": analytics,
       };
 
   /// Get RequestBuilder
@@ -130,6 +135,7 @@ class RequestBuilder {
   Map<String, String> _headers = {};
   bool _https = false;
   String? _cacheId;
+  VoidCallback? _analytics;
 
   /// Build the actual request
   Request build() {
@@ -147,6 +153,7 @@ class RequestBuilder {
       _headers,
       _https,
       _cacheId,
+      _analytics,
     );
   }
 
@@ -223,6 +230,12 @@ class RequestBuilder {
   /// Set cacheId
   RequestBuilder cache(String? cacheId) {
     _cacheId = cacheId;
+    return this;
+  }
+
+  /// Set callback to execute analytics call
+  RequestBuilder analytics(VoidCallback analytics) {
+    _analytics = analytics;
     return this;
   }
 }

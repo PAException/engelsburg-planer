@@ -18,7 +18,7 @@ class RouteModifier extends StatefulWidget {
 class _RouteModifierState extends State<RouteModifier> {
   String? callbackUrl;
   late GoRouter router;
-  late GoRouterState routerState;
+  late RouteInformationProvider routeInformation;
 
   @override
   Widget build(BuildContext context) => widget.child;
@@ -27,7 +27,7 @@ class _RouteModifierState extends State<RouteModifier> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     router = GoRouter.of(context);
-    routerState = GoRouterState.of(context);
+    routeInformation = GoRouter.of(context).routeInformationProvider;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       router.routerDelegate.removeListener(routerListener);
       router.routerDelegate.addListener(routerListener);
@@ -46,7 +46,7 @@ class _RouteModifierState extends State<RouteModifier> {
       callbackUrl = null;
     } else {
       //Get params from url string as map
-      Map<String, String> params = routerState.uri
+      Map<String, String> params = routeInformation.value.uri
               .toString()
               .split("?")
               .nullableAt(1)

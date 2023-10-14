@@ -670,5 +670,6 @@
   },
   "noTasksFound": "No tasks found",
   "otherParticipation": "Other participation",
-  "addTypeOfGrade": "Add type of grade"
+  "addTypeOfGrade": "Add type of grade",
+  "useTeacherAbbreviation": "Use the teacher abbreviation so we can filter by it"
 }

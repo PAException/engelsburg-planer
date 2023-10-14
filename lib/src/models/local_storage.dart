@@ -3,6 +3,7 @@
  */
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -57,6 +58,8 @@ class LocalStorage {
     //Wait for adapter to delete document
     var result = await _adapter.deleteDocument(path);
 
+    if (!result) return result;
+
     //If document has active stream add null to stream, close and remove reference
     var documentSnapshotController = _documentSnapshots[path];
     if (documentSnapshotController != null) {
@@ -74,7 +77,7 @@ class LocalStorage {
       });
     }
 
-    return result;
+    return true;
   }
 
   /// see [HiveDocumentDatabaseAdapter#getCollection]
@@ -215,7 +218,7 @@ class HiveDocumentDatabaseAdapter {
         ..removeWhere((key, _) => !(key as String).startsWith("_"));
 
       //Add collection refs to data to be set and clear box
-      data.addAll(collectionRefs as Map<String, dynamic>);
+      data.addAll(collectionRefs.cast<String, dynamic>());
       await box.clear();
     }
 
@@ -243,19 +246,36 @@ class HiveDocumentDatabaseAdapter {
   /// Returns if document does not exist after completion.
   Future<bool> deleteDocument(String path, [bool? cascade = false]) async {
     //Get box, if it does not exist return null
+    var segments = path.split("/");
     Box? box = await _getBox(path.split("/"));
     if (box == null) return true;
 
     //Extract subdirectories
-    var subDirectories = (box.toMap() as Map<String, List<String>>)
+    var subDirectories = box.toMap()
       ..removeWhere((key, _) => !key.startsWith("_"));
 
     //Remove all data except collections from the document
     if (!(cascade ?? false)) {
-      box
-        ..clear()
-        ..putAll(subDirectories)
-        ..flush();
+      if (subDirectories.isEmpty) {
+        //Remove reference from parent collection
+        var docRef = segments.removeLast();
+        var parentCollection = segments.removeLast();
+        var parentBox = await _getBox(segments);
+        if (parentBox != null) {
+          var docs = parentBox.get("_$parentCollection") as List;
+          docs.cast<String>().removeWhere((ref) => ref == docRef);
+          await parentBox.put("_$parentCollection", docs);
+          parentBox.flush();
+        }
+
+        //Delete box when finished
+        await box.deleteFromDisk();
+        return true;
+      }
+
+      await box.clear();
+      await box.putAll(subDirectories);
+      await box.flush();
     } else {
       //If cascade is true remove all subDirectories
       var result = await Future.wait(
@@ -282,7 +302,9 @@ class HiveDocumentDatabaseAdapter {
     if (box == null) return [];
 
     //Get actual document references of the collection
-    var docs = (box.get("_${segments.last}") as List).cast<String>();
+    var entry = box.get("_${segments.last}");
+    if (entry == null) return [];
+    var docs = (entry as List).cast<String>();
 
     //Get data of all fetched documents
     return docs.asyncMap((doc) async {
@@ -299,4 +321,9 @@ class LocalStorageData {
   final Map<String, dynamic> data;
 
   LocalStorageData(this.path, this.data);
+
+  @override
+  String toString() {
+    return 'LocalStorageData{path: $path, data: $data}';
+  }
 }

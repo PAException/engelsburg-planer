@@ -1,21 +1,21 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
 import 'package:engelsburg_planer/src/models/state/app_state.dart';
+import 'package:engelsburg_planer/src/utils/firebase/analytics.dart';
 import 'package:engelsburg_planer/src/utils/util.dart';
-import 'package:engelsburg_planer/src/view/pages/home/home_page.dart';
-import 'package:engelsburg_planer/src/view/pages/page.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:engelsburg_planer/src/view/pages/home_page.dart';
+import 'package:engelsburg_planer/src/view/routing/page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Page;
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class Router {
+class AppRouter {
   static late ValueKey<String> currentHomePageKey;
 
-  static GoRouter router(BuildContext context, AppConfigState config) {
+  static GoRouter router(BuildContext context) {
     Iterable<String> routes = Pages.navBar.map((e) => e.path.substring(1));
     Iterable<GoRoute> allRoutes = Pages.all
       ..removeWhere((e) => routes.contains(e.path.substring(1)));
@@ -25,6 +25,9 @@ class Router {
       debugLogDiagnostics: kDebugMode,
       initialLocation: "/",
       redirect: (context, state) {
+        //Set current screen for analytics
+        Analytics.interaction.screen(state.uri.toString());
+
         if (context.read<AppConfigState>().isConfigured) return null;
 
         return "/introduction";
@@ -32,27 +35,19 @@ class Router {
       routes: [
         GoRoute(
           path: "/:page(|${routes.join("|")})",
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             currentHomePageKey = state.pageKey;
 
-            return HomePage(
-              key: state.pageKey,
-              state: state,
+            return NoTransitionPage(
+              child: HomePage(
+                key: state.pageKey,
+                state: state,
+              ),
             );
           },
         ),
         ...allRoutes,
       ],
-      observers: [
-        NavigatorObserver(),
-      ],
     );
-  }
-}
-
-class GoRouterObserver extends NavigatorObserver {
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    FirebaseAnalytics.instance.setCurrentScreen(screenName: route.settings.name);
   }
 }

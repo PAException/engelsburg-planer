@@ -1,61 +1,23 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:engelsburg_planer/main.dart';
 import 'package:engelsburg_planer/src/models/db/grades.dart';
-import 'package:engelsburg_planer/src/models/storage.dart';
+import 'package:engelsburg_planer/src/models/storage_adapter.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:engelsburg_planer/src/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class Subjects {
   Subjects();
 
-  static SubjectsSchema get([bool online = storeOnline]) =>
-      online ? SubjectsOnline() : SubjectsOffline();
+  static DocumentReference<Subjects> ref() => const DocumentReference<Subjects>("subjects", Subjects.fromJson);
+
+  static CollectionReference<Subject> entries() => ref().collection<Subject>("entries", Subject.fromJson);
 
   Map<String, dynamic> toJson() => {};
 
   factory Subjects.fromJson(Map<String, dynamic> json) => Subjects();
-}
-
-abstract class SubjectsSchema extends Document<Subjects> {
-  Collection<Document<Subject>, Subject> get entries;
-}
-
-class SubjectsOnline extends OnlineDocument<Subjects> implements SubjectsSchema {
-  SubjectsOnline() : super(documentReference: doc, fromJson: Subjects.fromJson);
-
-  static DocumentReference<Map<String, dynamic>> doc() =>
-      FirebaseFirestore.instance.collection("subjects").doc(FirebaseAuth.instance.currentUser!.uid);
-
-  @override
-  Collection<Document<Subject>, Subject> get entries =>
-      OnlineCollection<OnlineDocument<Subject>, Subject>(
-        collection: () => document.collection("entries"),
-        buildType: (doc) => OnlineDocument(
-          documentReference: () => doc,
-          fromJson: Subject.fromJson,
-        ),
-      );
-}
-
-class SubjectsOffline extends OfflineDocument<Subjects> implements SubjectsSchema {
-  SubjectsOffline() : super(key: "subjects", fromJson: Subjects.fromJson);
-
-  @override
-  Collection<Document<Subject>, Subject> get entries =>
-      OfflineCollection<OfflineDocument<Subject>, Subject>(
-        parent: this,
-        collection: "entries",
-        buildType: (id, parent) => OfflineDocument(
-          parent: parent,
-          key: id,
-          fromJson: Subject.fromJson,
-        ),
-      );
 }
 
 /// Class that holds all information about a subject.
@@ -67,14 +29,16 @@ class Subject extends Comparable<Subject> {
   String? customName;
   String color;
   bool advancedCourse;
-  List<GradeType> gradeTypes;
+  late List<GradeType> _gradeTypes;
 
-  Subject({
-    required this.baseSubject,
+  factory Subject.fromBaseSubject(String baseSubject) => Subject(baseSubject, []);
+
+  Subject(
+    this.baseSubject,
+    this._gradeTypes, {
     this.customName,
     this.color = defaultColorString, //defaultColor
     this.advancedCourse = false,
-    this.gradeTypes = const [],
   });
 
   static List<Subject> fromSubjects(dynamic json) =>
@@ -90,21 +54,25 @@ class Subject extends Comparable<Subject> {
   String parsedName(BuildContext context) =>
       customName ?? BaseSubject.get(this).l10n(context) ?? baseSubject;
 
-  List<GradeType> getGradeTypes(BuildContext context) => gradeTypes.isNotEmpty
-      ? gradeTypes
-      : gradeTypes = [
-          GradeType(name: context.l10n.oralGrade, share: 0.5),
-          GradeType(name: context.l10n.exam, share: 0.5),
-        ];
+  List<GradeType> getGradeTypes(BuildContext context) => _gradeTypes.isNotEmpty
+      ? _gradeTypes
+      : _gradeTypes = _defaultGradeTypes(context);
+
+  static List<GradeType> _defaultGradeTypes(BuildContext context) => [
+    GradeType(name: context.l10n.oralGrade, share: 0.5),
+    GradeType(name: context.l10n.exam, share: 0.5),
+  ];
+
+  set gradeTypes(List<GradeType> gradeTypes) => _gradeTypes = gradeTypes;
 
   factory Subject.fromJson(Map<String, dynamic> json) => Subject(
-        baseSubject: json["baseSubject"],
+        json["baseSubject"],
+        (json["gradeTypes"] as List?)
+            ?.map<GradeType>((e) => GradeType.fromJson(e.cast<String, dynamic>()))
+            .toList() ?? [],
         customName: json["customName"],
         color: json["color"] ?? defaultColorString,
         advancedCourse: json["advancedCourse"],
-        gradeTypes: json["gradeTypes"]
-            .map<GradeType>((e) => GradeType.fromJson(e.cast<String, dynamic>()))
-            .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -112,7 +80,7 @@ class Subject extends Comparable<Subject> {
         "customName": customName,
         "color": color,
         "advancedCourse": advancedCourse,
-        "gradeTypes": gradeTypes.map((e) => e.toJson()).toList(),
+        "gradeTypes": _gradeTypes.map((e) => e.toJson()).toList(),
       };
 
   @override

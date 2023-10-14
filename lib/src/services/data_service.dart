@@ -1,8 +1,8 @@
 /*
- * Copyright (c) Paul Huerkamp 2022. All rights reserved.
+ * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-import 'package:engelsburg_planer/src/controller/article_controller.dart';
+import 'package:engelsburg_planer/src/backend/controller/article_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
