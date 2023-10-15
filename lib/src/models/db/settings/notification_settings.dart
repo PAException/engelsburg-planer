@@ -56,7 +56,7 @@ extension NotificationHelper on NotificationSettings {
   static final fcm = FirebaseMessaging.instance;
   static late AuthorizationStatus _authorizationStatus;
 
-  static bool get isAuthorized => _authorizationStatus == AuthorizationStatus.authorized;
+  static bool get isAuthorized => _authorizationStatus != AuthorizationStatus.denied;
 
   static Future<void> init() async {
     await fcm.setAutoInitEnabled(true);

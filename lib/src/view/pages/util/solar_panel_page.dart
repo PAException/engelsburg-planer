@@ -5,7 +5,7 @@
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
 import 'package:engelsburg_planer/src/models/api/solar_panel.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/view/widgets/api_future_builder.dart';
+import 'package:engelsburg_planer/src/view/widgets/util/api_future_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 

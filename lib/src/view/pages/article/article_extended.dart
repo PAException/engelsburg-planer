@@ -10,7 +10,7 @@ import 'package:engelsburg_planer/src/models/api/article.dart';
 import 'package:engelsburg_planer/src/utils/firebase/analytics.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/article/article_card.dart';
-import 'package:engelsburg_planer/src/view/widgets/network_status.dart';
+import 'package:engelsburg_planer/src/view/widgets/special/network_status.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/wrap_if.dart';
 import 'package:flutter/material.dart';

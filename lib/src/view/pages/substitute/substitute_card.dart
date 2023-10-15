@@ -4,6 +4,7 @@
 
 import 'package:engelsburg_planer/src/models/api/substitutes.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/view/widgets/teacher_list_tile.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -206,14 +207,7 @@ class ExtendedSubstituteCardState extends State<ExtendedSubstituteCard> {
               ),
             ),
             if (subst.substituteTeacher != null)
-            ListTile(
-              leading: const Icon(Icons.portrait),
-              dense: true,
-              title: Text(
-                  subst.substituteTeacher!,
-                  style: const TextStyle(fontSize: 18),
-                ),
-            ),
+              TeacherListTile(subst.substituteTeacher!),
             if (subst.subject != null)
               ListTile(
                 leading: const Icon(Icons.school),

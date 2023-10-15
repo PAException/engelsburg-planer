@@ -7,7 +7,7 @@ import 'package:engelsburg_planer/src/models/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/auth/account/account_security_dialogs.dart';
 import 'package:engelsburg_planer/src/view/pages/auth/auth_page.dart';
-import 'package:engelsburg_planer/src/view/widgets/oauth_tile.dart';
+import 'package:engelsburg_planer/src/view/widgets/special/oauth_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

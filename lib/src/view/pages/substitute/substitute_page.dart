@@ -8,13 +8,15 @@ import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:crypto/crypto.dart';
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
 import 'package:engelsburg_planer/src/models/api/substitutes.dart';
+import 'package:engelsburg_planer/src/models/api/teacher.dart';
 import 'package:engelsburg_planer/src/models/db/settings/notification_settings.dart';
 import 'package:engelsburg_planer/src/models/db/settings/substitute_settings.dart';
+import 'package:engelsburg_planer/src/models/session_persistent_data.dart';
 import 'package:engelsburg_planer/src/models/state/user_state.dart';
 import 'package:engelsburg_planer/src/models/storage_adapter.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/substitute/substitute_card.dart';
-import 'package:engelsburg_planer/src/view/widgets/api_future_builder.dart';
+import 'package:engelsburg_planer/src/view/widgets/util/api_future_builder.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/wrap_if.dart';
 import 'package:flutter/material.dart';
 
@@ -26,20 +28,30 @@ class SubstitutesPage extends StatelessWidget {
     return StreamSelector<SubstituteSettings, bool>(
       doc: SubstituteSettings.ref().defaultStorage(context),
       selector: (substituteSettings) => substituteSettings.password != null,
-      builder: (context, doc, t, value) =>
-          value ? const SubstitutePageContent() : const SubstituteKeyPage(),
+      builder: (context, doc, settings, value) {
+        if (value) {
+          getTeacher(settings.password!)
+              .build().api<Teachers>(Teachers.fromJson).then((apiResponse) {
+            if (apiResponse.dataPresent) {
+              SessionPersistentData.set(apiResponse.data!);
+            }
+          });
+        }
+
+        return value ? const SubstitutePageContent() : const SubstituteKeyPage();
+      },
     );
   }
 }
-
-Future? fetchingKeyHash;
-String? substituteKeyHash;
 
 class SubstituteKeyPage extends StatelessWidget {
   const SubstituteKeyPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Future? fetchingKeyHash;
+    String? substituteKeyHash;
+
     fetchingKeyHash ??= getSubstituteKeyHash().build().api<String>((json) {
       if (json is String) return json;
       if (json is List) return json[0];

@@ -38,7 +38,9 @@ class Path {
 
   static String get solarSystem => "solar_system";
 
-  static SubstitutePath get substitute => SubstitutePath();
+  static final SubstitutePath substitute = SubstitutePath();
+
+  static final InfoPath info = InfoPath();
 
   static String get notificationSettings => "settings/notification";
 }
@@ -51,6 +53,16 @@ class SubstitutePath {
   String get keyHash => "$path/key";
 
   String get messages => "$path/message";
+}
+
+class InfoPath {
+  InfoPath();
+
+  String get path => "info";
+
+  String get teacher => "$path/teacher";
+
+  String get classes => "$path/classes";
 }
 
 ///
@@ -111,6 +123,28 @@ RequestBuilder getSubstituteMessages(String substituteKey) => Request.builder()
 RequestBuilder getSubstituteKeyHash() =>
     Request.builder().https.api.get.path(Path.substitute.keyHash).cache("substitute_key_hash")
         .analytics(Analytics.api.substitute);
+
+///
+/// Information
+///
+
+RequestBuilder getTeacher(String substituteKey) => Request.builder()
+    .https
+    .api
+    .get
+    .path(Path.info.teacher)
+    .params(Query.substitutes(substituteKey))
+    .cache("info_teacher")
+    .analytics(Analytics.api.info);
+
+RequestBuilder getClasses(String substituteKey) => Request.builder()
+    .https
+    .api
+    .get
+    .path(Path.info.classes)
+    .params(Query.substitutes(substituteKey))
+    .cache("info_classes")
+    .analytics(Analytics.api.info);
 
 ///
 /// Notification

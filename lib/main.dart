@@ -2,8 +2,12 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
+import 'dart:async';
+
 import 'package:engelsburg_planer/src/app.dart';
 import 'package:engelsburg_planer/src/backend/db/db_service.dart';
+import 'package:engelsburg_planer/src/models/db/settings/notification_settings.dart';
+import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/utils/firebase/firebase_config.dart';
 import 'package:engelsburg_planer/src/models/state/app_state.dart';
 import 'package:engelsburg_planer/src/models/state/network_state.dart';
@@ -20,7 +24,9 @@ import 'package:provider/provider.dart';
 
 /// Initialize and run app
 void main() async {
-  await initialize();
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await InitializingPriority.instant.initialize();
 
   runApp(wrapProvider(const EngelsburgPlaner()));
 }
@@ -39,23 +45,33 @@ Widget wrapProvider(Widget app) {
   );
 }
 
-/// Initialize various services/instances
-Future<void> initialize() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await Future.wait([
-    Firebase.initializeApp(),
-    FirebaseConfig.initialize(),
-    CacheService.initialize(),
-    DatabaseService.initialize(),
-    IsolatedWorker.initialize(),
-    Hive.initFlutter(),
-  ]);
-  //if (kDebugMode) await FirebaseAuth.instance.useAuthEmulator('10.0.0.2', 9099);
-}
+Map<FutureOr<void> Function(), InitializingPriority> toInitialize = {
+  FirebaseConfig.initialize: InitializingPriority.instant,
+  CacheService.initialize: InitializingPriority.instant,
+  DatabaseService.initialize: InitializingPriority.instant,
+  IsolatedWorker.initialize: InitializingPriority.instant,
+  Hive.initFlutter: InitializingPriority.instant,
+  DataService.initialize: InitializingPriority.needsContext,
+  FirebaseConfig.initializeFCM: InitializingPriority.afterAppConfig,
+  NotificationHelper.init: InitializingPriority.afterAppConfig,
+};
 
 /// Initialize various services/instances which need a context
 Future<void> initializeWithContext(BuildContext context) async {
-  FirebaseConfig.initializeWithContext();
-  DataService.initialize(context);
+  DataService.initialize();
+}
+
+
+enum InitializingPriority {
+  instant,
+  needsContext,
+  afterAppConfig,
+}
+
+extension InitializingPriorityUtils on InitializingPriority{
+  Future initialize() {
+    return toInitialize.entries.where((entry) => entry.value == this).asyncMap(
+          (entry) async => await Future.value(entry.key.call()),
+    );
+  }
 }

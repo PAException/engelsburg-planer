@@ -3,6 +3,7 @@
  */
 
 import 'package:engelsburg_planer/src/backend/controller/article_controller.dart';
+import 'package:engelsburg_planer/src/utils/util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -18,14 +19,18 @@ class DataService {
   void updateContext(BuildContext context) => this.context = context;
 
   /// Get services and call setup() on them
-  static void initialize(BuildContext context) {
+  static Future<void> initialize() {
     _services = _initServices();
 
+    List<Future> setups = [];
+
     for (var controller in _services!.values) {
-      controller
-        ..updateContext(context)
-        ..setup();
+      setups.add(
+          (controller..updateContext(globalContext())).setup()
+      );
     }
+
+    return Future.wait(setups);
   }
 
   /// Parse all services in a map with types

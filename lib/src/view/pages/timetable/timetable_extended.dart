@@ -14,6 +14,7 @@ import 'package:engelsburg_planer/src/models/storage_adapter.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/utils/util.dart';
 import 'package:engelsburg_planer/src/view/pages/settings/subject/subject_select_page.dart';
+import 'package:engelsburg_planer/src/view/widgets/teacher_list_tile.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -231,37 +232,10 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard> {
                                     style: const TextStyle(fontSize: 20),
                                   ),
                             ),
-                          if ((!_teacherController.text.isBlank || _editing) &&
-                              config.userType == UserType.student)
-                            ListTile(
-                              leading: const Align(
-                                widthFactor: 1,
-                                alignment: Alignment.centerLeft,
-                                child: Icon(Icons.portrait),
-                              ),
-                              //TODO add teachers full name from API
-                              //subtitle: !_editing ? Text("Herr Rosenbach") : null,
-                              title: _editing
-                                  ? TextField(
-                                    controller: _teacherController,
-                                    maxLength: 4,
-                                    style: const TextStyle(fontSize: 20),
-                                    onChanged: (value) {
-                                      _teacherController.text = value.toUpperCase();
-                                    },
-                                  )
-                                  : Text(
-                                    _teacherController.text,
-                                    style: const TextStyle(fontSize: 20),
-                                  ),
-                              trailing: _editing
-                                  ? Tooltip(
-                                    message: context.l10n.useTeacherAbbreviation,
-                                    triggerMode: TooltipTriggerMode.tap,
-                                    margin: const EdgeInsets.all(12),
-                                    child: const Icon(Icons.help_outline),
-                                  )
-                                  : null,
+                          if (config.userType == UserType.student)
+                            TeacherListTile.edit(
+                              editing: _editing,
+                              controller: _teacherController,
                             ),
                           if (!_roomController.text.isBlank || _editing)
                             ListTile(

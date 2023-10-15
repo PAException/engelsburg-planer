@@ -5,7 +5,7 @@
 import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/models/state/theme_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/view/widgets/color_grid.dart';
+import 'package:engelsburg_planer/src/view/widgets/util/color_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

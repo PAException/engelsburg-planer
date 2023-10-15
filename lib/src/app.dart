@@ -17,18 +17,16 @@ import 'package:provider/provider.dart';
 
 import 'models/state/app_state.dart';
 
-Future<void>? _initialize;
-
 /// The app itself
 class EngelsburgPlaner extends StatelessWidget {
   const EngelsburgPlaner({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    //Start app
     Analytics.logAppOpen();
     GlobalContext.firstContext = context;
-    //Execute only once
-    _initialize ??= initializeWithContext(context);
+    InitializingPriority.needsContext.initialize();
 
     return Consumer2<ThemeState, AppConfigState>(
       builder: (context, theme, config, _) {
