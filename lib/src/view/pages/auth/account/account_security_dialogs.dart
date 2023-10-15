@@ -5,7 +5,7 @@
 import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/models/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/view/widgets/obscured_text_form.dart';
+import 'package:engelsburg_planer/src/view/widgets/util/obscured_text_form.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

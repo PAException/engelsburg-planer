@@ -2,7 +2,7 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-import 'package:engelsburg_planer/src/view/widgets/network_status.dart';
+import 'package:engelsburg_planer/src/view/widgets/special/network_status.dart';
 import 'package:flutter/material.dart';
 
 enum NetworkStatus { online, loading, offline }

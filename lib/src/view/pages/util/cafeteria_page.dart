@@ -8,7 +8,7 @@ import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
-import '../../widgets/api_future_builder.dart';
+import '../../widgets/util/api_future_builder.dart';
 
 class CafeteriaPage extends StatelessWidget {
   const CafeteriaPage({Key? key}) : super(key: key);

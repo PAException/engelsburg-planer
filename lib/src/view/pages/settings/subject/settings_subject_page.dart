@@ -8,7 +8,7 @@ import 'package:engelsburg_planer/src/models/state/user_state.dart';
 import 'package:engelsburg_planer/src/models/storage_adapter.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/settings/subject/subject_extended.dart';
-import 'package:engelsburg_planer/src/view/widgets/color_grid.dart';
+import 'package:engelsburg_planer/src/view/widgets/util/color_grid.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/switch_expandable.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/material.dart';

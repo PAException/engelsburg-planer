@@ -9,7 +9,7 @@ import 'package:engelsburg_planer/src/services/data_service.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/article/article_card.dart';
 import 'package:engelsburg_planer/src/view/pages/article/article_extended.dart';
-import 'package:engelsburg_planer/src/view/widgets/promised.dart';
+import 'package:engelsburg_planer/src/view/widgets/special/promised.dart';
 import 'package:flutter/material.dart';
 
 /// Page to display all saved articles by the user

@@ -2,16 +2,22 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
+import 'package:engelsburg_planer/main.dart';
 import 'package:engelsburg_planer/src/models/state/storable_change_notifier.dart';
 import 'package:engelsburg_planer/src/utils/firebase/analytics.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/routing/page.dart';
 
+Future? initialize;
+
 /// Basic configuration of the app.
 /// Defines the appearance and the order of all the sections of the app.
 class AppConfigState extends NullableStorableChangeNotifier<AppConfiguration> {
   AppConfigState() : super("app_configuration", AppConfiguration.fromJson) {
-    if (isConfigured) Pages.userType = userType!;
+    if (isConfigured) {
+      initialize = InitializingPriority.afterAppConfig.initialize();
+      Pages.userType = userType!;
+    }
   }
 
   bool get isConfigured => current != null;
@@ -29,8 +35,10 @@ class AppConfigState extends NullableStorableChangeNotifier<AppConfiguration> {
     assert(config.userType == UserType.other || config.extra != null);
 
     Analytics.user.setAppConfig(config);
+
     current = config;
     await save(() => Pages.userType = userType!);
+    return initialize ??= InitializingPriority.afterAppConfig.initialize();
   }
 }
 

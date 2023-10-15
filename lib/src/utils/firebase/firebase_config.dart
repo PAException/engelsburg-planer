@@ -4,6 +4,7 @@
 
 import 'dart:io';
 
+import 'package:engelsburg_planer/src/models/state/app_state.dart';
 import 'package:engelsburg_planer/src/utils/firebase/analytics.dart';
 import 'package:engelsburg_planer/src/utils/firebase/crashlytics.dart';
 import 'package:engelsburg_planer/src/utils/firebase/firebase_options.dart';
@@ -13,7 +14,6 @@ import 'package:engelsburg_planer/src/models/db/settings/substitute_settings.dar
 import 'package:engelsburg_planer/src/models/storage_adapter.dart';
 import 'package:engelsburg_planer/src/utils/util.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
@@ -26,21 +26,19 @@ class FirebaseConfig {
   static Future<void> initialize() async {
     //Init the core firebaseApp
     await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
+        options: DefaultFirebaseOptions.currentPlatform,
+    );
 
     Crashlytics.log("Initializing firebase services");
 
     //Init sub services
-    if (!kDebugMode) initializeCrashlytics();
-    initializeRemoteConfig();
     Analytics.initialize();
-    Crashlytics.initialize();
+    if (!kDebugMode) Crashlytics.initialize();
+    await initializeRemoteConfig();
   }
 
-  static void initializeWithContext() => initializeFirebaseMessaging();
-
   /// Initialize FCM - initialNotification, tokenRefresh action
-  static void initializeFirebaseMessaging() async {
+  static void initializeFCM() async {
     //Check if app was opened via a notification
     FirebaseMessaging.instance
         .getInitialMessage()
@@ -61,8 +59,7 @@ class FirebaseConfig {
       importance: Importance.max,
     );
 
-    final FlutterLocalNotificationsPlugin localNotifications =
-        FlutterLocalNotificationsPlugin();
+    final localNotifications = FlutterLocalNotificationsPlugin();
     localNotifications.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings("mipmap/ic_launcher"),
@@ -127,18 +124,6 @@ class FirebaseConfig {
         globalContext().go(link, extra: message.data);
       }
     }
-  }
-
-  /// Initialize the crashlytics firebase service to catch and report all errors.
-  static void initializeCrashlytics() {
-    //Pass all uncaught "fatal" errors from the framework to Crashlytics
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-
-    //Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-    PlatformDispatcher.instance.onError = (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      return true;
-    };
   }
 
   /// Initialize the remote config service of firebase to use remote based configuration of the app.

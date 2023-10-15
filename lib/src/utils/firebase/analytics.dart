@@ -51,6 +51,8 @@ class ApiAnalytics {
   void events() => _request("events");
 
   void solar() => _request("solar");
+
+  void info() => _request("info");
 }
 
 class InteractionAnalytics {

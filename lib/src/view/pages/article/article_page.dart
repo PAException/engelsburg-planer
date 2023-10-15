@@ -11,8 +11,8 @@ import 'package:engelsburg_planer/src/view/pages/article/article_card.dart';
 import 'package:engelsburg_planer/src/view/pages/article/article_extended.dart';
 import 'package:engelsburg_planer/src/view/pages/home_page.dart';
 import 'package:engelsburg_planer/src/view/routing/page.dart';
-import 'package:engelsburg_planer/src/view/widgets/paged_promised.dart';
-import 'package:engelsburg_planer/src/view/widgets/util/updatable.dart';
+import 'package:engelsburg_planer/src/view/widgets/special/paged_promised.dart';
+import 'package:engelsburg_planer/src/view/widgets/special/updatable.dart';
 import 'package:flutter/material.dart';
 
 /// Page to display all articles of the engelsburg

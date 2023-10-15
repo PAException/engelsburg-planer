@@ -67,9 +67,9 @@ class Subject extends Comparable<Subject> {
 
   factory Subject.fromJson(Map<String, dynamic> json) => Subject(
         json["baseSubject"],
-        (json["gradeTypes"] as List?)
-            ?.map<GradeType>((e) => GradeType.fromJson(e.cast<String, dynamic>()))
-            .toList() ?? [],
+        (json["gradeTypes"] as List?)?.map<GradeType>(
+                (e) => GradeType.fromJson(e.cast<String, dynamic>())
+        ).toList() ?? [],
         customName: json["customName"],
         color: json["color"] ?? defaultColorString,
         advancedCourse: json["advancedCourse"],
