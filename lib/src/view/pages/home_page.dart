@@ -6,11 +6,11 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/models/db/settings/notification_settings.dart';
 import 'package:engelsburg_planer/src/models/state/app_state.dart';
 import 'package:engelsburg_planer/src/models/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/constants.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/utils/firebase/crashlytics.dart';
 import 'package:engelsburg_planer/src/view/routing/page.dart';
 import 'package:engelsburg_planer/src/view/pages/auth/auth_page.dart';
 import 'package:engelsburg_planer/src/view/routing/route_modifier.dart';
@@ -136,11 +136,11 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
     return RouteModifier(
       child: Consumer<AppConfigState>(
         builder: (context, config, _) {
+          Crashlytics.set("appConfiguration", config.config);
           List<Widget> builtPages = pages.map((page) {
             //Build the page and pass the stream as argument
             return page.build(context, widget.state, standalone: false);
           }).toList();
-          NotificationHelper.init();
 
           final appBar = AppBar(
             title: Text(context.l10n.appTitle),

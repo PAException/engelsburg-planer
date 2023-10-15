@@ -124,3 +124,4 @@ app.*.symbols
 
 # Custom
 *google-services.json
+**/*key.json

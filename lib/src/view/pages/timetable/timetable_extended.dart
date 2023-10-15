@@ -197,16 +197,16 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard> {
                               ),
                             ),
                             subtitle: Text(widget.date.formatEEEEddMMToNow(context)),
-                            onTap: _editing
-                                ? () async {
-                                    Document<Subject>? res =
-                                        await context.pushPage(const SelectSubjectPage());
-                                    if (res == null) return;
+                            onTap: () async {
+                              Document<Subject>? res = await context.pushPage(
+                                  const SelectSubjectPage()
+                              );
+                              if (res == null) return;
 
-                                    currentSubject = res;
-                                    setState(() {});
-                                  }
-                                : null,
+                              currentSubject = res;
+                              if (!_editing) savePossibleChanges();
+                              setState(() {});
+                            },
                           ),
                           ListTile(
                             leading: const Icon(Icons.access_time),
@@ -221,10 +221,6 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard> {
                               config.userType == UserType.teacher)
                             ListTile(
                               leading: const Icon(Icons.class_),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
                               title: _editing
                                   ? TextField(
                                     controller: _classNameController,
@@ -243,12 +239,8 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard> {
                                 alignment: Alignment.centerLeft,
                                 child: Icon(Icons.portrait),
                               ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
                               //TODO add teachers full name from API
-                              subtitle: !_editing ? Text("Herr Rosenbach") : null,
+                              //subtitle: !_editing ? Text("Herr Rosenbach") : null,
                               title: _editing
                                   ? TextField(
                                     controller: _teacherController,
@@ -266,6 +258,7 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard> {
                                   ? Tooltip(
                                     message: context.l10n.useTeacherAbbreviation,
                                     triggerMode: TooltipTriggerMode.tap,
+                                    margin: const EdgeInsets.all(12),
                                     child: const Icon(Icons.help_outline),
                                   )
                                   : null,

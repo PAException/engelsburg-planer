@@ -6,6 +6,7 @@ import 'package:engelsburg_planer/main.dart';
 import 'package:engelsburg_planer/src/models/state/theme_state.dart';
 import 'package:engelsburg_planer/src/utils/firebase/analytics.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/utils/firebase/crashlytics.dart';
 import 'package:engelsburg_planer/src/utils/util.dart';
 import 'package:engelsburg_planer/src/view/routing/route_generator.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
@@ -33,6 +34,7 @@ class EngelsburgPlaner extends StatelessWidget {
       builder: (context, theme, config, _) {
         var router = AppRouter.router(context);
 
+        Crashlytics.log("Start building app..");
         return MaterialApp.router(
           builder: NoOverScrollEffect.get,
           debugShowCheckedModeBanner: false,

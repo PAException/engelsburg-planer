@@ -13,14 +13,16 @@ class Analytics {
   static final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
 
   static final DatabaseAnalytics database = DatabaseAnalytics(_analytics);
-  static final IntroductionAnalytics introduction = IntroductionAnalytics(_analytics);
+  static final IntroductionAnalytics introduction =
+      IntroductionAnalytics(_analytics);
   static final UserAnalytics user = UserAnalytics(_analytics);
-  static final InteractionAnalytics interaction = InteractionAnalytics(_analytics);
+  static final InteractionAnalytics interaction =
+      InteractionAnalytics(_analytics);
   static final ApiAnalytics api = ApiAnalytics(_analytics);
 
   static void initialize() => _analytics.setDefaultEventParameters({
-      if (kDebugMode) "debug_mode": kDebugMode.toString(),
-    });
+        if (kDebugMode) "debug_mode": kDebugMode.toString(),
+      });
 
   /// Called when the app starts building
   static void logAppOpen() => _analytics.logAppOpen();
@@ -34,9 +36,9 @@ class ApiAnalytics {
   ApiAnalytics(this._analytics);
 
   void _request(String type) => _analytics.logEvent(
-      name: "api_request",
-      parameters: {"type": type},
-  );
+        name: "api_request",
+        parameters: {"api_request_type": type},
+      );
 
   void article() => _request("article");
 
@@ -70,26 +72,24 @@ class ArticleAnalysis {
 
   /// Called everytime an article is selected
   void select(Article article) => _analytics.logSelectContent(
-    contentType: "article",
-    itemId: article.articleId.toString(),
-  );
+        contentType: "article",
+        itemId: article.articleId.toString(),
+      );
 
   /// Called if an article was saved
   /// --> should use [DelayedExecution]
-  void save(Article article) => _analytics.logEvent(
-    name: "article_save",
-    parameters: {
-      "articleId": article.articleId,
-      "title": article.title,
-    }
-  );
+  void save(Article article) =>
+      _analytics.logEvent(name: "article_save", parameters: {
+        "article_id": article.articleId,
+        "article_title": article.title,
+      });
 
   /// Called if an article was successfully shared
   void share(Article article, String method) => _analytics.logShare(
-    contentType: "article",
-    itemId: article.articleId.toString(),
-    method: method,
-  );
+        contentType: "article",
+        itemId: article.articleId.toString(),
+        method: method,
+      );
 }
 
 class UserAnalytics {
@@ -104,14 +104,14 @@ class UserAnalytics {
   }
 
   void _type(UserType type) => _analytics.setUserProperty(
-    name: "user_type",
-    value: type.name.toLowerCase(),
-  );
+        name: "user_type",
+        value: type.name.toLowerCase(),
+      );
 
   void _extra(String extra) => _analytics.setUserProperty(
-    name: "user_extra",
-    value: extra.toLowerCase(),
-  );
+        name: "user_extra",
+        value: extra.toLowerCase(),
+      );
 
   /// Called if the user was logged in
   void login([String? method]) => _analytics.logLogin(loginMethod: method);
@@ -139,11 +139,12 @@ class DatabaseAnalytics {
   DatabaseAnalytics(this._analytics);
 
   void _log(String name, Storage storage) {
-    String storageName = storage is FirestoreStorageImpl ? "firestore" : "local";
+    String storageName =
+        storage is FirestoreStorageImpl ? "firestore" : "local";
 
     _analytics.logEvent(
       name: name,
-      parameters: {"storage": storageName},
+      parameters: {"database_storage": storageName},
     );
   }
 

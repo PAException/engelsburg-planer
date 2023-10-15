@@ -30,8 +30,7 @@ abstract class Reference<T> {
   String toString() => 'Reference{path: $path}';
 
   @override
-  bool operator ==(Object other) =>
-      other is Reference && id == other.id;
+  bool operator ==(Object other) => other is Reference && id == other.id;
 
   @override
   int get hashCode => path.hashCode;
@@ -169,12 +168,17 @@ abstract class Storage {
   final Map<String, DocumentData> _data = {};
 
   /// Caches snapshot streams of documents (reference, streams)
-  final Map<String, List<StreamController<dynamic>>> _activeDocumentStreams = {};
-  final Map<String, StreamSubscription<Map<String, dynamic>?>> _documentStreams = {};
+  final Map<String, List<StreamController<dynamic>>> _activeDocumentStreams =
+      {};
+  final Map<String, StreamSubscription<Map<String, dynamic>?>>
+      _documentStreams = {};
 
   /// Caches snapshot streams of collections (reference, stream)
-  final Map<String, List<StreamController<dynamic>>> _activeCollectionStreams = {};
-  final Map<String, StreamSubscription<Map<DocumentReference, Map<String, dynamic>>>> _collectionStreams = {};
+  final Map<String, List<StreamController<dynamic>>> _activeCollectionStreams =
+      {};
+  final Map<String,
+          StreamSubscription<Map<DocumentReference, Map<String, dynamic>>>>
+      _collectionStreams = {};
 
   /// Caches timers for delayed document updates (reference, timer)Map<Stream, List<StreamController<dynamic>>>
   final Map<String, Timer> _delayedDocumentUpdates = {};
@@ -196,7 +200,8 @@ abstract class Storage {
 
   /// Creates a new document within a collection.
   @nonVirtual
-  Future<Document<T>?> addDocument<T>(CollectionReference<T> collection, dynamic data) {
+  Future<Document<T>?> addDocument<T>(
+      CollectionReference<T> collection, dynamic data) {
     var id = StringUtils.randomAlphaNumeric(20);
     var createDocRef = collection.doc(id);
 
@@ -319,9 +324,10 @@ abstract class Storage {
 
   /// Get all documents of a collection.
   @nonVirtual
-  Future<List<Document<T>>> getCollection<T>(CollectionReference<T> collection, {bool updateCache = true}) async {
+  Future<List<Document<T>>> getCollection<T>(CollectionReference<T> collection,
+      {bool updateCache = true}) async {
     return ((await _getCollection(collection))
-      ..removeWhere((key, value) => value.isEmpty))
+          ..removeWhere((key, value) => value.isEmpty))
         .mapToList((ref, value) {
       if (updateCache) _data[ref.path] = value;
 
@@ -432,8 +438,6 @@ abstract class Storage {
     return newController.stream;
   }
 
-
-
   /// Set the data of a document.
   /// Creates new document if not existing.
   Future<bool> _setDocument(DocumentReference<dynamic> doc, DocumentData data);
@@ -451,7 +455,8 @@ abstract class Storage {
   Stream<DocumentData?> _documentSnapshots(DocumentReference<dynamic> doc);
 
   /// Return all documents of a collection.
-  Future<CollectionData<T>> _getCollection<T>(CollectionReference<T> collection);
+  Future<CollectionData<T>> _getCollection<T>(
+      CollectionReference<T> collection);
 
   /// Return the stream of the snapshots of the collection.
   /// Stream must dispatch event if...
@@ -506,10 +511,10 @@ class FirestoreStorageImpl extends Storage {
   @override
   Future<bool> _deleteDocument(DocumentReference<dynamic> doc) =>
       evaluate(() => instance.doc(addPrefix(doc.path)).delete().then((value) {
-        Analytics.database.delete(this);
+            Analytics.database.delete(this);
 
-        return value;
-      }));
+            return value;
+          }));
 
   @override
   Stream<DocumentData?> _documentSnapshots(DocumentReference<dynamic> doc) =>
@@ -520,11 +525,13 @@ class FirestoreStorageImpl extends Storage {
       });
 
   @override
-  Future<CollectionData<T>> _getCollection<T>(CollectionReference<T> collection) async {
+  Future<CollectionData<T>> _getCollection<T>(
+      CollectionReference<T> collection) async {
     var snapshot = await instance.collection(addPrefix(collection.path)).get();
 
     return snapshot.docs.toMap(
-      key: (doc) => DocumentReference<T>(addPrefix(doc.reference.path), collection.parser),
+      key: (doc) => DocumentReference<T>(
+          addPrefix(doc.reference.path), collection.parser),
       value: (doc) {
         Analytics.database.read(this);
 
@@ -539,7 +546,8 @@ class FirestoreStorageImpl extends Storage {
 
     return snapshots.map((snapshot) {
       return snapshot.docs.toMap(
-        key: (doc) => DocumentReference(addPrefix(doc.reference.path), collection.parser),
+        key: (doc) =>
+            DocumentReference(addPrefix(doc.reference.path), collection.parser),
         value: (doc) {
           Analytics.database.read(this);
 
@@ -565,7 +573,8 @@ class LocalStorageImpl extends Storage {
       });
 
   @override
-  Future<CollectionData<T>> _getCollection<T>(CollectionReference<T> collection) async {
+  Future<CollectionData<T>> _getCollection<T>(
+      CollectionReference<T> collection) async {
     var docs = await instance.getCollection(addPrefix(collection.path));
 
     return docs.toMap(
@@ -591,7 +600,8 @@ class LocalStorageImpl extends Storage {
     DocumentReference<dynamic> doc,
     Map<String, dynamic> data,
   ) =>
-      evaluate(() => instance.setDocument(addPrefix(doc.path), data)).then((value) {
+      evaluate(() => instance.setDocument(addPrefix(doc.path), data))
+          .then((value) {
         Analytics.database.write(this);
 
         return value;
@@ -599,7 +609,9 @@ class LocalStorageImpl extends Storage {
 
   @override
   Stream<CollectionData<T>> _collectionSnapshots<T>(Collection<T> collection) {
-    return instance.collectionSnapshots(addPrefix(collection.path)).asyncMap((docs) {
+    return instance
+        .collectionSnapshots(addPrefix(collection.path))
+        .asyncMap((docs) {
       return docs.toMap(
         key: (doc) => DocumentReference(addPrefix(doc.path), collection.parser),
         value: (doc) {
@@ -632,11 +644,19 @@ Future<bool> evaluate(FutureOr Function() toEvaluate) async {
 }
 
 class CollectionStreamBuilder<T> extends StatelessWidget {
-  const CollectionStreamBuilder({super.key, required this.collection, required this.itemBuilder, this.separatorBuilder, this.loading, this.empty,});
+  const CollectionStreamBuilder({
+    super.key,
+    required this.collection,
+    required this.itemBuilder,
+    this.separatorBuilder,
+    this.loading,
+    this.empty,
+  });
 
   final Collection<T> collection;
   final Widget Function(BuildContext context, Document<T> doc) itemBuilder;
-  final Widget Function(BuildContext context, Document<T> doc)? separatorBuilder;
+  final Widget Function(BuildContext context, Document<T> doc)?
+      separatorBuilder;
   final Widget? loading;
   final Widget? empty;
 
@@ -656,9 +676,11 @@ class CollectionStreamBuilder<T> extends StatelessWidget {
 
         var data = snapshot.data!;
         return ListView.separated(
-            itemBuilder: (context, index) => itemBuilder.call(context, data[index]),
-            separatorBuilder: (context, index) => separatorBuilder?.call(context, data[index]) ?? Container(),
-            itemCount: data.length,
+          itemBuilder: (context, index) =>
+              itemBuilder.call(context, data[index]),
+          separatorBuilder: (context, index) =>
+              separatorBuilder?.call(context, data[index]) ?? Container(),
+          itemCount: data.length,
         );
       },
     );
@@ -675,15 +697,16 @@ class StreamConsumer<T> extends StatelessWidget {
 
   final Document<T> doc;
   final Widget Function(BuildContext context, Document<T> doc, T t) itemBuilder;
-  final Widget? Function(BuildContext context, Document<
-      T> doc, Object? error)? errorBuilder;
+  final Widget? Function(BuildContext context, Document<T> doc, Object? error)?
+      errorBuilder;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<T?>(
       stream: doc.stream(),
       builder: (context, snapshot) {
-        if (snapshot.hasData) return itemBuilder.call(context, doc, snapshot.data as T);
+        if (snapshot.hasData)
+          return itemBuilder.call(context, doc, snapshot.data as T);
 
         return errorBuilder?.call(context, doc, snapshot.error) ?? Container();
       },
@@ -700,15 +723,19 @@ class NullableStreamConsumer<T> extends StatelessWidget {
   }) : super(key: key);
 
   final Document<T>? doc;
-  final Widget Function(BuildContext context, Document<T>? doc, T? t) itemBuilder;
-  final Widget? Function(BuildContext context, Document<T>? doc, Object? error)? errorBuilder;
+  final Widget Function(BuildContext context, Document<T>? doc, T? t)
+      itemBuilder;
+  final Widget? Function(BuildContext context, Document<T>? doc, Object? error)?
+      errorBuilder;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<T?>(
       stream: doc?.stream(),
       builder: (context, snapshot) {
-        if (!snapshot.hasError) return itemBuilder.call(context, doc, snapshot.data);
+        if (!snapshot.hasError) {
+          return itemBuilder.call(context, doc, snapshot.data);
+        }
 
         return errorBuilder?.call(context, doc, snapshot.error) ?? Container();
       },
@@ -728,7 +755,8 @@ class StreamSelector<T, V> extends StatelessWidget {
   final Document<T> doc;
   final Widget Function(BuildContext context, Document doc, T t, V v) builder;
   final V Function(T t) selector;
-  final Widget? Function(BuildContext context, Document doc, Object? error)? errorBuilder;
+  final Widget? Function(BuildContext context, Document doc, Object? error)?
+      errorBuilder;
 
   @override
   Widget build(BuildContext context) {

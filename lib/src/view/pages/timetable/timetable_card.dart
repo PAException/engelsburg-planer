@@ -22,15 +22,15 @@ class TimetableDate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 4.0),
-        child: Center(
-          child: Text(
-            editing ? date.formatEEEE(context) : date.formatEEEEddMMToNow(context),
-            textScaleFactor: 2,
-            textAlign: TextAlign.center,
-          ),
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Center(
+        child: Text(
+          editing ? date.formatEEEE(context) : date.formatEEEEddMMToNow(context),
+          textScaleFactor: 2,
+          textAlign: TextAlign.center,
         ),
-      );
+      ),
+    );
 }
 
 /// Timetable card to display a break
@@ -155,9 +155,10 @@ class TimetableCard extends StatelessWidget {
                         child: Text(entry.lesson.toString(), textScaleFactor: 1.8),
                       ),
                       title: subject != null
-                          ? Text(subject.parsedName(context),
-                              textScaleFactor: 1.25)
-                          : null,
+                          ? Text(
+                            subject.parsedName(context),
+                            textScaleFactor: 1.25
+                          ) : null,
                       subtitle: TimetableSubtitle(
                         entry: entry,
                         showTeacher: context.read<AppConfigState>().userType == UserType.student,

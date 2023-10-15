@@ -12,12 +12,12 @@ class Crashlytics {
   static void initialize() => _crashlytics.sendUnsentReports();
 
   /// Log an error message to extend the crash report
-  void log(String msg) => _crashlytics.log(msg);
+  static void log(String msg) => _crashlytics.log(msg);
 
   /// Set a custom key-value-pair to extend the logs and errors.
   /// Value will tried to be encoded to json,
   /// otherwise the toString() value is used.
-  void set(String key, dynamic value) {
+  static void set(String key, dynamic value) {
     String? data;
     try {
       data = jsonEncode(value);

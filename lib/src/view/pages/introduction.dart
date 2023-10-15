@@ -3,11 +3,13 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
+import 'package:engelsburg_planer/src/models/db/settings/notification_settings.dart';
 import 'package:engelsburg_planer/src/models/state/app_state.dart';
 import 'package:engelsburg_planer/src/utils/firebase/analytics.dart';
 import 'package:engelsburg_planer/src/utils/constants.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/view/routing/route_generator.dart';
+import 'package:engelsburg_planer/src/utils/firebase/crashlytics.dart';
+import 'package:engelsburg_planer/src/utils/util.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/switch_expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -119,6 +121,7 @@ class _IntroductionPageState extends State<IntroductionPage> {
   }
 
   void onDone(AppConfigState config) async {
+    Crashlytics.log("Configuring app for the first time...");
     if (selectedUserType == null) return;
     if (key.currentState!.validate()) {
       String? extra;
@@ -133,6 +136,8 @@ class _IntroductionPageState extends State<IntroductionPage> {
         extra: extra,
       );
       GoRouter router = GoRouter.of(context);
+      NotificationHelper.init().then((value) =>
+          globalContext().read<NotificationSettings>().setEnabled(true));
       await config.configure(appConfiguration);
 
       Analytics.introduction.complete();

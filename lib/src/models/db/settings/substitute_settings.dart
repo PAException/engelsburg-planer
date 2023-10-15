@@ -62,12 +62,15 @@ class SubstituteSettings {
   /// Get priority topics to send notification settings to API if enabled.
   Future<List<String>> priorityTopics() async {
     var priorityTopics = [
-      if (byClasses) ...classes.map((className) => "substitute.class.$className"),
-      if (byTeacher) ...teacher.map((teacher) => "substitute.teacher.$teacher"),
+      if (byClasses)
+        ...classes.map((className) => "substitute.class.$className"),
+      if (byTeacher)
+        ...teacher.map((teacher) => "substitute.teacher.$teacher"),
     ];
 
     if (byTimetable) {
-      var entries = await Timetable.entries().defaultStorage(globalContext()).documents();
+      var entries =
+          await Timetable.entries().defaultStorage(globalContext()).documents();
       var timetableTopics = entries.map((entry) {
         var day = entry.data!.day;
         var lesson = entry.data!.lesson;
@@ -92,7 +95,8 @@ class SubstituteSettings {
   }
 
   static DocumentReference<SubstituteSettings> ref() =>
-      const DocumentReference<SubstituteSettings>("substitute_settings", SubstituteSettings.fromJson);
+      const DocumentReference<SubstituteSettings>(
+          "substitute_settings", SubstituteSettings.fromJson);
 
   factory SubstituteSettings.fromJson(Map<String, dynamic> json) => json.isEmpty
       ? SubstituteSettings.empty()

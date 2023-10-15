@@ -4,6 +4,7 @@
 
 import 'package:engelsburg_planer/src/models/state/app_state.dart';
 import 'package:engelsburg_planer/src/utils/firebase/analytics.dart';
+import 'package:engelsburg_planer/src/utils/firebase/crashlytics.dart';
 import 'package:engelsburg_planer/src/utils/util.dart';
 import 'package:engelsburg_planer/src/view/pages/home_page.dart';
 import 'package:engelsburg_planer/src/view/routing/page.dart';
@@ -16,6 +17,7 @@ class AppRouter {
   static late ValueKey<String> currentHomePageKey;
 
   static GoRouter router(BuildContext context) {
+    Crashlytics.log("Initializing router");
     Iterable<String> routes = Pages.navBar.map((e) => e.path.substring(1));
     Iterable<GoRoute> allRoutes = Pages.all
       ..removeWhere((e) => routes.contains(e.path.substring(1)));

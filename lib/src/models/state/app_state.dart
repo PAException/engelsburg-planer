@@ -22,6 +22,8 @@ class AppConfigState extends NullableStorableChangeNotifier<AppConfiguration> {
 
   bool get isLowerGrade => userType == UserType.student && (extra?[0].isNumeric ?? false);
 
+  AppConfiguration? get config => current;
+
   Future<void> configure(AppConfiguration config) async {
     /// Extra has to be set of appType is student or teacher
     assert(config.userType == UserType.other || config.extra != null);

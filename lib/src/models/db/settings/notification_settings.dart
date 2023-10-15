@@ -59,6 +59,8 @@ extension NotificationHelper on NotificationSettings {
   static bool get isAuthorized => _authorizationStatus == AuthorizationStatus.authorized;
 
   static Future<void> init() async {
+    await fcm.setAutoInitEnabled(true);
+
     //Get notification settings from firebase,
     // ask for permission if state is not determined yet
     var settings = await fcm.getNotificationSettings();

@@ -25,7 +25,10 @@ class FirebaseConfig {
   /// Initializes every used firebase service
   static Future<void> initialize() async {
     //Init the core firebaseApp
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+
+    Crashlytics.log("Initializing firebase services");
 
     //Init sub services
     if (!kDebugMode) initializeCrashlytics();
@@ -39,7 +42,9 @@ class FirebaseConfig {
   /// Initialize FCM - initialNotification, tokenRefresh action
   static void initializeFirebaseMessaging() async {
     //Check if app was opened via a notification
-    FirebaseMessaging.instance.getInitialMessage().then(handleOpenedRemoteMessage);
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then(handleOpenedRemoteMessage);
 
     FirebaseMessaging.onMessageOpenedApp.listen(handleOpenedRemoteMessage);
 
@@ -50,13 +55,14 @@ class FirebaseConfig {
     );
 
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'high_importance_channel', // id
-      'High Importance Notifications', // title
-      description: 'This channel is used for important notifications.', // description
+      'high_importance_channel',
+      'High Importance Notifications',
+      description: 'This channel is used for important notifications.',
       importance: Importance.max,
     );
 
-    final FlutterLocalNotificationsPlugin localNotifications = FlutterLocalNotificationsPlugin();
+    final FlutterLocalNotificationsPlugin localNotifications =
+        FlutterLocalNotificationsPlugin();
     localNotifications.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings("mipmap/ic_launcher"),
@@ -67,10 +73,12 @@ class FirebaseConfig {
     );
 
     await localNotifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      Crashlytics.log("Received notification while the app was opened");
       //On IOS the notification is also displayed when the app is opened
       if (Platform.isIOS) return;
 
@@ -99,7 +107,9 @@ class FirebaseConfig {
     FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
       updateNotificationSettings(
         token,
-        await (await SubstituteSettings.ref().storage(Storage.offline).load()).priorityTopics(),
+        await (
+            await SubstituteSettings.ref().storage(Storage.offline).load()
+        ).priorityTopics(),
       ).build().api(ignore);
     });
   }
@@ -109,9 +119,13 @@ class FirebaseConfig {
 
   static void handleOpenedRemoteMessage(RemoteMessage? message) {
     if (message == null) return;
+    Crashlytics.log("Handling user click on notification");
+    Crashlytics.set("notification_data", message.data);
     if (message.data.isNotEmpty) {
       String? link = message.data["link"];
-      if (link != null && link.isNotEmpty) globalContext().go(link, extra: message.data);
+      if (link != null && link.isNotEmpty) {
+        globalContext().go(link, extra: message.data);
+      }
     }
   }
 
@@ -128,23 +142,25 @@ class FirebaseConfig {
   }
 
   /// Initialize the remote config service of firebase to use remote based configuration of the app.
-  static void initializeRemoteConfig() {
+  static Future<void> initializeRemoteConfig() async {
     //First activate, then fetch the remote configuration to avoid loading times for users
     final remoteConfig = FirebaseRemoteConfig.instance;
 
-    //Set defaults that aren't fetched yet
-    remoteConfig.setDefaults(const {
-      "enable_firebase": false,
-      "app_store_url": "",
-      "play_store_url": "",
-      "support_email": "engelsburg.planer@gmail.com",
-    });
+    if (remoteConfig.lastFetchStatus == RemoteConfigFetchStatus.noFetchYet) {
+      //Set defaults that aren't fetched yet
+      remoteConfig.setDefaults(const {
+        "enable_firebase": false,
+        "app_store_url": "",
+        "play_store_url": "",
+        "support_email": "engelsburg.planer@gmail.com",
+      });
+    }
 
     //Activate the config
-    remoteConfig.activate();
+    await remoteConfig.activate();
 
     //Set remote config fetch settings and perform fetch
-    remoteConfig.setConfigSettings(RemoteConfigSettings(
+    await remoteConfig.setConfigSettings(RemoteConfigSettings(
       fetchTimeout: const Duration(minutes: 1),
       minimumFetchInterval: const Duration(hours: 1),
     ));
