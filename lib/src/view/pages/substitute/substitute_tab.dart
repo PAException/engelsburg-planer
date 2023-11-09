@@ -4,8 +4,6 @@
 
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
 
-
-
 import 'package:engelsburg_planer/src/backend/api/model/substitutes.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/model/settings/notification_settings.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/model/settings/substitute_settings.dart';
@@ -25,6 +23,38 @@ class SubstituteTab extends StatefulWidget {
 }
 
 class _SubstituteTabState extends State<SubstituteTab> {
+  /// Merges substitutes that only differ by lesson and the lessons are
+  /// consecutively. Returns substitutes referring to an int that represents
+  /// the last lesson, if the substitutes have been merged.
+  Map<Substitute, int?> mergeSubstitutes(List<Substitute> substitutes) {
+    Map<Substitute, int?> merged = {};
+    List<Substitute> ignore = [];
+    for (Substitute substitute in substitutes) {
+      if (ignore.contains(substitute)) continue;
+
+      int? lesson;
+      Substitute latest = substitute;
+      while (lesson == null) {
+        var next = substitutes.firstNullableWhere((s) => latest.isPreceding(s));
+
+        if (next != null) {
+          latest = next;
+          ignore.add(next);
+        } else {
+          lesson = latest.lesson!;
+        }
+      }
+
+      merged[substitute] = lesson;
+    }
+
+    return merged.map((key, value) {
+      if (key.lesson == value) value = null;
+
+      return MapEntry(key, value);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamConsumer<SubstituteSettings>(
@@ -35,12 +65,18 @@ class _SubstituteTabState extends State<SubstituteTab> {
           child: ApiFutureBuilder<Substitutes>(
             request: getSubstitutes(
               substituteSettings.password!,
-              classes: substituteSettings.byClasses ? substituteSettings.classes : [],
-              teacher: substituteSettings.byTeacher ? substituteSettings.teacher : [],
+              classes: substituteSettings.byClasses
+                  ? substituteSettings.classes
+                  : [],
+              teacher: substituteSettings.byTeacher
+                  ? substituteSettings.teacher
+                  : [],
             ).build(),
             parser: (json) => Substitutes.fromJson(json),
             dataBuilder: (substitutesResponse, refresh, context) {
-              var substitutes = substitutesResponse.substitutes;
+              var merged =
+                  mergeSubstitutes(substitutesResponse.substitutes..sort());
+              var substitutes = merged.keys.toList();
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -52,7 +88,8 @@ class _SubstituteTabState extends State<SubstituteTab> {
                       );
                     }
 
-                    bool addText = index == 0 || substitutes[index - 1].date != substitutes[index].date;
+                    bool addText = index == 0 ||
+                        substitutes[index - 1].date != substitutes[index].date;
 
                     return WrapIf(
                       condition: addText,
@@ -63,17 +100,23 @@ class _SubstituteTabState extends State<SubstituteTab> {
                             child: Padding(
                               padding: const EdgeInsets.all(12),
                               child: Text(
-                                substitutes[index].date!.formatEEEEddMM(context),
+                                substitutes[index]
+                                    .date!
+                                    .formatEEEEddMM(context),
                                 textScaleFactor: 2,
                                 textAlign: TextAlign.start,
-                                style: const TextStyle(fontWeight: FontWeight.w500),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500),
                               ),
                             ),
                           ),
                           child,
                         ],
                       ),
-                      child: SubstituteCard(substitute: substitutes[index]),
+                      child: SubstituteCard(
+                        substitute: substitutes[index],
+                        endLesson: merged[substitutes[index]],
+                      ),
                     );
                   },
                   itemCount: substitutes.length + 1,
@@ -85,7 +128,10 @@ class _SubstituteTabState extends State<SubstituteTab> {
             errorBuilder: (error, context) {
               if (error.isForbidden) {
                 substituteSettings.password = null;
-                NotificationSettings.ref().defaultStorage(context).load().then((value) => value.updateSubstituteSettings());
+                NotificationSettings.ref()
+                    .defaultStorage(context)
+                    .load()
+                    .then((value) => value.updateSubstituteSettings());
                 doc.setDelayed(substituteSettings);
               }
 
@@ -118,10 +164,8 @@ class SubstituteState extends StatelessWidget {
 
     return Center(
         child: Text(
-          "${context.l10n.stateOf} ${date.format(context, "dd.MM., HH:mm")}",
-          textScaleFactor: 1.2,
-        )
-    );
+      "${context.l10n.stateOf} ${date.format(context, "dd.MM., HH:mm")}",
+      textScaleFactor: 1.2,
+    ));
   }
 }
-
