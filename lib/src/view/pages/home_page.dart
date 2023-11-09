@@ -58,6 +58,8 @@ void sendUpdate(String identifier, Map<String, dynamic> data) {
 }
 
 class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+  final pageViewKey = GlobalKey<State<PageView>>();
+
   late final PageController _pageController;
   int _currentPage = 0;
   Future? _animatingPage;
@@ -99,7 +101,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
 
   void updateIndex(int index) {
     //If the current icon is tapped don't switch and send update to screen
-    setState(() => extended = false);
     if (index == _currentPage) {
       sendUpdate(widget.state.uri.toString(), {"resetView": true});
 
@@ -151,6 +152,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
 
           final content = NetworkStatusBar(
             child: PageView(
+              key: pageViewKey,
               allowImplicitScrolling: false,
               controller: _pageController,
               onPageChanged: (index) {
@@ -185,7 +187,11 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
                                     : NavigationRailLabelType.selected,
                                 destinations: Pages.navRailItems(context),
                                 extended: extended,
-                                onDestinationSelected: updateIndex,
+                                onDestinationSelected: (index) {
+                                  setState(() => extended = false);
+
+                                  updateIndex(index);
+                                },
                                 selectedIndex: _currentPage,
                                 trailing: IconButton(
                                   icon: const Padding(
