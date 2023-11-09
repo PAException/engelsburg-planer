@@ -8,7 +8,7 @@ class ColorGrid extends StatelessWidget {
   final void Function(Color color) onColorSelected;
   final Color? currentColor;
 
-  const ColorGrid({Key? key, required this.onColorSelected, this.currentColor}) : super(key: key);
+  const ColorGrid({super.key, required this.onColorSelected, this.currentColor});
 
   @override
   Widget build(BuildContext context) {

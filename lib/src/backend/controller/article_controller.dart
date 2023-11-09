@@ -4,11 +4,11 @@
 
 import 'package:engelsburg_planer/src/backend/api/api_error.dart';
 import 'package:engelsburg_planer/src/backend/api/api_response.dart';
-import 'package:engelsburg_planer/src/backend/db/db_service.dart';
-import 'package:engelsburg_planer/src/models/api/article.dart';
-import 'package:engelsburg_planer/src/services/cache_service.dart';
+import 'package:engelsburg_planer/src/backend/api/model/article.dart';
+import 'package:engelsburg_planer/src/backend/database/cache/app_persistent_data.dart';
+import 'package:engelsburg_planer/src/backend/database/sql/sql_database.dart';
 import 'package:engelsburg_planer/src/services/data_service.dart';
-import 'package:engelsburg_planer/src/services/synchronization_service.dart';
+import 'package:engelsburg_planer/src/services/promise.dart';
 
 class ArticleService extends DataService {
   final Set<int> _saved = {};
@@ -16,10 +16,8 @@ class ArticleService extends DataService {
   /// Set up initial saved article data
   @override
   Future<void> setup() async {
-    //TODO convert to document database
-
     //If user is not logged in get saved articles from cache
-    Iterable<int>? cached = CacheService.getNullableJson<List>("article_saved")?.cast<int>();
+    var cached = AppPersistentData.get<List<int>>("article_saved");
     if (cached != null) _saved.addAll(cached);
   }
 
@@ -30,7 +28,7 @@ class ArticleService extends DataService {
             return const ApiResponse.error(ApiError(404, "NOT_FOUND", "articles"));
           }
 
-          final articles = await DatabaseService.getBatched<Article>(
+          final articles = await SqlDatabase.getBatched<Article>(
             orderBy: "date DESC",
             where: "articleId=?",
             whereArgs: _saved.toList().map((e) => [e]).toList(),
@@ -49,15 +47,14 @@ class ArticleService extends DataService {
     //If the user is not logged in update in memory and write in memory to cache
     _setSaved(article, saved);
 
-    List<int> cached =
-        CacheService.getNullableJson<List>("article_saved")?.cast<int>().toList() ?? [];
+    List<int> cached = AppPersistentData.get<List<int>>("article_saved") ?? [];
     if (saved && !cached.contains(article.articleId)) {
       cached.add(article.articleId);
     } else if (cached.contains(article.articleId)) {
       cached.remove(article.articleId);
     }
 
-    await CacheService.setJson("article_saved", cached);
+    AppPersistentData.set("article_saved", cached);
   }
 
   /// Add or remove to/from saved articles

@@ -5,14 +5,15 @@
 import 'package:engelsburg_planer/src/backend/api/api_response.dart';
 import 'package:engelsburg_planer/src/backend/api/request.dart';
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
-import 'package:engelsburg_planer/src/models/state/network_state.dart';
-import 'package:engelsburg_planer/src/services/cache_service.dart';
-import 'package:engelsburg_planer/src/utils/type_definitions.dart';
-import 'package:engelsburg_planer/src/utils/util.dart';
+import 'package:engelsburg_planer/src/backend/database/state/network_state.dart';
+import 'package:engelsburg_planer/src/utils/global_context.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 const Duration kTimeout = Duration(seconds: 5);
+
+typedef Parser<T> = T Function(dynamic json);
 
 /// Service to execute predefined api or plain requests
 class RequestService {
@@ -32,6 +33,7 @@ class RequestService {
   ///
   /// Will return empty body and status 0 after defined (default 5) timeout
   static Future<http.Response> execute(Request request, {Duration timeout = kTimeout}) async {
+    var stopwatch = Stopwatch()..start();
     //Set network status loading
     globalContext().read<NetworkState>().update(NetworkStatus.loading);
 
@@ -40,20 +42,35 @@ class RequestService {
     //Set authorization header if request is an authenticated one
 
     //Append Hash-header if needed (modified check)
-    request = CacheService.appendModifiedCheck(request);
+    request = appendModifiedCheck(request);
+    var prepareTime = stopwatch.elapsedMilliseconds;
 
     //Execute request
     return _request(request).timeout(timeout, onTimeout: () {
-      //On timeout set network status as offline and return response with status = 999
-      globalContext().read<NetworkState>().update(NetworkStatus.offline);
-      //TODO? create retry service? (callback?), exponential backoff?
+      //On timeout return response with status = 999
       return http.Response("", 999);
+
+      //TODO? create retry service? (callback?), exponential backoff?
     }).then((response) {
-      //If request wasn't timed out then set network status as online
-      if (response.statusCode != 999) {
+      stopwatch.stop();
+
+      RequestAnalysis analysis;
+      if (response.statusCode == 999) {
+        globalContext().read<NetworkState>().update(NetworkStatus.offline);
+
+        analysis = RequestAnalysis.timedOut(prepareTime);
+      } else {
+        //If request wasn't timed out then set network status as online
         globalContext().read<NetworkState>().update(NetworkStatus.online);
-        request.analytics?.call();
+
+        analysis = RequestAnalysis(
+          prepareTime: prepareTime,
+          responseTime: stopwatch.elapsedMilliseconds - prepareTime,
+          responseSize: response.contentLength,
+          timedOut: false,
+        );
       }
+      request.analytics?.call(analysis);
 
       return response;
     });
@@ -82,4 +99,33 @@ class RequestService {
         return await http.delete(uri, headers: headers, body: body); //DELETE
     }
   }
+
+  static Request appendModifiedCheck(Request request) {
+    return request;
+
+    /* //TODO
+    //Return instance if no cacheId is specified
+    if (request.cacheId == null) return request;
+
+    //Try get hash, if null return non modified instance
+    var hash = getNullable<String>("${request.cacheId!}_hash");
+    if (hash == null) return request;
+
+    //If hash is present return request with additional Hash-header
+    request.headers["Hash"] = hash;
+    return request;
+    */
+  }
+}
+
+@immutable
+class RequestAnalysis {
+  final int prepareTime;
+  final int? responseTime;
+  final int? responseSize;
+  final bool timedOut;
+
+  const RequestAnalysis({required this.prepareTime, required this.responseTime, required this.responseSize, required this.timedOut,}) : assert(timedOut || responseTime != null);
+
+  const RequestAnalysis.timedOut(this.prepareTime) : timedOut = true, responseTime = null, responseSize = null;
 }

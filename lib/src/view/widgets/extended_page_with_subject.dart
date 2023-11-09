@@ -5,17 +5,18 @@
 import 'dart:async';
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/models/db/subjects.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
-import 'package:engelsburg_planer/src/models/storage_adapter.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/subjects.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/base/document.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/settings/subject/subject_select_page.dart';
+import 'package:engelsburg_planer/src/view/widgets/special/storage/stream_consumer.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 
 class ExtendedPageWithSubject extends StatefulWidget {
   const ExtendedPageWithSubject({
-    Key? key,
+    super.key,
     required this.onEdit,
     required this.children,
     this.onDelete,
@@ -23,7 +24,7 @@ class ExtendedPageWithSubject extends StatefulWidget {
     this.subject,
     this.heroTag,
     this.subtitle,
-  }) : super(key: key);
+  });
 
   final Document<Subject>? subject;
   final String? heroTag;

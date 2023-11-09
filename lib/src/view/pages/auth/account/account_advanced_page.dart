@@ -5,11 +5,11 @@
 import 'dart:convert';
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/models/db/grades.dart';
-import 'package:engelsburg_planer/src/models/db/subjects.dart';
-import 'package:engelsburg_planer/src/models/db/tasks.dart';
-import 'package:engelsburg_planer/src/models/db/timetable.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/grades.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/subjects.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/tasks.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/timetable.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/auth/auth_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,7 +19,7 @@ import 'package:flutter/services.dart';
 /// Page to display advanced account actions like requesting all
 /// saved data as well as deleting the account of the user permanently.
 class AccountAdvancedPage extends StatelessWidget {
-  const AccountAdvancedPage({Key? key}) : super(key: key);
+  const AccountAdvancedPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +71,7 @@ class AccountAdvancedPage extends StatelessWidget {
 
 /// Confirmation dialog to confirm the deletion of a user's account
 class AccountDeleteConfirmationDialog extends StatelessWidget {
-  const AccountDeleteConfirmationDialog({Key? key}) : super(key: key);
+  const AccountDeleteConfirmationDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +100,7 @@ class AccountDeleteConfirmationDialog extends StatelessWidget {
 
 /// Page to display all account data of a user
 class AccountData extends StatelessWidget {
-  const AccountData({Key? key}) : super(key: key);
+  const AccountData({super.key});
 
   static const encoder = JsonEncoder.withIndent('  ');
 

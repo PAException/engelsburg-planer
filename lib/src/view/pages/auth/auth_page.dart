@@ -6,7 +6,7 @@ import 'dart:async';
 
 import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/utils/util.dart';
+import 'package:engelsburg_planer/src/utils/global_context.dart';
 import 'package:engelsburg_planer/src/view/pages/auth/account/account_security_dialogs.dart';
 import 'package:engelsburg_planer/src/view/widgets/animated_app_name.dart';
 import 'package:engelsburg_planer/src/view/widgets/special/oauth_button.dart';
@@ -58,7 +58,7 @@ void defaultOnSuccessCallback() {
 }
 
 class SignInPage extends CompactStatelessWidget {
-  const SignInPage({Key? key}) : super(key: key);
+  const SignInPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +133,7 @@ class AuthenticationForm extends StatelessWidget {
   final _passwordTextController = TextEditingController();
 
   AuthenticationForm({
-    Key? key,
+    super.key,
     this.showOAuth = true,
     this.showResetPassword = true,
     this.validatePassword = true,
@@ -141,7 +141,7 @@ class AuthenticationForm extends StatelessWidget {
     this.email,
     this.action = signInAction,
     this.onSuccess = defaultOnSuccessCallback,
-  }) : super(key: key) {
+  }) {
     _emailTextController = TextEditingController(text: email);
   }
 

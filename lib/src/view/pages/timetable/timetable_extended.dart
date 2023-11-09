@@ -3,31 +3,31 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/models/api/substitutes.dart';
-import 'package:engelsburg_planer/src/models/db/settings/notification_settings.dart';
-import 'package:engelsburg_planer/src/models/db/settings/substitute_settings.dart';
-import 'package:engelsburg_planer/src/models/db/subjects.dart';
-import 'package:engelsburg_planer/src/models/db/timetable.dart';
-import 'package:engelsburg_planer/src/models/state/app_state.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
-import 'package:engelsburg_planer/src/models/storage_adapter.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/timetable.dart';
+import 'package:engelsburg_planer/src/backend/database/state/app_state.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/base/document.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/utils/util.dart';
 import 'package:engelsburg_planer/src/view/pages/settings/subject/subject_select_page.dart';
-import 'package:engelsburg_planer/src/view/widgets/teacher_list_tile.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/subjects.dart';
+import 'package:engelsburg_planer/src/backend/api/model/substitutes.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/settings/notification_settings.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/settings/substitute_settings.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:provider/provider.dart';
+import 'package:engelsburg_planer/src/utils/global_context.dart';
+import 'package:engelsburg_planer/src/view/widgets/teacher_list_tile.dart';
 
 class ExtendedTimetableCard extends CompactStatefulWidget {
   const ExtendedTimetableCard({
-    Key? key,
+    super.key,
     required this.entry,
     required this.heroTag,
     required this.date,
     this.entryDoc,
     this.editing = false,
-  }) : super(key: key);
+  });
 
   final TimetableEntry entry;
   final String heroTag;
@@ -90,7 +90,7 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard> {
     if (entryDoc == null) {
       entryDoc = await Timetable.entries().defaultStorage(context).addDocument(data);
       if ((await SubstituteSettings.ref().defaultStorage(globalContext()).load()).byTimetable) {
-        NotificationSettings.ref().offlineStorage.load().then((value) => value.updateSubstituteSettings());
+        NotificationSettings.ref().offline.load().then((value) => value.updateSubstituteSettings());
       }
     } else if (markFlush) {
       entryDoc!.setDelayed(data);
@@ -133,7 +133,7 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard> {
               ),
               actions: [
                 const Flex(direction: Axis.horizontal),
-                if (_editing)
+                if (_editing && entryDoc != null)
                   IconButton(
                     icon: const Icon(Icons.delete),
                     color: Theme.of(context).colorScheme.onSurface,

@@ -15,11 +15,11 @@ class Conditioned extends StatelessWidget {
   final Widget? otherwise;
 
   const Conditioned({
-    Key? key,
+    super.key,
     required this.condition,
     required this.child,
     this.otherwise,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => (condition ? child : otherwise) ?? Container();

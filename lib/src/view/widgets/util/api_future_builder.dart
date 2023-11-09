@@ -2,15 +2,21 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
+import 'package:engelsburg_planer/src/backend/api/api_error.dart';
 import 'package:engelsburg_planer/src/backend/api/api_response.dart';
 import 'package:engelsburg_planer/src/backend/api/request.dart';
-import 'package:engelsburg_planer/src/models/state/network_state.dart';
-import 'package:engelsburg_planer/src/utils/type_definitions.dart';
+import 'package:engelsburg_planer/src/backend/database/state/network_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' hide ErrorBuilder;
 
 const Widget kLoadingWidget = Center(child: CircularProgressIndicator());
+
+typedef Parser<T> = T Function(dynamic json);
+
+typedef DataBuilder<T> = Widget Function(T t, RefreshCallback refresh, BuildContext context);
+typedef LoadingBuilder = Widget Function(BuildContext context);
+typedef ErrorBuilder = Widget Function(ApiError error, BuildContext context);
 
 /// Widget to build efficiently from an api request.
 /// On Build the given request is taken, executed and parsed to <T>.
@@ -27,13 +33,13 @@ class ApiFutureBuilder<T> extends StatefulWidget {
   final LoadingBuilder? loadingBuilder;
 
   const ApiFutureBuilder({
-    Key? key,
+    super.key,
     required this.request,
     required this.parser,
     required this.dataBuilder,
     required this.errorBuilder,
     this.loadingBuilder,
-  }) : super(key: key);
+  });
 
   @override
   State<ApiFutureBuilder<T>> createState() => _ApiFutureBuilderState<T>();

@@ -5,21 +5,21 @@
 import 'dart:async';
 
 import 'package:engelsburg_planer/src/app.dart';
-import 'package:engelsburg_planer/src/backend/db/db_service.dart';
-import 'package:engelsburg_planer/src/models/db/settings/notification_settings.dart';
+import 'package:engelsburg_planer/src/backend/database/cache/app_persistent_data.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/settings/notification_settings.dart';
+import 'package:engelsburg_planer/src/backend/database/sql/sql_database.dart';
+import 'package:engelsburg_planer/src/backend/database/state/app_state.dart';
+import 'package:engelsburg_planer/src/backend/database/state/network_state.dart';
+import 'package:engelsburg_planer/src/backend/database/state/semester_state.dart';
+import 'package:engelsburg_planer/src/backend/database/state/theme_state.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
+import 'package:engelsburg_planer/src/services/firebase/firebase_config.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/utils/firebase/firebase_config.dart';
-import 'package:engelsburg_planer/src/models/state/app_state.dart';
-import 'package:engelsburg_planer/src/models/state/network_state.dart';
-import 'package:engelsburg_planer/src/models/state/semester_state.dart';
-import 'package:engelsburg_planer/src/models/state/theme_state.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
-import 'package:engelsburg_planer/src/services/cache_service.dart';
 import 'package:engelsburg_planer/src/services/data_service.dart';
 import 'package:engelsburg_planer/src/services/isolated_worker.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
 /// Initialize and run app
@@ -27,6 +27,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await InitializingPriority.instant.initialize();
+  await InitializingPriority.afterInstant.initialize();
 
   runApp(wrapProvider(const EngelsburgPlaner()));
 }
@@ -47,24 +48,20 @@ Widget wrapProvider(Widget app) {
 
 Map<FutureOr<void> Function(), InitializingPriority> toInitialize = {
   FirebaseConfig.initialize: InitializingPriority.instant,
-  CacheService.initialize: InitializingPriority.instant,
-  DatabaseService.initialize: InitializingPriority.instant,
+  SqlDatabase.initialize: InitializingPriority.instant,
   IsolatedWorker.initialize: InitializingPriority.instant,
   Hive.initFlutter: InitializingPriority.instant,
-  DataService.initialize: InitializingPriority.needsContext,
-  FirebaseConfig.initializeFCM: InitializingPriority.afterAppConfig,
+  AppPersistentData.initialize: InitializingPriority.afterInstant,
+  DataService.initialize: InitializingPriority.context,
   NotificationHelper.init: InitializingPriority.afterAppConfig,
+  FirebaseConfig.initializeFCM: InitializingPriority.afterAppConfig,
 };
-
-/// Initialize various services/instances which need a context
-Future<void> initializeWithContext(BuildContext context) async {
-  DataService.initialize();
-}
-
 
 enum InitializingPriority {
   instant,
-  needsContext,
+  afterInstant,
+  context,
+  afterContext,
   afterAppConfig,
 }
 

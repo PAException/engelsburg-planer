@@ -2,7 +2,7 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-import 'package:engelsburg_planer/src/models/state/network_state.dart';
+import 'package:engelsburg_planer/src/backend/database/state/network_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +27,7 @@ import 'package:provider/provider.dart';
 class NetworkStatusBar extends StatefulWidget {
   final Widget child;
 
-  const NetworkStatusBar({Key? key, required this.child}) : super(key: key);
+  const NetworkStatusBar({super.key, required this.child});
 
   @override
   State<NetworkStatusBar> createState() => _NetworkStatusBarState();
@@ -59,7 +59,7 @@ class _NetworkStatusBarState extends State<NetworkStatusBar> {
 abstract class NetworkStatusWidget extends StatelessWidget implements PreferredSizeWidget {
   final double height;
 
-  const NetworkStatusWidget({Key? key, required this.height}) : super(key: key);
+  const NetworkStatusWidget({super.key, required this.height});
 
   @override
   @nonVirtual
@@ -80,7 +80,7 @@ abstract class NetworkStatusWidget extends StatelessWidget implements PreferredS
 
 /// Standby widget = nothing
 class OnlineWidget extends NetworkStatusWidget {
-  const OnlineWidget({Key? key}) : super(key: key, height: 0);
+  const OnlineWidget({super.key}) : super(height: 0);
 
   @override
   Widget build(BuildContext context) => Container();
@@ -88,7 +88,7 @@ class OnlineWidget extends NetworkStatusWidget {
 
 /// Dynamic blue thin LinearProgressIndicator
 class LoadingWidget extends NetworkStatusWidget {
-  const LoadingWidget({Key? key}) : super(key: key, height: 4);
+  const LoadingWidget({super.key}) : super(height: 4);
 
   @override
   Widget build(BuildContext context) => LinearProgressIndicator(
@@ -100,7 +100,7 @@ class LoadingWidget extends NetworkStatusWidget {
 
 /// Small rectangular widget labeled with OFFLINE
 class OfflineWidget extends NetworkStatusWidget {
-  const OfflineWidget({Key? key}) : super(key: key, height: 20);
+  const OfflineWidget({super.key}) : super(height: 20);
 
   @override
   Widget build(BuildContext context) => Container(

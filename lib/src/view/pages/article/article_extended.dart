@@ -4,10 +4,10 @@
 
 import 'package:awesome_extensions/awesome_extensions.dart' hide NavigatorExt;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:engelsburg_planer/src/backend/api/model/article.dart';
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
-import 'package:engelsburg_planer/src/backend/db/db_service.dart';
-import 'package:engelsburg_planer/src/models/api/article.dart';
-import 'package:engelsburg_planer/src/utils/firebase/analytics.dart';
+import 'package:engelsburg_planer/src/backend/database/sql/sql_database.dart';
+import 'package:engelsburg_planer/src/services/firebase/analytics.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/article/article_card.dart';
 import 'package:engelsburg_planer/src/view/widgets/special/network_status.dart';
@@ -37,9 +37,8 @@ class ExtendedArticle extends StatefulWidget {
     this.articleId,
     this.popCallback,
     this.statusBar = true,
-    Key? key,
-  })  : assert(articleId != null || article != null),
-        super(key: key);
+    super.key,
+  })  : assert(articleId != null || article != null);
 
   @override
   ExtendedArticleState createState() => ExtendedArticleState();
@@ -55,7 +54,7 @@ class ExtendedArticleState extends State<ExtendedArticle> {
       fetchArticle = Future.value(widget.article!);
     } else {
       fetchArticle = Future(() async {
-        var article = await DatabaseService.get<Article>(
+        var article = await SqlDatabase.get<Article>(
           where: "articleId=?",
           whereArgs: [widget.articleId!],
         );

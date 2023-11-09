@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 class RouteModifier extends StatefulWidget {
-  const RouteModifier({Key? key, required this.child}) : super(key: key);
+  const RouteModifier({super.key, required this.child});
 
   final Widget child;
 

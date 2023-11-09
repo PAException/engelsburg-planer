@@ -3,23 +3,23 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/models/db/settings/notification_settings.dart';
-import 'package:engelsburg_planer/src/models/state/app_state.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
-import 'package:engelsburg_planer/src/utils/firebase/analytics.dart';
+import 'package:engelsburg_planer/src/backend/database/state/app_state.dart';
+import 'package:engelsburg_planer/src/services/firebase/analytics.dart';
+import 'package:engelsburg_planer/src/services/firebase/crashlytics.dart';
 import 'package:engelsburg_planer/src/utils/constants.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/utils/firebase/crashlytics.dart';
-import 'package:engelsburg_planer/src/utils/firebase/firebase_config.dart';
-import 'package:engelsburg_planer/src/utils/util.dart';
-import 'package:engelsburg_planer/src/view/widgets/util/switch_expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/settings/notification_settings.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
+import 'package:provider/provider.dart';
+import 'package:engelsburg_planer/src/utils/global_context.dart';
+import 'package:engelsburg_planer/src/view/widgets/app_icon.dart';
+import 'package:engelsburg_planer/src/view/widgets/util/switch_expandable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:provider/provider.dart';
 
 class IntroductionPage extends StatefulWidget {
-  const IntroductionPage({Key? key}) : super(key: key);
+  const IntroductionPage({super.key});
 
   @override
   State<IntroductionPage> createState() => _IntroductionPageState();
@@ -42,7 +42,7 @@ class _IntroductionPageState extends State<IntroductionPage> {
       PageViewModel(
         title: context.l10n.welcomeToApp,
         body: context.l10n.welcomeAppDescription,
-        image: Image.asset(AssetPaths.appLogo),
+        image: const AppIcon(size: 2),
         decoration: PageDecoration(
           imagePadding: const EdgeInsets.only(top: 80),
           pageColor: Theme.of(context).canvasColor,
@@ -50,19 +50,21 @@ class _IntroductionPageState extends State<IntroductionPage> {
       ),
       PageViewModel(
         decoration: PageDecoration(
-          titlePadding: const EdgeInsets.only(top: 40),
-          pageColor: Theme.of(context).canvasColor,
-        ),
+            titlePadding: const EdgeInsets.only(top: 64),
+            pageColor: Theme.of(context).canvasColor,
+            bodyAlignment: Alignment.topCenter),
         title: context.l10n.newFeatures,
         useScrollView: false,
-        bodyWidget: Expanded(
+        bodyWidget: Container(
+          alignment: Alignment.topCenter,
+          width: 600,
           child: ListView(
-            physics: const BouncingScrollPhysics(),
             shrinkWrap: true,
             children: [
               ListTile(
                 leading: const Icon(Icons.library_books),
-                title: Text("${context.l10n.news} (${context.l10n.notifications})"),
+                title: Text(
+                    "${context.l10n.news} (${context.l10n.notifications})"),
               ),
               ListTile(
                 leading: const Icon(Icons.apps_outlined),
@@ -78,7 +80,8 @@ class _IntroductionPageState extends State<IntroductionPage> {
               ),
               ListTile(
                 leading: const Icon(Icons.dashboard),
-                title: Text("${context.l10n.substitutes} (${context.l10n.notifications})"),
+                title: Text(
+                    "${context.l10n.substitutes} (${context.l10n.notifications})"),
               ),
               /*
               ListTile(
@@ -94,10 +97,15 @@ class _IntroductionPageState extends State<IntroductionPage> {
         title: context.l10n.configure,
         useScrollView: true,
         decoration: PageDecoration(
-          titlePadding: const EdgeInsets.only(top: 40),
+          titlePadding: const EdgeInsets.only(top: 64),
           pageColor: Theme.of(context).canvasColor,
+          bodyAlignment: Alignment.topCenter,
         ),
-        bodyWidget: SelectUserType(key: key, onUpdate: () => setState(() {})),
+        bodyWidget: Container(
+          alignment: Alignment.topCenter,
+          width: 600,
+          child: SelectUserType(key: key, onUpdate: () => setState(() {})),
+        ),
       ),
     ];
 
@@ -107,6 +115,7 @@ class _IntroductionPageState extends State<IntroductionPage> {
         pages: pages,
         globalFooter: Text(context.l10n.developedBy).paddingOnly(bottom: 16),
         hideBottomOnKeyboard: true,
+        resizeToAvoidBottomInset: false,
         next: Text(context.l10n.next).fontWeight(FontWeight.w600),
         done: Disabled(
           disabled: key.currentState?.userType == null,
@@ -115,7 +124,8 @@ class _IntroductionPageState extends State<IntroductionPage> {
         dotsDecorator: DotsDecorator(
           activeSize: const Size(18.0, 9.0),
           activeColor: Theme.of(context).colorScheme.primary,
-          activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+          activeShape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
         ),
         onDone: () => onDone(config),
       ),
@@ -123,8 +133,8 @@ class _IntroductionPageState extends State<IntroductionPage> {
   }
 
   void onDone(AppConfigState config) async {
-    Crashlytics.log("Configuring app for the first time...");
     if (selectedUserType == null) return;
+    Crashlytics.log("Configuring app for the first time...");
     if (key.currentState!.validate()) {
       String? extra;
       if (selectedUserType == UserType.student) {
@@ -137,21 +147,25 @@ class _IntroductionPageState extends State<IntroductionPage> {
         userType: selectedUserType!,
         extra: extra,
       );
-      GoRouter router = GoRouter.of(context);
       await config.configure(appConfiguration);
-      NotificationSettings.ref().defaultStorage(globalContext()).load()
+      NotificationSettings.ref()
+          .defaultStorage(globalContext())
+          .load()
           .then((value) => value.setEnabled(true));
 
       Analytics.introduction.complete();
-      router.go("/");
-      //nav.push(MaterialPageRoute(builder: (_) => const WhatsNextPage()));
+      if (appConfiguration.userType == UserType.student) {
+        globalContext().go("/settings/subject?callbackUrl=/article");
+      } else {
+        globalContext().go("/article");
+      }
     }
   }
 }
 
 /// Widget content to be displayed to select the app type.
 class SelectUserType extends StatefulWidget {
-  const SelectUserType({required Key? key, required this.onUpdate}) : super(key: key);
+  const SelectUserType({required super.key, required this.onUpdate});
 
   final VoidCallback onUpdate;
 
@@ -179,9 +193,12 @@ class SelectUserTypeState extends State<SelectUserType> {
       key: _formKey,
       child: Column(
         children: [
-          Text(context.l10n.questionAppType).textScale(1.4).textAlignment(TextAlign.center),
+          Text(context.l10n.questionAppType)
+              .textScale(1.4)
+              .textAlignment(TextAlign.center),
           6.heightBox,
-          Text(context.l10n.descriptionAppTypeConfiguration).textAlignment(TextAlign.center),
+          Text(context.l10n.descriptionAppTypeConfiguration)
+              .textAlignment(TextAlign.center),
           20.heightBox,
           buildUserTypeListTile(
             title: context.l10n.student,
@@ -194,7 +211,9 @@ class SelectUserTypeState extends State<SelectUserType> {
             hint: context.l10n.classNameInputHint,
             appType: UserType.student,
             validator: (value) {
-              if (_selectedUserType == UserType.student && value != null && value.length < 2) {
+              if (_selectedUserType == UserType.student &&
+                  value != null &&
+                  value.length < 2) {
                 return context.l10n.invalidClassname;
               }
 
@@ -212,7 +231,9 @@ class SelectUserTypeState extends State<SelectUserType> {
             hint: context.l10n.teacherAbbreviationInputHint,
             appType: UserType.teacher,
             validator: (value) {
-              if (_selectedUserType == UserType.teacher && value != null && value.length < 3) {
+              if (_selectedUserType == UserType.teacher &&
+                  value != null &&
+                  value.length < 3) {
                 return context.l10n.invalidAbbreviation;
               }
 
@@ -288,7 +309,7 @@ class SelectUserTypeState extends State<SelectUserType> {
 
 /// Stateful widget to select the app type
 class SelectUserTypeDialog extends StatefulWidget {
-  const SelectUserTypeDialog({Key? key}) : super(key: key);
+  const SelectUserTypeDialog({super.key});
 
   @override
   State<SelectUserTypeDialog> createState() => _SelectUserTypeDialogState();
@@ -335,7 +356,9 @@ class _SelectUserTypeDialogState extends State<SelectUserTypeDialog> {
                         extra: extra,
                       );
                       GoRouter router = GoRouter.of(context);
-                      await context.read<AppConfigState>().configure(appConfiguration);
+                      await context
+                          .read<AppConfigState>()
+                          .configure(appConfiguration);
 
                       router.go("/");
                     }
@@ -353,7 +376,7 @@ class _SelectUserTypeDialogState extends State<SelectUserTypeDialog> {
 
 /// Page to display to user for next steps after the app configuration is finished.
 class WhatsNextPage extends StatelessWidget {
-  const WhatsNextPage({Key? key}) : super(key: key);
+  const WhatsNextPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -401,7 +424,8 @@ class WhatsNextPage extends StatelessWidget {
                 40.heightBox,
                 ElevatedButton(
                   onPressed: () => context.navigate("/signIn"),
-                  child: Text(context.l10n.signIn).paddingSymmetric(vertical: 10, horizontal: 40),
+                  child: Text(context.l10n.signIn)
+                      .paddingSymmetric(vertical: 10, horizontal: 40),
                 ),
               ],
             ),

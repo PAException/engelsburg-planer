@@ -3,8 +3,8 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
+import 'package:engelsburg_planer/src/backend/api/model/article.dart';
 import 'package:engelsburg_planer/src/backend/controller/article_controller.dart';
-import 'package:engelsburg_planer/src/models/api/article.dart';
 import 'package:engelsburg_planer/src/services/data_service.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/article/article_card.dart';
@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 
 /// Page to display all saved articles by the user
 class SavedArticlePage extends StatelessWidget {
-  const SavedArticlePage({Key? key}) : super(key: key);
+  const SavedArticlePage({super.key});
 
   @override
   Widget build(BuildContext context) {

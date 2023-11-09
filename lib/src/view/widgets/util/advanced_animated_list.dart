@@ -66,7 +66,7 @@ class AdvancedAnimatedList extends StatefulWidget {
   /// Creates a scrolling container that animates items when they are inserted
   /// or removed.
   const AdvancedAnimatedList({
-    Key? key,
+    super.key,
     required this.itemBuilder,
     this.initialItemCount = 0,
     this.scrollDirection = Axis.vertical,
@@ -77,8 +77,7 @@ class AdvancedAnimatedList extends StatefulWidget {
     this.shrinkWrap = false,
     this.padding,
     this.clipBehavior = Clip.hardEdge,
-  })  : assert(initialItemCount >= 0),
-        super(key: key);
+  })  : assert(initialItemCount >= 0);
 
   /// Called, as needed, to build list item widgets.
   ///
@@ -348,11 +347,10 @@ class AdvancedAnimatedListState extends State<AdvancedAnimatedList>
 class SliverAnimatedList extends StatefulWidget {
   /// Creates a sliver that animates items when they are inserted or removed.
   const SliverAnimatedList({
-    Key? key,
+    super.key,
     required this.itemBuilder,
     this.initialItemCount = 0,
-  })  : assert(initialItemCount >= 0),
-        super(key: key);
+  })  : assert(initialItemCount >= 0);
 
   /// Called, as needed, to build list item widgets.
   ///

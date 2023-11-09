@@ -2,8 +2,8 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-import 'package:engelsburg_planer/src/models/api/teacher.dart';
-import 'package:engelsburg_planer/src/models/session_persistent_data.dart';
+import 'package:engelsburg_planer/src/backend/api/model/teacher.dart';
+import 'package:engelsburg_planer/src/backend/database/cache/session_persistent_data.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:flutter/material.dart';
 
@@ -14,9 +14,9 @@ class TeacherListTile extends StatelessWidget {
     required this.controller,
   });
 
-  TeacherListTile(String abbreviation, {super.key})
+  TeacherListTile(String? abbreviation, {super.key})
       : editing = false,
-        controller = TextEditingController(text: abbreviation);
+        controller = TextEditingController(text: abbreviation ?? "");
 
   final bool editing;
   final TextEditingController? controller;

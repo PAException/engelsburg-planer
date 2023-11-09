@@ -8,9 +8,10 @@ import 'package:engelsburg_planer/src/backend/api/api_response.dart';
 import 'package:engelsburg_planer/src/backend/api/request_service.dart';
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
 import 'package:engelsburg_planer/src/backend/util/query.dart';
-import 'package:engelsburg_planer/src/utils/type_definitions.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+
+typedef Parser<T> = T Function(dynamic json);
 
 enum HttpMethod { get, head, post, put, patch, delete }
 
@@ -65,7 +66,7 @@ class Request {
   /// Key to cache response of request
   final String? cacheId;
 
-  final VoidCallback? analytics;
+  final void Function(RequestAnalysis)? analytics;
 
   const Request(
     this.method,
@@ -135,7 +136,7 @@ class RequestBuilder {
   Map<String, String> _headers = {};
   bool _https = false;
   String? _cacheId;
-  VoidCallback? _analytics;
+  void Function(RequestAnalysis)? _analytics;
 
   /// Build the actual request
   Request build() {
@@ -234,7 +235,7 @@ class RequestBuilder {
   }
 
   /// Set callback to execute analytics call
-  RequestBuilder analytics(VoidCallback analytics) {
+  RequestBuilder analytics(void Function(RequestAnalysis) analytics) {
     _analytics = analytics;
     return this;
   }

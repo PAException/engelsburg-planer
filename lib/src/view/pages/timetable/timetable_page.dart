@@ -3,22 +3,23 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/models/api/substitutes.dart';
-import 'package:engelsburg_planer/src/models/db/timetable.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
-import 'package:engelsburg_planer/src/models/storage_adapter.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/timetable.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/base/document.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/utils/util.dart';
+import 'package:flutter/material.dart';
+import 'package:engelsburg_planer/src/backend/api/model/substitutes.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
+import 'package:engelsburg_planer/src/utils/global_context.dart';
+import 'package:engelsburg_planer/src/utils/transitions.dart';
 import 'package:engelsburg_planer/src/view/pages/timetable/timetable_card.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/advanced_animated_list.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:week_of_year/week_of_year.dart';
 
 const _kDuration = Duration(milliseconds: 500);
 
 class TimetablePage extends StatefulWidget {
-  const TimetablePage({Key? key}) : super(key: key);
+  const TimetablePage({super.key});
 
   @override
   State<StatefulWidget> createState() => TimetablePageState();
@@ -49,7 +50,7 @@ class TimetablePageState extends State<TimetablePage> {
         _timetable.removeAt(index);
         _animatedList.currentState?.removeItem(
           index,
-          (context, animation) => Animations.easeFade(animation, element),
+          (context, animation) => Transitions.easeFade(animation, element),
           duration: fast ? Duration.zero : _kDuration,
         );
       },
@@ -67,7 +68,7 @@ class TimetablePageState extends State<TimetablePage> {
         _animatedList.currentState?.insertItem(
           index,
           duration: _kDuration * (fast ? 0.75 : 1),
-          builder: (context, animation) => Animations.easeOutScaleQuadSize(animation, element),
+          builder: (context, animation) => Transitions.easeOutScaleQuadSize(animation, element),
         );
         await Future.delayed(_kDuration ~/ (fast ? 30 : 20));
       },
@@ -117,7 +118,7 @@ class TimetablePageState extends State<TimetablePage> {
     //Remove element from list with same animation
     _animatedList.currentState?.removeItem(
       index,
-      (context, animation) => Animations.easeInOutSineSizeEaseInSineScale(
+      (context, animation) => Transitions.easeInOutSineSizeEaseInSineScale(
         animation,
         element,
       ),
@@ -131,7 +132,7 @@ class TimetablePageState extends State<TimetablePage> {
     _timetable.remove(from);
     _animatedList.currentState?.removeItem(
       0,
-      (context, animation) => Animations.easeFadeScaleSize(animation, from),
+      (context, animation) => Transitions.easeFadeScaleSize(animation, from),
       duration: Duration.zero,
     );
 
@@ -139,7 +140,7 @@ class TimetablePageState extends State<TimetablePage> {
     _timetable.insert(0, to);
     _animatedList.currentState?.insertItem(
       0,
-      builder: (context, animation) => Animations.easeInOutSineSizeEaseInSineScale(animation, to),
+      builder: (context, animation) => Transitions.easeInOutSineSizeEaseInSineScale(animation, to),
       duration: _kDuration,
     );
   }
@@ -349,15 +350,6 @@ class TimetablePageState extends State<TimetablePage> {
                         ),
                       ),
                       Expanded(child: Container()),
-                      IconButton(
-                        icon: const Icon(Icons.today),
-                        onPressed: () {
-                          //Only skip to current date if date is not already today
-                          if (!_date.isSameDay(DateTime.now())) {
-                            setState.call(() => _setDate(DateTime.now()));
-                          }
-                        },
-                      ),
                     ],
                   ),
                   const Padding(
@@ -497,7 +489,7 @@ class TimetablePageState extends State<TimetablePage> {
                       ),
                       initialItemCount: _timetable.length,
                       itemBuilder: (context, index, animation) =>
-                          Animations.easeInOutSineSizeEaseInSineScale(
+                          Transitions.easeInOutSineSizeEaseInSineScale(
                         animation,
                         _timetable.nullableAt(index) ?? Container(),
                       ),

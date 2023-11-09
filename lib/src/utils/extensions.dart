@@ -6,9 +6,8 @@ import 'dart:async';
 import 'dart:math';
 
 import "package:awesome_extensions/awesome_extensions.dart";
-import 'package:engelsburg_planer/src/models/db/subjects.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
-import 'package:engelsburg_planer/src/view/routing/route_generator.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/subjects.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -258,19 +257,6 @@ extension BuildContextExt on BuildContext {
       );
     } else {
       return push(widget);
-    }
-  }
-}
-
-extension WidgetExt on Widget {
-  Widget wrapIf({
-    required bool value,
-    required Widget Function(Widget child) wrap,
-  }) {
-    if (value) {
-      return wrap.call(this);
-    } else {
-      return this;
     }
   }
 }

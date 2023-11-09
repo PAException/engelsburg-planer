@@ -15,14 +15,14 @@ class SwitchExpandable extends StatefulWidget {
   final Duration? reverseDuration;
 
   const SwitchExpandable({
-    Key? key,
+    super.key,
     required this.switchListTile,
     required this.child,
     this.duration = const Duration(milliseconds: 300),
     this.curve = Curves.easeInOut,
     this.reverseDuration,
     this.invert = false,
-  }) : super(key: key);
+  });
 
   @override
   SwitchExpandableState createState() => SwitchExpandableState();
@@ -69,7 +69,7 @@ class SwitchExpandableState extends State<SwitchExpandable> with SingleTickerPro
 }
 
 class Disabled extends StatelessWidget {
-  const Disabled({Key? key, required this.child, this.disabled = true}) : super(key: key);
+  const Disabled({super.key, required this.child, this.disabled = true});
 
   final Widget child;
   final bool disabled;

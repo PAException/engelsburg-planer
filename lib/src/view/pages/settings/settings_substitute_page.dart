@@ -2,23 +2,23 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-import 'package:engelsburg_planer/src/models/db/settings/notification_settings.dart';
-import 'package:engelsburg_planer/src/models/db/settings/substitute_settings.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
-import 'package:engelsburg_planer/src/models/storage_adapter.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/settings/notification_settings.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/settings/substitute_settings.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/view/widgets/special/storage/stream_consumer.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/switch_expandable.dart';
 import 'package:flutter/material.dart';
 
 class SubstituteSettingsPage extends StatelessWidget {
-  const SubstituteSettingsPage({Key? key}) : super(key: key);
+  const SubstituteSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     TextEditingController classController = TextEditingController(),
         teacherController = TextEditingController();
 
-    var notificationSettings = NotificationSettings.ref().offlineStorage;
+    var notificationSettings = NotificationSettings.ref().offline;
     return StreamConsumer<SubstituteSettings>(
       doc: SubstituteSettings.ref().defaultStorage(context),
       itemBuilder: (context, doc, settings) {
@@ -39,8 +39,11 @@ class SubstituteSettingsPage extends StatelessWidget {
                     value: settings.byClasses,
                     onChanged: (value) {
                       settings.byClasses = value;
-                      notificationSettings.load().then((value) => value.updateSubstituteSettings());
-                      doc.setDelayed(settings);
+                      doc.setDelayed(
+                        settings,
+                        onSuccess: () => notificationSettings.load().then(
+                                (value) => value.updateSubstituteSettings()),
+                      );
                     },
                     title: Text(context.l10n.class_),
                   ),
@@ -64,8 +67,11 @@ class SubstituteSettingsPage extends StatelessWidget {
                                   shape: StadiumBorder(side: BorderSide(color: color)),
                                   onDeleted: () {
                                     settings.classes.remove(e);
-                                    notificationSettings.load().then((value) => value.updateSubstituteSettings());
-                                    doc.setDelayed(settings);
+                                    doc.setDelayed(
+                                      settings,
+                                      onSuccess: () => notificationSettings.load().then(
+                                              (value) => value.updateSubstituteSettings()),
+                                    );
                                   },
                                 );
                               }).toList(),
@@ -79,8 +85,11 @@ class SubstituteSettingsPage extends StatelessWidget {
                           onFieldSubmitted: (text) {
                             settings.classes.add(text);
                             classController.clear();
-                            notificationSettings.load().then((value) => value.updateSubstituteSettings());
-                            doc.setDelayed(settings);
+                            doc.setDelayed(
+                              settings,
+                              onSuccess: () => notificationSettings.load().then(
+                                      (value) => value.updateSubstituteSettings()),
+                            );
                           },
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
@@ -104,8 +113,11 @@ class SubstituteSettingsPage extends StatelessWidget {
                     value: settings.byTeacher,
                     onChanged: (value) {
                       settings.byTeacher = value;
-                      notificationSettings.load().then((value) => value.updateSubstituteSettings());
-                      doc.setDelayed(settings);
+                      doc.setDelayed(
+                        settings,
+                        onSuccess: () => notificationSettings.load().then(
+                                (value) => value.updateSubstituteSettings()),
+                      );
                     },
                     title: Text(context.l10n.teacher),
                   ),
@@ -129,8 +141,11 @@ class SubstituteSettingsPage extends StatelessWidget {
                                   shape: StadiumBorder(side: BorderSide(color: color)),
                                   onDeleted: () {
                                     settings.teacher.remove(e);
-                                    notificationSettings.load().then((value) => value.updateSubstituteSettings());
-                                    doc.setDelayed(settings);
+                                    doc.setDelayed(
+                                      settings,
+                                      onSuccess: () => notificationSettings.load().then(
+                                              (value) => value.updateSubstituteSettings()),
+                                    );
                                   },
                                 );
                               }).toList(),
@@ -144,8 +159,11 @@ class SubstituteSettingsPage extends StatelessWidget {
                           onFieldSubmitted: (text) {
                             settings.teacher.add(text);
                             teacherController.clear();
-                            notificationSettings.load().then((value) => value.updateSubstituteSettings());
-                            doc.setDelayed(settings);
+                            doc.setDelayed(
+                              settings,
+                              onSuccess: () => notificationSettings.load().then(
+                                      (value) => value.updateSubstituteSettings()),
+                            );
                           },
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
@@ -168,8 +186,11 @@ class SubstituteSettingsPage extends StatelessWidget {
                   value: settings.byTimetable,
                   onChanged: (value) {
                     settings.byTimetable = value;
-                    notificationSettings.load().then((value) => value.updateSubstituteSettings());
-                    doc.setDelayed(settings);
+                    doc.setDelayed(
+                      settings,
+                      onSuccess: () => notificationSettings.load().then(
+                              (value) => value.updateSubstituteSettings()),
+                    );
                   },
                   title: Text(context.l10n.timetable),
                 ),

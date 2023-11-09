@@ -3,7 +3,7 @@
   "@appTitle": {
     "description": "The title of the application"
   },
-  "appDescription": "An app that displays information about the Engelsburg-Gymnasium and can be used for managing grades, timetable and tasks.\n\nDeveloped by former student Paul Huerkamp.",
+  "appDescription": "An app that displays information about the Engelsburg-Gymnasium and can be used for managing grades, timetable and tasks.",
   "@appDescription": {
     "description": "The description of the app, shown on the about page"
   },
@@ -671,5 +671,9 @@
   "noTasksFound": "No tasks found",
   "otherParticipation": "Other participation",
   "addTypeOfGrade": "Add type of grade",
-  "useTeacherAbbreviation": "Use the teacher abbreviation so we can filter by it"
+  "useTeacherAbbreviation": "Use the teacher abbreviation so we can filter by it",
+  "addTask": "Add task",
+  "addGrade": "Add grade",
+  "stateOf": "State of",
+  "showDoneTasks": "Show done tasks"
 }

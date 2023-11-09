@@ -30,10 +30,10 @@ abstract class CompactStatefulWidget extends StatefulWidget {
 
 class HeroText extends StatelessWidget {
   const HeroText({
-    Key? key,
+    super.key,
     required this.tag,
     required this.child,
-  }) : super(key: key);
+  });
 
   final String tag;
   final Widget child;
@@ -51,7 +51,7 @@ class HeroText extends StatelessWidget {
 }
 
 class OptionalHero extends StatelessWidget {
-  const OptionalHero({Key? key, this.tag, required this.child}) : super(key: key);
+  const OptionalHero({super.key, this.tag, required this.child});
 
   final String? tag;
   final Widget child;

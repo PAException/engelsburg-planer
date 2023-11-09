@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 
 class AnimatedAppName extends StatefulWidget {
   const AnimatedAppName({
-    Key? key,
+    super.key,
     this.textStyle = const TextStyle(fontSize: 24),
     this.iconSize = 80,
     this.curve = Curves.fastOutSlowIn,
     this.duration = const Duration(milliseconds: 1500),
-  }) : super(key: key);
+  });
 
   final TextStyle textStyle;
   final double iconSize;

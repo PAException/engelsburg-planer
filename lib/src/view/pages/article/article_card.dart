@@ -2,14 +2,15 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
+import 'package:engelsburg_planer/src/backend/api/model/article.dart';
 import 'package:engelsburg_planer/src/backend/controller/article_controller.dart';
-import 'package:engelsburg_planer/src/models/api/article.dart';
 import 'package:engelsburg_planer/src/services/data_service.dart';
-import 'package:engelsburg_planer/src/utils/firebase/analytics.dart';
+import 'package:engelsburg_planer/src/services/firebase/analytics.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/utils/util.dart';
 import 'package:engelsburg_planer/src/view/pages/article/article_page.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
+import 'package:engelsburg_planer/src/view/widgets/util/wrap_if.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image/flutter_image.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -23,7 +24,7 @@ class ArticleCard extends StatefulWidget {
   final Article article;
   final VoidCallback? onTap;
 
-  const ArticleCard({Key? key, required this.article, this.onTap}) : super(key: key);
+  const ArticleCard({super.key, required this.article, this.onTap});
 
   @override
   State<ArticleCard> createState() => _ArticleCardState();
@@ -71,7 +72,7 @@ class ArticleImage extends StatelessWidget {
   final Article article;
   final String heroTag;
 
-  const ArticleImage({Key? key, required this.article, required this.heroTag}) : super(key: key);
+  const ArticleImage({super.key, required this.article, required this.heroTag});
 
   @override
   Widget build(BuildContext context) {
@@ -94,11 +95,15 @@ class ArticleImage extends StatelessWidget {
                 timeout: const Duration(seconds: 4),
               ),
             ),
+            placeholderBuilder: (_) => SpinKitCircle(
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            /* //TODO
             placeholderBuilder: article.blurHash != null && article.blurHash!.length >= 6
                 ? OctoPlaceholder.blurHash(article.blurHash!)
                 : (_) => SpinKitCircle(
                       color: Theme.of(context).colorScheme.primary,
-                    ),
+                    ),*/
           ),
         ),
       ),
@@ -113,42 +118,41 @@ class ArticleTitle extends StatelessWidget {
   final TextStyle textStyle;
 
   const ArticleTitle({
-    Key? key,
+    super.key,
     required this.article,
     required this.heroTag,
     required this.textStyle,
-  }) : super(key: key);
+  });
 
   const ArticleTitle.card({
-    Key? key,
+    super.key,
     required this.article,
     required this.heroTag,
-  })  : textStyle = const TextStyle(fontSize: 20.0),
-        super(key: key);
+  })  : textStyle = const TextStyle(fontSize: 20.0);
 
   const ArticleTitle.extended({
-    Key? key,
+    super.key,
     required this.article,
     required this.heroTag,
-  })  : textStyle = const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-        super(key: key);
-
+  })  : textStyle = const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold);
   @override
-  Widget build(BuildContext context) => Text(
-        HtmlUtils.unescape(article.title.toString()),
+  Widget build(BuildContext context) {
+    return WrapIf(
+      condition: article.mediaUrl == null,
+      wrap: (child, context) => HeroText(tag: heroTag, child: child),
+      child: Text(
+        unescapeHtml(article.title.toString()),
         style: textStyle,
-      ).wrapIf(
-        //Wrap in hero text if media url == null, otherwise hero is already the image
-        value: article.mediaUrl == null,
-        wrap: (child) => HeroText(tag: heroTag, child: child),
-      );
+      ),
+    );
+  }
 }
 
 /// Action section of [ArticleCard]
 class ArticleCardActions extends StatelessWidget {
   final Article article;
 
-  const ArticleCardActions({Key? key, required this.article}) : super(key: key);
+  const ArticleCardActions({super.key, required this.article});
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +181,7 @@ class ArticleCardActions extends StatelessWidget {
 class ArticleSaveIconButton extends StatefulWidget {
   final Article article;
 
-  const ArticleSaveIconButton(this.article, {Key? key}) : super(key: key);
+  const ArticleSaveIconButton(this.article, {super.key});
 
   @override
   State<ArticleSaveIconButton> createState() => _ArticleSaveIconButtonState();
@@ -202,7 +206,7 @@ class _ArticleSaveIconButtonState extends State<ArticleSaveIconButton> {
       },
       builder: (context, onTap) => IconButton(
         onPressed: onTap,
-        icon: Icon(saved ? Icons.bookmark_outlined : Icons.bookmark_border_outlined),
+        icon: Icon(saved ? Icons.bookmark_added_outlined : Icons.bookmark_add_outlined),
       ),
     );
   }
@@ -212,7 +216,7 @@ class _ArticleSaveIconButtonState extends State<ArticleSaveIconButton> {
 class OpenInBrowserIconButton extends StatelessWidget {
   final String? url;
 
-  const OpenInBrowserIconButton(this.url, {Key? key}) : super(key: key);
+  const OpenInBrowserIconButton(this.url, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -234,7 +238,7 @@ class ShareIconButton extends StatelessWidget {
   final String? url;
   final VoidCallback? onShare;
 
-  const ShareIconButton(this.url, {Key? key, this.onShare}) : super(key: key);
+  const ShareIconButton(this.url, {super.key, this.onShare});
 
   @override
   Widget build(BuildContext context) {

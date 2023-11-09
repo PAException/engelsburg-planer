@@ -3,9 +3,9 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/models/db/subjects.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
-import 'package:engelsburg_planer/src/models/storage_adapter.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/subjects.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/base/document.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/settings/subject/subject_extended.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/color_grid.dart';
@@ -14,7 +14,7 @@ import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/material.dart';
 
 class SubjectSettingsPage extends CompactStatefulWidget {
-  const SubjectSettingsPage({Key? key}) : super(key: key);
+  const SubjectSettingsPage({super.key});
 
   @override
   State<SubjectSettingsPage> createState() => _SubjectSettingsPageState();
@@ -63,10 +63,10 @@ class _SubjectSettingsPageState extends State<SubjectSettingsPage> {
 
 class SubjectTile extends StatefulWidget {
   const SubjectTile({
-    Key? key,
+    super.key,
     this.subject,
     required this.baseSubject,
-  }) : super(key: key);
+  });
 
   final Document<Subject>? subject;
   final BaseSubject baseSubject;
@@ -146,7 +146,7 @@ class _SubjectTileState extends State<SubjectTile> {
 /// If the user cancels the optional color, which was passed as an optional argument, will be popped.
 /// If the user presses reset null will be popped.
 class SelectColorDialog extends StatelessWidget {
-  const SelectColorDialog({Key? key, this.color}) : super(key: key);
+  const SelectColorDialog({super.key, this.color});
 
   final Color? color;
 
@@ -177,7 +177,7 @@ class SelectColorDialog extends StatelessWidget {
 
 /// Dialog to confirm the deletion of a subject. Pops the corresponding bool.
 class ConfirmDeleteSubjectDialog extends StatelessWidget {
-  const ConfirmDeleteSubjectDialog({Key? key}) : super(key: key);
+  const ConfirmDeleteSubjectDialog({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -10,11 +10,11 @@ class WrapIf extends StatelessWidget {
   final Widget child;
 
   const WrapIf({
-    Key? key,
+    super.key,
     required this.condition,
     required this.wrap,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
