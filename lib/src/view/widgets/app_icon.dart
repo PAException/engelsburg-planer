@@ -13,18 +13,20 @@ class AppIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WrapIf(
-      condition: Theme.of(context).brightness == Brightness.dark,
-      wrap: (child, context) => CircleAvatar(
-        radius: 30 * size,
-        backgroundColor: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: child,
-        ),
+    return Container(
+      clipBehavior: Clip.hardEdge,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8 * size),
+        boxShadow: [
+          if (Theme.of(context).brightness == Brightness.light)
+            const BoxShadow(
+              color: Colors.grey,
+              offset: Offset(2.0, 2.0),
+              blurRadius: 4.0,
+            ),
+        ],
       ),
       child: Image.asset(AssetPaths.appLogo, height: 60 * size),
     );
   }
 }
-
