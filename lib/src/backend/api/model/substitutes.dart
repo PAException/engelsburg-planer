@@ -60,7 +60,9 @@ class Substitute extends Comparable {
   factory Substitute.fromJson(dynamic json) => Substitute(
         date: DateTime.parse(json["date"]),
         className: json["className"],
-        lesson: json["lesson"] is String ? int.parse(json["lesson"]) : json["lesson"],
+        lesson: json["lesson"] is String
+            ? int.parse(json["lesson"])
+            : json["lesson"],
         subject: json["subject"],
         substituteTeacher: json["substituteTeacher"],
         teacher: json["teacher"],
@@ -156,7 +158,9 @@ class Substitute extends Comparable {
     }
 
     //compare class
-    if (a.className != null && b.className != null && a.className != b.className) {
+    if (a.className != null &&
+        b.className != null &&
+        a.className != b.className) {
       //Q1 Q1 => false, //Q1 E1 => true, //Q1 Q1Q3 => true
 
       var aClassName = a.className!, bClassName = b.className!;
@@ -174,7 +178,8 @@ class Substitute extends Comparable {
           if (aNum ^ bNum) {
             return aNum ? 1 : -1;
           } else if (aNum && bNum) {
-            return int.parse(aFirst + aSecond).compareTo(int.parse(bFirst + bSecond));
+            return int.parse(aFirst + aSecond)
+                .compareTo(int.parse(bFirst + bSecond));
           } else {
             return int.parse(aFirst).compareTo(int.parse(bFirst));
           }
@@ -253,6 +258,23 @@ class Substitute extends Comparable {
     //compare type
     return b.type.priority.compareTo(a.type.priority);
   }
+
+  bool isPreceding(Substitute substitute) => date == substitute.date &&
+          className == substitute.className &&
+          substitute.lesson != null &&
+          lesson == substitute.lesson! - 1 &&
+          subject == substitute.subject &&
+          substituteTeacher == substitute.substituteTeacher &&
+          teacher == substitute.teacher &&
+          type == substitute.type &&
+          substituteOf == substitute.substituteOf &&
+          room == substitute.room &&
+          text == substitute.text;
+
+  @override
+  String toString() {
+    return 'Substitute{date: $date, className: $className, lesson: $lesson, subject: $subject, substituteTeacher: $substituteTeacher, teacher: $teacher, type: $type, substituteOf: $substituteOf, room: $room, text: $text}';
+  }
 }
 
 class SubstituteMessage {
@@ -276,7 +298,8 @@ class SubstituteMessage {
 
   static List<SubstituteMessage> fromSubstituteMessages(dynamic json) =>
       List<SubstituteMessage>.from(
-          (json is List ? json : json["substituteMessages"]).map(SubstituteMessage.fromJson));
+          (json is List ? json : json["substituteMessages"])
+              .map(SubstituteMessage.fromJson));
 
   factory SubstituteMessage.fromJson(dynamic json) => SubstituteMessage(
         date: DateTime.parse(json["date"]),

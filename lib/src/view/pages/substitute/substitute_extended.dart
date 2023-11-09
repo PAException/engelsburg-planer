@@ -2,7 +2,6 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-
 import 'package:engelsburg_planer/src/backend/api/model/substitutes.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +14,12 @@ class ExtendedSubstitute extends CompactStatefulWidget {
     super.key,
     required this.substitute,
     required this.heroTag,
+    this.endLesson,
   });
 
   final Substitute substitute;
   final String heroTag;
+  final int? endLesson;
 
   @override
   ExtendedSubstituteCardState createState() => ExtendedSubstituteCardState();
@@ -30,7 +31,7 @@ class ExtendedSubstituteCardState extends State<ExtendedSubstitute> {
     var substitute = widget.substitute;
 
     var start = Substitute.lessonStart(substitute.lesson!);
-    var end = Substitute.lessonEnd(substitute.lesson!);
+    var end = Substitute.lessonEnd(widget.endLesson ?? substitute.lesson!);
     String timeOfLessons = "$start - $end ${context.l10n.oclock}";
 
     return Scaffold(
@@ -76,7 +77,7 @@ class ExtendedSubstituteCardState extends State<ExtendedSubstitute> {
               subtitle: Text(substitute.date!.formatEEEEddMMToNow(context)),
             ),
             SubstituteListTile(
-              title: substitute.lesson!.toString(),
+              title: "${substitute.lesson!}${widget.endLesson != null ? " - ${widget.endLesson}" : ""}",
               subtitle: timeOfLessons,
               icon: Icons.access_time,
             ),
