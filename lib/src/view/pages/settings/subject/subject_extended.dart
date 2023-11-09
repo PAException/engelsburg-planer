@@ -3,22 +3,25 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:d_chart/d_chart.dart';
-import 'package:engelsburg_planer/src/models/db/grades.dart';
-import 'package:engelsburg_planer/src/models/db/subjects.dart';
-import 'package:engelsburg_planer/src/models/db/timetable.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
-import 'package:engelsburg_planer/src/models/storage_adapter.dart';
+import 'package:d_chart/commons/config_render.dart';
+import 'package:d_chart/commons/data_model.dart';
+import 'package:d_chart/ordinal/pie.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/grades.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/subjects.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/timetable.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/base/document.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/utils/util.dart';
+import 'package:engelsburg_planer/src/utils/global_context.dart';
 import 'package:engelsburg_planer/src/view/pages/grade/grade_extended.dart';
 import 'package:engelsburg_planer/src/view/pages/settings/subject/settings_subject_page.dart';
+import 'package:engelsburg_planer/src/view/widgets/special/storage/stream_consumer.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class ExtendedSubjectPage extends CompactStatefulWidget {
-  const ExtendedSubjectPage({Key? key, required this.subjectDoc}) : super(key: key);
+  const ExtendedSubjectPage({super.key, required this.subjectDoc});
 
   final Document<Subject> subjectDoc;
 
@@ -180,18 +183,20 @@ class _ExtendedSubjectPageState extends State<ExtendedSubjectPage>
                           height: 250,
                           child: Stack(
                             children: [
-                              DChartPie(//TODO
-                                fillColor: (pieData, index) => _getDonutColor(index!),
-                                donutWidth: 20,
-                                showLabelLine: false,
-                                pieLabel: (pieData, index) => "",
-                                data: gradeTypes!
-                                    .mapIndex((type, index) => {
-                                          "domain": type.name,
-                                          "measure": type.share,
-                                        })
-                                    .toList(),
+                              DChartPieO(
                                 animate: false,
+                                 customLabel:  (_, __) => "",
+                                 configRenderPie: const ConfigRenderPie(
+                                   arcWidth: 20,
+                                   strokeWidthPx: 0,
+                                 ),
+                                data: gradeTypes!.mapIndex((type, index) {
+                                  return OrdinalData(
+                                    domain: type.name,
+                                    measure: type.share,
+                                    color: _getDonutColor(index),
+                                  );
+                                }).toList(),
                               ),
                               Center(
                                 child: IconButton(
@@ -472,7 +477,7 @@ class _ExtendedSubjectPageState extends State<ExtendedSubjectPage>
 }
 
 class ExtendedSubjectListTile extends StatefulWidget {
-  const ExtendedSubjectListTile({Key? key, required this.subject, this.heroTag}) : super(key: key);
+  const ExtendedSubjectListTile({super.key, required this.subject, this.heroTag});
 
   final Document<Subject> subject;
   final String? heroTag;

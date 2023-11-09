@@ -1,6 +1,6 @@
 {
   "appTitle": "Engelsburg-Planer",
-  "appDescription": "Eine App, die Informationen über das Engelsburg-Gymnasium übersichtlich zusammenstellt und zum Verwalten von Noten, dem Stundenplan und Hausaufgaben genutzt werden kann.\n\nEntwickelt von dem ehemaligen Schüler Paul Huerkamp.",
+  "appDescription": "Eine App, die Informationen über das Engelsburg-Gymnasium übersichtlich zusammenstellt und zum Verwalten von Noten, dem Stundenplan und Hausaufgaben genutzt werden kann.",
   "events": "Termine",
   "cafeteria": "Cafeteria",
   "settings": "Einstellungen",
@@ -223,5 +223,9 @@
   "noTasksFound": "Keine Aufgaben gefunden",
   "otherParticipation": "Sonstige Mitarbeit",
   "addTypeOfGrade": "Notenart hinzufügen",
-  "useTeacherAbbreviation": "Benutze die Abkürzung damit wir danach filtern können"
+  "useTeacherAbbreviation": "Benutze die Abkürzung damit wir danach filtern können",
+  "addTask": "Aufgabe hinzufügen",
+  "addGrade": "Note hinzufügen",
+  "stateOf": "Stand",
+  "showDoneTasks": "Fertige Aufgaben anzeigen"
 }

@@ -125,3 +125,7 @@ app.*.symbols
 # Custom
 *google-services.json
 **/*key.json
+**/*.p8
+**/*.p12
+
+

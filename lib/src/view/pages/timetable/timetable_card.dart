@@ -2,20 +2,21 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-import 'package:engelsburg_planer/src/models/db/subjects.dart';
-import 'package:engelsburg_planer/src/models/db/timetable.dart';
-import 'package:engelsburg_planer/src/models/state/app_state.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
-import 'package:engelsburg_planer/src/models/storage_adapter.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/timetable.dart';
+import 'package:engelsburg_planer/src/backend/database/state/app_state.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/base/document.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/view/widgets/special/storage/stream_consumer.dart';
 import 'package:flutter/material.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/subjects.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:provider/provider.dart';
 
 import 'timetable_extended.dart';
 
 /// Timetable card to display the current date
 class TimetableDate extends StatelessWidget {
-  const TimetableDate({Key? key, required this.date, this.editing = false}) : super(key: key);
+  const TimetableDate({super.key, required this.date, this.editing = false});
 
   final DateTime date;
   final bool editing;
@@ -35,7 +36,7 @@ class TimetableDate extends StatelessWidget {
 
 /// Timetable card to display a break
 class TimetableBreak extends StatelessWidget {
-  const TimetableBreak({Key? key}) : super(key: key);
+  const TimetableBreak({super.key});
 
   @override
   Widget build(BuildContext context) => Stack(
@@ -61,10 +62,10 @@ class TimetableBreak extends StatelessWidget {
 /// Timetable card to display one or more free hours
 class TimetableFreeHour extends StatelessWidget {
   const TimetableFreeHour({
-    Key? key,
+    super.key,
     required this.freeHours,
     this.timeSpan,
-  }) : super(key: key);
+  });
 
   final int freeHours;
   final String? timeSpan;
@@ -93,34 +94,48 @@ class TimetableFreeHour extends StatelessWidget {
 
 /// Timetable card to display that there are no entries
 class TimetableNoEntries extends StatelessWidget {
-  const TimetableNoEntries({Key? key, required this.editCallback}) : super(key: key);
+  const TimetableNoEntries({super.key, required this.editCallback});
 
   final void Function() editCallback;
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
+  Widget build(BuildContext context) {
+    return Center(
+      child: GestureDetector(
         onTap: editCallback,
         child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Text(
-              context.l10n.noTimetable,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            children: [
+              Text(
+                context.l10n.noTimetable,
+                style: Theme.of(context).textTheme.bodySmall,
+                textScaleFactor: 1.2,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: ElevatedButton(
+                  onPressed: editCallback,
+                  child: Text(context.l10n.add),
+                ),
+              )
+            ],
           ),
         ),
-      );
+      ),
+    );
+  }
 }
 
 /// Timetable card to display a lesson
 class TimetableCard extends StatelessWidget {
   const TimetableCard({
-    Key? key,
+    super.key,
     required this.date,
     required this.entry,
     this.entryDoc,
     this.editing = false,
-  }) : super(key: key);
+  });
 
   final DateTime date;
   final TimetableEntry entry;
@@ -187,11 +202,11 @@ class TimetableCard extends StatelessWidget {
 
 class TimetableSubtitle extends StatelessWidget {
   const TimetableSubtitle({
-    Key? key,
+    super.key,
     required this.entry,
     this.showTeacher = true,
     this.showClassName = false,
-  }) : super(key: key);
+  });
 
   final TimetableEntry entry;
   final bool showTeacher;

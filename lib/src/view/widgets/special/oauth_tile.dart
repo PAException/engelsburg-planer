@@ -2,7 +2,7 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/constants.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/services/oauth.dart';
@@ -17,11 +17,11 @@ class OAuthTile extends StatelessWidget {
   final Widget icon;
 
   const OAuthTile({
-    Key? key,
+    super.key,
     required this.oAuth,
     required this.title,
     required this.icon,
-  }) : super(key: key);
+  });
 
   /// Google OAuth list tile
   factory OAuthTile.google() {

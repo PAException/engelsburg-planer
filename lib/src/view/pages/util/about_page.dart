@@ -6,13 +6,14 @@ import 'dart:io' show Platform;
 
 import 'package:engelsburg_planer/src/utils/constants.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/view/widgets/app_icon.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
 class AboutPage extends StatelessWidget {
-  const AboutPage({Key? key}) : super(key: key);
+  const AboutPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,31 +21,38 @@ class AboutPage extends StatelessWidget {
       future: PackageInfo.fromPlatform(),
       builder: (context, snapshot) {
         final packageInfo = snapshot.data;
-        var appStoreUrl = FirebaseRemoteConfig.instance.getString("app_store_url");
-        var playStoreUrl = FirebaseRemoteConfig.instance.getString("play_store_url");
         var supportEmail = FirebaseRemoteConfig.instance.getString("support_email");
+
+        String storeUrl = "";
+        if (Platform.isIOS) {
+          storeUrl = FirebaseRemoteConfig.instance.getString("app_store_url");
+        } else if (Platform.isAndroid) {
+          storeUrl = FirebaseRemoteConfig.instance.getString("play_store_url");
+        }
 
         return ListView(
           children: <Widget>[
             ListTile(
-              leading: Image.asset(AssetPaths.appLogo),
+              leading: const AppIcon(),
               title: Text(
                 packageInfo?.appName ?? context.l10n.loadingAppName,
               ),
               subtitle: Text(
-                packageInfo?.version ?? context.l10n.loadingAppVersion,
+                packageInfo == null
+                    ? context.l10n.loadingAppVersion
+                    : "${packageInfo.version}+${packageInfo.buildNumber}",
               ),
             ),
             ListTile(
               title: Text(context.l10n.appDescription),
             ),
             const Divider(),
-            if (appStoreUrl.isNotEmpty && playStoreUrl.isNotEmpty)
+            if (storeUrl.isNotEmpty)
               ListTile(
                 leading: const Icon(Icons.star_half),
                 title: Text(context.l10n.rateApp),
                 onTap: () => url_launcher.launchUrl(
-                  Uri.parse(Platform.isIOS ? appStoreUrl : playStoreUrl),
+                  Uri.parse(storeUrl),
                 ),
               ),
             ListTile(
@@ -56,12 +64,9 @@ class AboutPage extends StatelessWidget {
               leading: const Icon(Icons.info),
               title: Text(context.l10n.openSourceLicenses),
               onTap: () => showLicensePage(
-                applicationIcon: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Image.asset(
-                    AssetPaths.appLogo,
-                    height: 64.0,
-                  ),
+                applicationIcon: const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: AppIcon(size: 2),
                 ),
                 applicationName: packageInfo?.appName,
                 applicationVersion: packageInfo?.version,

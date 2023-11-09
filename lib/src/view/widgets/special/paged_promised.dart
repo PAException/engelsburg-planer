@@ -3,11 +3,12 @@
  */
 
 import 'package:engelsburg_planer/src/backend/api/api_error.dart';
-import 'package:engelsburg_planer/src/services/synchronization_service.dart';
-import 'package:engelsburg_planer/src/utils/type_definitions.dart';
+import 'package:engelsburg_planer/src/services/promise.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+typedef LoadingBuilder = Widget Function(BuildContext context);
+typedef ErrorBuilder = Widget Function(ApiError error, BuildContext context);
 typedef ItemBuilder<T> = Widget Function(T t, BuildContext context);
 
 const Widget kLoadingWidget = Center(child: CircularProgressIndicator());
@@ -32,14 +33,14 @@ class PagedPromised<T> extends StatefulWidget {
   final ScrollController? scrollController;
 
   const PagedPromised({
-    Key? key,
+    super.key,
     required this.promise,
     required this.itemBuilder,
     required this.separatorBuilder,
     required this.errorBuilder,
     this.scrollController,
     this.loadingBuilder,
-  }) : super(key: key);
+  });
 
   @override
   State<PagedPromised<T>> createState() => PagedPromisedState<T>();
@@ -117,12 +118,12 @@ class PagedPromisedContent<T> extends StatefulWidget {
   final ScrollController scrollController;
 
   const PagedPromisedContent({
-    Key? key,
+    super.key,
     required this.promise,
     required this.itemBuilder,
     required this.separatorBuilder,
     required this.scrollController,
-  }) : super(key: key);
+  });
 
   @override
   State<PagedPromisedContent<T>> createState() => _PagedPromisedContentState<T>();

@@ -3,22 +3,23 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/models/db/grades.dart';
-import 'package:engelsburg_planer/src/models/db/subjects.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
-import 'package:engelsburg_planer/src/models/storage_adapter.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/grades.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/subjects.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/base/document.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/widgets/extended_page_with_subject.dart';
+import 'package:engelsburg_planer/src/view/widgets/special/storage/stream_consumer.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/material.dart';
 
 class ExtendedGradePage extends CompactStatefulWidget {
   const ExtendedGradePage({
-    Key? key,
+    super.key,
     this.grade,
     this.subject,
     this.heroTag,
-  }) : super(key: key);
+  });
 
   final Document<Grade>? grade;
   final Document<Subject>? subject;
@@ -54,7 +55,10 @@ class _ExtendedGradePageState extends State<ExtendedGradePage> {
           editing: true,
           heroTag: widget.heroTag,
           subject: subjectDoc,
-          onDelete: () => widget.grade?.delete(),
+          onDelete: widget.grade == null ? null : () {
+            widget.grade?.delete();
+            context.pop();
+          },
           onEdit: (edit, subject) {
             if (subject == null || gradeType == null) return false;
 
@@ -186,7 +190,7 @@ num gradeToValue(num grade) => grade * -1 + 7;
 num valueToGrade(num value) => (value - 7) * -1;
 
 class GradeSlider extends StatefulWidget {
-  const GradeSlider({Key? key, required this.color, this.value}) : super(key: key);
+  const GradeSlider({super.key, required this.color, this.value});
 
   final int? value;
   final Color? color;

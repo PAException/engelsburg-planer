@@ -3,7 +3,7 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/obscured_text_form.dart';
 import 'package:flutter/material.dart';
@@ -21,18 +21,16 @@ class RequestPasswordResetDialog extends StatelessWidget {
   final bool set;
 
   const RequestPasswordResetDialog({
-    Key? key,
+    super.key,
     this.initialEmail,
     required this.set,
-  }) : super(key: key);
+  });
 
-  const RequestPasswordResetDialog.set({Key? key, this.initialEmail})
-      : set = true,
-        super(key: key);
+  const RequestPasswordResetDialog.set({super.key, this.initialEmail})
+      : set = true;
 
-  const RequestPasswordResetDialog.reset({Key? key, this.initialEmail})
-      : set = false,
-        super(key: key);
+  const RequestPasswordResetDialog.reset({super.key, this.initialEmail})
+      : set = false;
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +105,7 @@ class ResetPasswordDialog extends StatelessWidget {
   /// This will be only important for the title of the dialog.
   final bool set;
 
-  const ResetPasswordDialog({Key? key, required this.set}) : super(key: key);
+  const ResetPasswordDialog({super.key, required this.set});
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +154,7 @@ class ResetPasswordDialog extends StatelessWidget {
 
 /// Dialog to verify the email of an account.
 class VerifyEmailDialog extends StatelessWidget {
-  const VerifyEmailDialog({Key? key}) : super(key: key);
+  const VerifyEmailDialog({super.key});
 
   @override
   Widget build(BuildContext context) {

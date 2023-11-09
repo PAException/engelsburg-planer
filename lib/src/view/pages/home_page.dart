@@ -6,21 +6,22 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/models/state/app_state.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
-import 'package:engelsburg_planer/src/utils/constants.dart';
+import 'package:engelsburg_planer/src/backend/database/state/app_state.dart';
+import 'package:engelsburg_planer/src/services/firebase/crashlytics.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/utils/firebase/crashlytics.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
+import 'package:provider/provider.dart';
 import 'package:engelsburg_planer/src/view/routing/page.dart';
 import 'package:engelsburg_planer/src/view/pages/auth/auth_page.dart';
 import 'package:engelsburg_planer/src/view/routing/route_modifier.dart';
+import 'package:engelsburg_planer/src/view/widgets/app_icon.dart';
 import 'package:engelsburg_planer/src/view/widgets/special/network_status.dart';
 import 'package:engelsburg_planer/src/view/widgets/special/updatable.dart';
-import 'package:engelsburg_planer/src/view/widgets/util/wrap_if.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart' hide Router;
 import 'package:go_router/go_router.dart' hide GoRouterHelper;
-import 'package:provider/provider.dart';
 
 /// Default page of the app.
 /// Contains a PageView and a NavigationBar with 5 pages.
@@ -51,6 +52,7 @@ Stream<Map<String, dynamic>> createConnection(String identifier) {
 
 void sendUpdate(String identifier, Map<String, dynamic> data) {
   if (data.isEmpty) return;
+  if (identifier == "/") identifier = "/article";
 
   _connections[identifier]?.add(data);
 }
@@ -162,7 +164,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
 
           return LayoutBuilder(
             builder: (context, constraints) {
-              if (context.isLandscape && constraints.maxWidth > 500) {
+              if (context.isLandscape && constraints.maxWidth > 600) {
                 return Scaffold(
                   appBar: AppBar(
                     title: appBar.title,
@@ -173,20 +175,27 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
                   body: Row(
                     children: [
                       StatefulBuilder(builder: (context, setState) {
-                        return NavigationRail(
-                          labelType: extended
-                              ? NavigationRailLabelType.none
-                              : NavigationRailLabelType.selected,
-                          destinations: Pages.navRailItems(context),
-                          extended: extended,
-                          onDestinationSelected: updateIndex,
-                          selectedIndex: _currentPage,
-                          trailing: IconButton(
-                            icon: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 20.0),
-                              child: Icon(Icons.more_horiz),
+                        return Align(
+                          alignment: Alignment.topCenter,
+                          child: SingleChildScrollView(
+                            child: IntrinsicHeight(
+                              child: NavigationRail(
+                                labelType: extended
+                                    ? NavigationRailLabelType.none
+                                    : NavigationRailLabelType.selected,
+                                destinations: Pages.navRailItems(context),
+                                extended: extended,
+                                onDestinationSelected: updateIndex,
+                                selectedIndex: _currentPage,
+                                trailing: IconButton(
+                                  icon: const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                    child: Icon(Icons.more_horiz),
+                                  ),
+                                  onPressed: () => Scaffold.of(context).openDrawer(),
+                                ),
+                              ),
                             ),
-                            onPressed: () => Scaffold.of(context).openDrawer(),
                           ),
                         );
                       }),
@@ -225,8 +234,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
 /// Includes AppLogo, title, motivation to signIn/Up, profile and other pages.
 /// Order and visibility are dependent on the auth state and the app configuration.
 class HomePageDrawer extends StatelessWidget {
-  const HomePageDrawer({Key? key, this.includeBottomNavItems = false})
-      : super(key: key);
+  const HomePageDrawer({super.key, this.includeBottomNavItems = false});
 
   final bool includeBottomNavItems;
 
@@ -239,28 +247,24 @@ class HomePageDrawer extends StatelessWidget {
             Container(
               height: 100,
               padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  WrapIf(
-                    condition: Theme.of(context).brightness == Brightness.dark,
-                    wrap: (child, context) => CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: child,
+              child: GestureDetector(
+                onDoubleTap: () {
+                  if (!kDebugMode) return;
+
+                  context.read<AppConfigState>().remove();
+                },
+                child: Row(
+                  children: [
+                    const AppIcon(),
+                    Expanded(
+                      child: Text(
+                        context.l10n.appTitle,
+                        textScaleFactor: 1.5,
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    child: Image.asset(AssetPaths.appLogo, scale: 1.6),
-                  ),
-                  Expanded(
-                    child: Text(
-                      context.l10n.appTitle,
-                      textScaleFactor: 1.5,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             if (FirebaseRemoteConfig.instance.getBool("enable_firebase"))
@@ -285,7 +289,7 @@ class HomePageDrawer extends StatelessWidget {
 }
 
 class AuthenticationTiles extends StatelessWidget {
-  const AuthenticationTiles({Key? key}) : super(key: key);
+  const AuthenticationTiles({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -2,10 +2,10 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-import 'package:engelsburg_planer/src/models/state/app_state.dart';
-import 'package:engelsburg_planer/src/utils/firebase/analytics.dart';
-import 'package:engelsburg_planer/src/utils/firebase/crashlytics.dart';
-import 'package:engelsburg_planer/src/utils/util.dart';
+import 'package:engelsburg_planer/src/backend/database/state/app_state.dart';
+import 'package:engelsburg_planer/src/services/firebase/analytics.dart';
+import 'package:engelsburg_planer/src/services/firebase/crashlytics.dart';
+import 'package:engelsburg_planer/src/utils/global_context.dart';
 import 'package:engelsburg_planer/src/view/pages/home_page.dart';
 import 'package:engelsburg_planer/src/view/routing/page.dart';
 import 'package:flutter/foundation.dart';

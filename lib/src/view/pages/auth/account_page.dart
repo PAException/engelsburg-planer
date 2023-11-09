@@ -5,7 +5,7 @@
 import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/backend/api/request.dart';
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/auth/account/account_security_dialogs.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AccountPage extends StatelessWidget {
-  const AccountPage({Key? key}) : super(key: key);
+  const AccountPage({super.key});
 
   @override
   Widget build(BuildContext context) {

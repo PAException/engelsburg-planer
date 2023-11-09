@@ -3,9 +3,9 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
+import 'package:engelsburg_planer/src/backend/api/model/article.dart';
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
-import 'package:engelsburg_planer/src/models/api/article.dart';
-import 'package:engelsburg_planer/src/services/synchronization_service.dart';
+import 'package:engelsburg_planer/src/services/promise.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/article/article_card.dart';
 import 'package:engelsburg_planer/src/view/pages/article/article_extended.dart';
@@ -31,9 +31,9 @@ class _ArticlePageState extends HomeScreenPageState<ArticlePage> {
   final ScrollController scrollController = ScrollController();
 
   /// Information to build the automated paged promise
-  final PagedPromise<Article> promise = SyncService.paged(
+  final PagedPromise<Article> promise = PagedPromise.fromRequest(
     request: (paging) => getArticles(paging: paging).build(),
-    parse: (e) => Article.fromArticles(e),
+    parse: Article.fromArticles,
     dbOrderBy: "date DESC",
     pagingSize: 20,
   );
@@ -67,7 +67,7 @@ class _ArticlePageState extends HomeScreenPageState<ArticlePage> {
         final floatingActionButton = FloatingActionButton(
           heroTag: StringUtils.randomAlphaNumeric(10),
           onPressed: () => context.navigate(Pages.savedArticles.path),
-          child: const Icon(Icons.bookmark_outlined),
+          child: const Icon(Icons.bookmarks_outlined),
         );
 
         if (context.isLandscape && constraints.maxWidth > 600) {

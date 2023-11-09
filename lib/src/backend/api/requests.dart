@@ -4,11 +4,11 @@
 
 import 'dart:io';
 
+import 'package:engelsburg_planer/src/backend/api/model/dto/update_notification_settings_dto.dart';
 import 'package:engelsburg_planer/src/backend/api/request.dart';
 import 'package:engelsburg_planer/src/backend/util/paging.dart';
 import 'package:engelsburg_planer/src/backend/util/query.dart';
-import 'package:engelsburg_planer/src/models/api/dto/update_notification_settings_dto.dart';
-import 'package:engelsburg_planer/src/utils/firebase/analytics.dart';
+import 'package:engelsburg_planer/src/services/firebase/analytics.dart';
 import 'package:flutter/foundation.dart';
 
 ///
@@ -17,7 +17,6 @@ import 'package:flutter/foundation.dart';
 class Host {
   static bool enforceHttpForDebug = kDebugMode;
 
-  //static String get api => kDebugMode ? debugApi : productionApi;
   static String get api => productionApi;
 
   static String get productionApi => "api.engelsburg-planer.de";

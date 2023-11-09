@@ -2,15 +2,15 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
+import 'package:engelsburg_planer/src/backend/api/model/solar_panel.dart';
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
-import 'package:engelsburg_planer/src/models/api/solar_panel.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/api_future_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 class SolarPanelPage extends StatelessWidget {
-  const SolarPanelPage({Key? key}) : super(key: key);
+  const SolarPanelPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -96,11 +96,11 @@ class SolarPanelInfoBox extends StatelessWidget {
   final String value;
 
   const SolarPanelInfoBox({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     required this.value,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

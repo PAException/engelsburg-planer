@@ -3,7 +3,7 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/models/state/theme_state.dart';
+import 'package:engelsburg_planer/src/backend/database/state/theme_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/color_grid.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 
 /// Settings page to allow user to change the theme of the app.
 class ThemeSettingsPage extends StatelessWidget {
-  const ThemeSettingsPage({Key? key}) : super(key: key);
+  const ThemeSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -70,13 +70,13 @@ class ColorChanger extends StatelessWidget {
   final void Function(Color? color) update;
 
   const ColorChanger({
-    Key? key,
+    super.key,
     this.color,
     required this.title,
     required this.subtitle,
     required this.dialogTitle,
     required this.update,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

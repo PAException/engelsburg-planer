@@ -3,7 +3,7 @@
  */
 
 import 'package:engelsburg_planer/src/backend/controller/article_controller.dart';
-import 'package:engelsburg_planer/src/utils/util.dart';
+import 'package:engelsburg_planer/src/utils/global_context.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -25,9 +25,7 @@ class DataService {
     List<Future> setups = [];
 
     for (var controller in _services!.values) {
-      setups.add(
-          (controller..updateContext(globalContext())).setup()
-      );
+      setups.add((controller..updateContext(globalContext())).setup());
     }
 
     return Future.wait(setups);

@@ -3,7 +3,7 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/auth/account/account_security_dialogs.dart';
 import 'package:engelsburg_planer/src/view/pages/auth/auth_page.dart';
@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 //TODO create sub widgets => test the layout (column > column)
 /// Page to access account security settings of a user. E.g. reset password, add OAuth.
 class AccountSecurityPage extends StatelessWidget {
-  const AccountSecurityPage({Key? key}) : super(key: key);
+  const AccountSecurityPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +101,7 @@ class AccountSecurityPage extends StatelessWidget {
 
 /// ListTile to handle the first set of an email.
 class SetPasswordTile extends StatelessWidget {
-  const SetPasswordTile({Key? key}) : super(key: key);
+  const SetPasswordTile({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -2,11 +2,15 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-import 'package:engelsburg_planer/src/services/synchronization_service.dart';
-import 'package:engelsburg_planer/src/utils/type_definitions.dart';
+import 'package:engelsburg_planer/src/backend/api/api_error.dart';
+import 'package:engelsburg_planer/src/services/promise.dart';
 import 'package:flutter/material.dart';
 
 const Widget kLoadingWidget = Center(child: CircularProgressIndicator());
+
+typedef DataBuilder<T> = Widget Function(T t, RefreshCallback refresh, BuildContext context);
+typedef LoadingBuilder = Widget Function(BuildContext context);
+typedef ErrorBuilder = Widget Function(ApiError error, BuildContext context);
 
 /// Widget to wrap a [Promise]
 ///
@@ -26,12 +30,12 @@ class Promised<T> extends StatefulWidget {
   final LoadingBuilder? loadingBuilder;
 
   const Promised({
-    Key? key,
+    super.key,
     required this.promise,
     required this.dataBuilder,
     required this.errorBuilder,
     this.loadingBuilder,
-  }) : super(key: key);
+  });
 
   @override
   State<Promised<T>> createState() => _PromisedState<T>();

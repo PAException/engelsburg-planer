@@ -3,8 +3,8 @@
  */
 
 import 'package:awesome_extensions/awesome_extensions.dart';
+import 'package:engelsburg_planer/src/backend/api/model/events.dart';
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
-import 'package:engelsburg_planer/src/models/api/events.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/api_future_builder.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ import 'package:intl/intl.dart';
 final _dateFormat = DateFormat('dd.MM.yyyy');
 
 class EventsPage extends StatelessWidget {
-  const EventsPage({Key? key}) : super(key: key);
+  const EventsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class EventsPage extends StatelessWidget {
 class EventListTile extends StatelessWidget {
   final Event event;
 
-  const EventListTile(this.event, {Key? key}) : super(key: key);
+  const EventListTile(this.event, {super.key});
 
   @override
   Widget build(BuildContext context) {

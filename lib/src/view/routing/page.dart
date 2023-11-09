@@ -2,10 +2,12 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
+import 'package:engelsburg_planer/src/backend/api/model/article.dart';
 import 'package:engelsburg_planer/src/view/pages/introduction.dart';
-import 'package:engelsburg_planer/src/models/api/article.dart';
-import 'package:engelsburg_planer/src/models/state/app_state.dart';
+import 'package:engelsburg_planer/src/backend/database/state/app_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:engelsburg_planer/src/view/pages/article/article_page.dart';
 import 'package:engelsburg_planer/src/view/pages/article/article_extended.dart';
 import 'package:engelsburg_planer/src/view/pages/article/article_saved_page.dart';
@@ -17,7 +19,7 @@ import 'package:engelsburg_planer/src/view/pages/auth/account/account_security_p
 import 'package:engelsburg_planer/src/view/pages/auth/account/account_advanced_page.dart';
 import 'package:engelsburg_planer/src/view/pages/auth/account_page.dart';
 import 'package:engelsburg_planer/src/view/pages/auth/auth_page.dart';
-import 'package:engelsburg_planer/src/view/pages/auth/settings_page.dart';
+import 'package:engelsburg_planer/src/view/pages/settings/settings_page.dart';
 import 'package:engelsburg_planer/src/view/pages/settings/settings_notifications_page.dart';
 import 'package:engelsburg_planer/src/view/pages/settings/subject/settings_subject_page.dart';
 import 'package:engelsburg_planer/src/view/pages/settings/settings_substitute_page.dart';
@@ -28,9 +30,7 @@ import 'package:engelsburg_planer/src/view/pages/util/events_page.dart';
 import 'package:engelsburg_planer/src/view/pages/util/solar_panel_page.dart';
 import 'package:engelsburg_planer/src/view/widgets/special/network_status.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:go_router/go_router.dart';
 
 typedef L10n = String Function(AppLocalizations l10n);
 
@@ -261,7 +261,7 @@ class Pages {
     page: const SavedArticlePage(),
     path: "/article/saved",
     label: (l10n) => l10n.savedArticles,
-    icon: Icons.bookmark_outlined,
+    icon: Icons.bookmarks_outlined,
   );
 
   static final StyledRoute substitutes = StyledRoute.static(

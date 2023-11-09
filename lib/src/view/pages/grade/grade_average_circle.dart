@@ -4,13 +4,11 @@
 
 import 'dart:math';
 
-import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:flutter/material.dart';
 
 class AverageGradeCircle extends StatefulWidget {
-  const AverageGradeCircle({Key? key, required this.average, required this.percent})
-      : super(key: key);
+  const AverageGradeCircle({super.key, required this.average, required this.percent});
 
   final double average;
   final double percent;

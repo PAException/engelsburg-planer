@@ -2,16 +2,16 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
-import 'package:engelsburg_planer/src/models/db/subjects.dart';
-import 'package:engelsburg_planer/src/models/db/tasks.dart';
-import 'package:engelsburg_planer/src/models/state/user_state.dart';
-import 'package:engelsburg_planer/src/models/storage_adapter.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/subjects.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/model/tasks.dart';
+import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:engelsburg_planer/src/view/pages/task/task_extended.dart';
 import 'package:flutter/material.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/base/document.dart';
+import 'package:engelsburg_planer/src/view/pages/task/task_extended.dart';
 
 class TaskCardLandscape extends StatelessWidget {
-  const TaskCardLandscape({Key? key, required this.taskDoc}) : super(key: key);
+  const TaskCardLandscape({super.key, required this.taskDoc});
 
   final Document<Task> taskDoc;
 

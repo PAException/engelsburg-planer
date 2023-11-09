@@ -6,10 +6,10 @@ import 'dart:convert';
 
 import 'package:engelsburg_planer/src/backend/api/api_error.dart';
 import 'package:engelsburg_planer/src/backend/api/request.dart';
-import 'package:engelsburg_planer/src/services/cache_service.dart';
-import 'package:engelsburg_planer/src/utils/type_definitions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' hide Request;
+
+typedef Parser<T> = T Function(dynamic json);
 
 /// Handle http responses of api
 @immutable
@@ -35,6 +35,35 @@ class ApiResponse<T> {
   bool get errorNotPresent => error == null;
 
   bool get dataNotPresent => data == null;
+
+  Future<ApiResponse<T>> checkNotModified(Request request, Parser<T> parse) async {
+    return this;
+
+    /* //TODO
+    //Return instance if no cacheId is specified
+    if (request.cacheId == null) return this;
+
+    if (dataPresent) {
+      //Cache new data and hash if data present, return original response
+      SessionPersistentData.keyed["${request.cacheId!}_hash"] = raw!.headers["hash"];
+      await setJson(request.cacheId!, data!);
+    } else if (error?.isNotModified ?? false) {
+      //If data wasn't modified get cached and return new ApiResponse with data and without error
+      try {
+        return ApiResponse<T>(raw, null, parse.call(getJson(request.cacheId!)));
+      } on StateError {
+        await remove(request.cacheId!);
+      }
+    } else if (error?.status == 999) {
+      //Response timed out: ignore error but set data from cache
+      dynamic json = getNullableJson(request.cacheId!);
+      return ApiResponse<T>(raw, error, json != null ? parse.call(json) : null);
+    }
+
+    //Return original response if not a NOT_MODIFIED error was present
+    return this;
+    */
+  }
 
   @override
   String toString() {
@@ -71,9 +100,6 @@ extension ResponseExtension on Response {
     }
 
     //Check for not modified error and cached data
-    response = await CacheService.handle<T>(request, response, parse);
-
-    //Return final response
-    return response;
+    return response.checkNotModified(request, parse);
   }
 }

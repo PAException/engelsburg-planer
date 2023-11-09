@@ -21,7 +21,7 @@ class OAuthButton extends StatelessWidget {
   final String text;
 
   const OAuthButton({
-    Key? key,
+    super.key,
     required this.oAuth,
     required this.type,
     required this.backgroundColor,
@@ -29,7 +29,7 @@ class OAuthButton extends StatelessWidget {
     required this.borderColor,
     required this.icon,
     required this.text,
-  }) : super(key: key);
+  });
 
   /// Google OAuth sign in button
   factory OAuthButton.google(BuildContext context) {
