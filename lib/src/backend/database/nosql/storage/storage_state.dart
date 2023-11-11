@@ -66,6 +66,8 @@ class StorageState {
         _delayedWriteData.remove(document);
         if (result) return;
 
+        debugPrint("[${document.id}] delayed write failed");
+
         //Revert cache
         _cache.removeDocument(document);
         if (previous != null) _cache.setDocument(document, previous);

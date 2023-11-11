@@ -14,54 +14,55 @@ class NotificationSettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamConsumer<NotificationSettings>(
-      doc: NotificationSettings.ref().defaultStorage(context),
-      itemBuilder: (context, doc, settings) {
-        return Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: StatefulBuilder(builder: (context, setState) {
-            return ListView(
-              padding: const EdgeInsets.all(8.0),
-              children: [
-                SwitchListTile(
-                  value: settings.enabled,
-                  title: Text(context.l10n.allowNotifications),
-                  onChanged: (value) {
-                    settings.setEnabled(value);
-                    doc.setDelayed(settings);
-                  },
-                ),
-                Disabled(
-                  disabled: !settings.enabled,
-                  child: Column(
-                    children: [
-                      const Divider(height: 10),
-                      SwitchListTile(
-                        secondary: const Icon(Icons.library_books),
-                        value: settings.article,
-                        title: Text(context.l10n.articles),
-                        onChanged: (value) {
-                          settings.article = value;
-                          doc.setDelayed(settings);
-                        },
-                      ),
-                      SwitchListTile(
-                        secondary: const Icon(Icons.dashboard),
-                        value: settings.substitute,
-                        title: Text(context.l10n.substitutes),
-                        onChanged: (value) {
-                          settings.setSubstitute(value);
-                          doc.setDelayed(settings);
-                        },
-                      ),
-                    ],
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: StreamConsumer<NotificationSettings>(
+        doc: NotificationSettings.ref().defaultStorage(context),
+        errorBuilder: (context, doc, error) => Text(error.toString()),
+        itemBuilder: (context, doc, settings) {
+          print(settings);
+
+          return ListView(
+          padding: const EdgeInsets.all(8.0),
+          children: [
+            SwitchListTile(
+              value: settings.enabled,
+              title: Text(context.l10n.allowNotifications),
+              onChanged: (value) {
+                settings.setEnabled(value);
+                doc.setDelayed(settings);
+              },
+            ),
+            Disabled(
+              disabled: !settings.enabled,
+              child: Column(
+                children: [
+                  const Divider(height: 10),
+                  SwitchListTile(
+                    secondary: const Icon(Icons.library_books),
+                    value: settings.article,
+                    title: Text(context.l10n.articles),
+                    onChanged: (value) {
+                      settings.article = value;
+                      doc.setDelayed(settings);
+                    },
                   ),
-                ),
-              ],
-            );
-          }),
+                  SwitchListTile(
+                    secondary: const Icon(Icons.dashboard),
+                    value: settings.substitute,
+                    title: Text(context.l10n.substitutes),
+                    onChanged: (value) {
+                      settings.setSubstitute(value);
+                      doc.setDelayed(settings);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
         );
-      },
+        },
+      ),
     );
   }
 }

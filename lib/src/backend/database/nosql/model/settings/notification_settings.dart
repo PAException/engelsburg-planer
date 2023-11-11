@@ -18,7 +18,6 @@ class NotificationSettings {
   Set<String> _priorityTopics;
   bool _substitute;
 
-
   NotificationSettings(
     this._enabled,
     this._topics,
@@ -27,36 +26,44 @@ class NotificationSettings {
   );
 
   static DocumentReference<NotificationSettings> ref() =>
-      const DocumentReference<NotificationSettings>("notification_settings", NotificationSettings.fromJson);
+      const DocumentReference<NotificationSettings>(
+          "notification_settings", NotificationSettings.fromJson);
 
   NotificationSettings.all([bool? on])
       : _enabled = NotificationHelper.isAuthorized,
         _topics = {},
-        _priorityTopics = NotificationHelper.isAuthorized ? {
-          "article"
-        } : {},
+        _priorityTopics = NotificationHelper.isAuthorized ? {"article"} : {},
         _substitute = NotificationHelper.isAuthorized;
 
   factory NotificationSettings.fromJson(Map<String, dynamic> json) =>
-      json.isEmpty ? NotificationSettings.all() : NotificationSettings(
-    json["enabled"],
-    json["topics"],
-    json["priorityTopics"],
-    json["substitute"],
-  );
+      json.isEmpty
+          ? NotificationSettings.all()
+          : NotificationSettings(
+              json["enabled"],
+              (json["topics"] as List).toSet().cast<String>(),
+              (json["priorityTopics"] as List).toSet().cast<String>(),
+              json["substitute"],
+            );
 
   Map<String, dynamic> toJson() => {
-    "enabled": _enabled,
-    "topics": _topics,
-    "priorityTopics": _priorityTopics,
-  };
+        "enabled": _enabled,
+        "topics": _topics.toList(),
+        "priorityTopics": _priorityTopics.toList(),
+        "substitute": _substitute,
+      };
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }
 
 extension NotificationHelper on NotificationSettings {
   static final fcm = FirebaseMessaging.instance;
   static late AuthorizationStatus _authorizationStatus;
 
-  static bool get isAuthorized => _authorizationStatus != AuthorizationStatus.denied;
+  static bool get isAuthorized =>
+      _authorizationStatus != AuthorizationStatus.denied;
 
   static Future<void> init() async {
     await fcm.setAutoInitEnabled(true);
@@ -166,10 +173,7 @@ extension NotificationHelper on NotificationSettings {
     var settings = await SubstituteSettings.ref().offline.load();
     var substituteTopics = await settings.priorityTopics();
 
-    updatePriorityTopics({
-      ..._priorityTopics,
-      ...substituteTopics
-    });
+    updatePriorityTopics({..._priorityTopics, ...substituteTopics});
   }
 
   /// Refreshes substitute settings
@@ -177,5 +181,13 @@ extension NotificationHelper on NotificationSettings {
 
   bool get article => _priorityTopics.contains("article");
 
-  set article(bool value) => updatePriorityTopics(_priorityTopics..add("article"));
+  set article(bool value) {
+    if (value) {
+      _priorityTopics.add("article");
+    } else {
+      _priorityTopics.remove("article");
+    }
+
+    updatePriorityTopics(_priorityTopics);
+  }
 }
