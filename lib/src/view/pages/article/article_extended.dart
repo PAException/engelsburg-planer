@@ -38,7 +38,7 @@ class ExtendedArticle extends StatefulWidget {
     this.popCallback,
     this.statusBar = true,
     super.key,
-  })  : assert(articleId != null || article != null);
+  }) : assert(articleId != null || article != null);
 
   @override
   ExtendedArticleState createState() => ExtendedArticleState();
@@ -58,7 +58,9 @@ class ExtendedArticleState extends State<ExtendedArticle> {
           where: "articleId=?",
           whereArgs: [widget.articleId!],
         );
-        article ??= (await getArticle(widget.articleId!).build().api(Article.fromJson)).data;
+        article ??=
+            (await getArticle(widget.articleId!).build().api(Article.fromJson))
+                .data;
 
         return article;
       });
@@ -99,71 +101,65 @@ class ExtendedArticleState extends State<ExtendedArticle> {
               OpenInBrowserIconButton(article.link),
               ShareIconButton(
                 article.link,
-                onShare: () => Analytics.interaction.article.share(article, "article_extended"),
+                onShare: () => Analytics.interaction.article
+                    .share(article, "article_extended"),
               ),
             ],
           ),
           body: WrapIf(
             condition: widget.statusBar,
             wrap: (child, context) => NetworkStatusBar(child: child),
-            child: ListView(
-              children: [
-                if (article.mediaUrl != null)
-                  OptionalHero(
-                    tag: widget.hero,
-                    child: CachedNetworkImage(
-                      height: 250,
-                      fit: BoxFit.cover,
-                      imageUrl: article.mediaUrl!,
-                    ),
-                  ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ArticleTitle.extended(article: article, heroTag: widget.hero ?? ""),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16.0, bottom: 32.0),
-                        child: Text(
-                          _dateFormat.format(DateTime.fromMillisecondsSinceEpoch(article.date)),
-                        ),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ArticleTitle.extended(
+                        article: article, heroTag: widget.hero ?? ""),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0, bottom: 32.0),
+                      child: Text(
+                        _dateFormat.format(
+                            DateTime.fromMillisecondsSinceEpoch(article.date)),
                       ),
-                      const Divider(height: 32.0),
-                      HtmlWidget(
-                        article.content.toString(),
-                        textStyle: const TextStyle(height: 1.5, fontSize: 18.0),
-                        onTapUrl: (url) => url_launcher.launchUrl(
-                          Uri.parse(url),
-                          mode: LaunchMode.externalApplication,
-                        ),
-                        onTapImage: (meta) => showDialog(
-                          context: context,
-                          builder: (context) => Dialog(
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              alignment: Alignment.center,
-                              children: <Widget>[
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 500,
-                                  child: OctoImage(
-                                    image: CachedNetworkImageProvider(meta.sources.first.url),
-                                    fit: BoxFit.contain,
-                                    placeholderBuilder: (_) => SpinKitCircle(
-                                      color: Theme.of(context).colorScheme.primary,
-                                    ),
+                    ),
+                    const Divider(height: 32.0),
+                    HtmlWidget(
+                      article.content.toString(),
+                      textStyle: const TextStyle(height: 1.5, fontSize: 18.0),
+                      onTapUrl: (url) => url_launcher.launchUrl(
+                        Uri.parse(url),
+                        mode: LaunchMode.externalApplication,
+                      ),
+                      onTapImage: (meta) => showDialog(
+                        context: context,
+                        builder: (context) => Dialog(
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            alignment: Alignment.center,
+                            children: <Widget>[
+                              SizedBox(
+                                width: double.infinity,
+                                height: 500,
+                                child: OctoImage(
+                                  image: CachedNetworkImageProvider(
+                                      meta.sources.first.url),
+                                  fit: BoxFit.contain,
+                                  placeholderBuilder: (_) => SpinKitCircle(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         );
