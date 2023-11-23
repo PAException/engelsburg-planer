@@ -63,7 +63,7 @@ dependencies:
   flutter_local_notifications: ^16.1.0
   share_plus: ^7.1.0
   flutter_widget_from_html: ^0.14.3
-  package_info_plus: ^4.1.0
+  package_info_plus: ^5.0.1
   octo_image: ^2.0.0
   google_sign_in: ^6.0.2
   awesome_extensions: ^2.0.5
