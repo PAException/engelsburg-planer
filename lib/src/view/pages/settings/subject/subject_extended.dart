@@ -125,7 +125,7 @@ class _ExtendedSubjectPageState extends State<ExtendedSubjectPage>
             icon: const Icon(Icons.delete),
             color: Theme.of(context).colorScheme.onSurface,
             onPressed: () => context.dialog(const ConfirmDeleteSubjectDialog()).then((value) {
-              if (!value) return;
+              if (!(value ?? false)) return;
 
               widget.subjectDoc.delete();
               Timetable.entries().defaultStorage(context).documents().then((items) {
@@ -513,8 +513,8 @@ class _ExtendedSubjectListTileState extends State<ExtendedSubjectListTile>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    var subject = widget.subject.data!;
-    _customNameController ??= TextEditingController(text: subject.parsedName(context));
+    var subject = widget.subject.data;
+    _customNameController ??= TextEditingController(text: subject?.parsedName(context) ?? context.l10n.noSubjectSelected);
 
     return ListTile(
       leading: Padding(
@@ -578,7 +578,7 @@ class _ExtendedSubjectListTileState extends State<ExtendedSubjectListTile>
           },
         ),
       ),
-      subtitle: Text([
+      subtitle: subject == null ? null : Text([
         if (subject.customName != null) BaseSubject.get(subject).l10n(context)!,
         BaseSubject.get(subject).l10nGroup(context),
       ].join(" - ")),

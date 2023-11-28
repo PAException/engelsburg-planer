@@ -14,7 +14,7 @@ class StorageCache {
 
   /// Writes the data of the document to the cache and also references the
   /// document in the collection cache if possible.
-  void setDocument(DocumentReference document, Map<String, dynamic> data) {
+  void setDocument<T>(DocumentReference<T> document, Map<String, dynamic> data) {
     debugPrint("[${document.id}] updating cached document: $data");
     //Update document cache
     _documentCache[document] = data;
@@ -60,12 +60,12 @@ class StorageCache {
   }
 
   //TODO docs
-  void setCollection(CollectionReference collection, CollectionData collectionData) {
+  void setCollection<T>(CollectionReference<T> collection, CollectionData collectionData) {
     debugPrint("[${collection.id}] setting cached collection: $collectionData");
 
     //Map collection data to document references
     var documents = collectionData.mapToList((key, value) {
-      var document = DocumentReference(key, collection.parser);
+      var document = DocumentReference<T>(key, collection.parser);
 
       //Update each document
       setDocument(document, value);
@@ -80,9 +80,9 @@ class StorageCache {
   List<DocumentReference<T>>? getCollection<T>(CollectionReference<T> collection) {
     debugPrint("[${collection.id}] getting cached collection");
 
-    var refs = _collectionCache[collection]?.toList() ?? [];
+    var refs = _collectionCache[collection];
 
-    return refs.cast<DocumentReference<T>>();
+    return refs?.map((e) => e.cast(collection.parser)).toList() ?? [];
   }
 
   /// Returns if the data to the given reference, document or collection,

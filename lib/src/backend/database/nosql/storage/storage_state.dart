@@ -100,7 +100,7 @@ class StorageState {
   List<DocumentReference<T>>? getCachedCollection<T>(
     CollectionReference<T> collection,
   ) {
-    return _cache.getCollection(collection);
+    return _cache.getCollection<T>(collection);
   }
 
   //TODO docs

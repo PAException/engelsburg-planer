@@ -33,6 +33,8 @@ abstract class Reference<T> {
 
   @override
   int get hashCode => path.hashCode;
+
+  Reference<D> cast<D>(Parser<D> parser);
 }
 
 /// Same as Reference<T>, but only to documents.
@@ -55,6 +57,9 @@ class DocumentReference<T> extends Reference<T> {
     );
   }
 
+  @override
+  DocumentReference<D> cast<D>(Parser<D> parser) => DocumentReference<D>(path, parser);
+
   /// Makes the reference concrete, links a storage to the reference.
   @nonVirtual
   Document<T> storage(Storage storage) => Document<T>.ref(storage, this);
@@ -75,6 +80,9 @@ class CollectionReference<T> extends Reference<T> {
     path.substring(0, path.lastIndexOf("/")),
     parser,
   );
+
+  @override
+  CollectionReference<D> cast<D>(Parser<D> parser) => CollectionReference<D>(path, parser);
 
   /// Makes the reference concrete, links a storage to the reference.
   @nonVirtual

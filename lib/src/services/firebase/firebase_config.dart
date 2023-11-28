@@ -3,6 +3,7 @@
  */
 
 import 'dart:io';
+import 'dart:math';
 
 import 'package:engelsburg_planer/src/backend/database/nosql/model/settings/substitute_settings.dart';
 import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
@@ -148,6 +149,18 @@ class FirebaseConfig {
       fetchTimeout: const Duration(minutes: 1),
       minimumFetchInterval: const Duration(hours: 1),
     ));
-    remoteConfig.fetchAndActivate();
+
+    int backOff = 0;
+    Future.doWhile(() async {
+      try {
+        await remoteConfig.fetchAndActivate();
+
+        return true;
+      } catch (_) {
+        await Future.delayed(Duration(seconds: pow(2, backOff++).toInt()));
+
+        return false;
+      }
+    });
   }
 }

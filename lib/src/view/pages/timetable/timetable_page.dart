@@ -45,7 +45,7 @@ class TimetablePageState extends State<TimetablePage> {
     if (_animating != null) return;
 
     //Remove all
-    _timetable.forIndexed(
+    List.of(_timetable).forIndexed(
       (index, element) {
         _timetable.removeAt(index);
         _animatedList.currentState?.removeItem(

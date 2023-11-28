@@ -102,11 +102,13 @@ class StorageStreams {
       var stream = createNativeStream.call(document.path);
       _documentSubscriptions[document] = stream.listen(handleData);
     } else {
-      _dispatchDocument(
-        document: document,
-        data: _latestDocumentData[document],
-        intercept: intercept,
-      );
+      Future.doWhile(() => _latestDocumentData[document] == null).then((_) {
+        _dispatchDocument(
+          document: document,
+          data: _latestDocumentData[document],
+          intercept: intercept,
+        );
+      });
     }
 
     return newController.stream;
@@ -153,11 +155,13 @@ class StorageStreams {
       //Save the stream subscription
       _collectionSubscriptions[collection] = stream.listen(handleData);
     } else {
-      _dispatchCollection(
-        collection: collection,
-        collectionData: _latestCollectionData[collection]!,
-        intercept: intercept,
-      );
+      Future.doWhile(() => _latestCollectionData[collection] == null).then((_) {
+        _dispatchCollection(
+          collection: collection,
+          collectionData: _latestCollectionData[collection]!,
+          intercept: intercept,
+        );
+      });
     }
 
     return newController.stream;
