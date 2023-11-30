@@ -36,6 +36,7 @@ class AppConfigState extends NullableStorableChangeNotifier<AppConfiguration> {
 
     Analytics.user.setAppConfig(config);
 
+
     current = config;
     save(() => Pages.userType = userType!);
     return initialize ??= InitializingPriority.afterAppConfig.initialize();
