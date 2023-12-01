@@ -48,9 +48,18 @@ increment_flutter_version() {
 execute_flutter_release_builds() {
     flutter build ipa --release
     flutter build appbundle --release
+
+    # Ensure release directory exists; create if not present
+    mkdir -p ./release
+
+    # Copy IPA file to release directory
+    cp build/ios/ipa/*.ipa ./release
+
+    # Copy App Bundle file to release directory
+    cp build/app/outputs/bundle/release/*.aab ./release
 }
 
-# Increment version regardless of --no-build presence
+# Increment version based on provided options
 if [ "$1" == "--major" ] || [ "$1" == "--minor" ] || [ "$1" == "--patch" ]; then
     increment_flutter_version "$1"
 elif [ "$2" == "--major" ] || [ "$2" == "--minor" ] || [ "$2" == "--patch" ]; then
