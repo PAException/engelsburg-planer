@@ -5,18 +5,48 @@
 #######################################
 
 # Script Usage:
-#   - This script increments the version number in the Flutter project's pubspec.yaml file.
-#   - It provides options to increment the MAJOR, MINOR, or PATCH version components.
+#   - This script must be executed from the root of the Flutter project.
+#   - It increments the build number in the Flutter project's pubspec.yaml file.
+#   - It provides options to increment the MAJOR, MINOR, or PATCH version components in
+#     addition to the build number.
 #   - Release builds for iOS and Android can be disabled using the --no-build option.
+#   - The appBundle and ipa file are copied to the ./release directory.
 
 # Usage:
-#   ./build.sh [OPTIONS]
+#   ./build_release [OPTIONS]
 
 # Available Options:
 #   --major          Increment the MAJOR version component.
 #   --minor          Increment the MINOR version component.
 #   --patch          Increment the PATCH version component.
+#   => only one of the options above can be used at a time.
+#
 #   --no-build       Disable release builds for iOS and Android.
+
+ios_release_build() {
+    # Build ipa
+    flutter build ipa --release
+
+    # Copy IPA file to release directory
+    cp build/ios/ipa/*.ipa ./release
+}
+
+android_release_build() {
+    # Build appBundle
+    flutter build appbundle --release
+
+    # Copy App Bundle file to release directory
+    cp build/app/outputs/bundle/release/*.aab ./release
+}
+
+# Function to execute Flutter release builds for iOS and Android
+execute_flutter_release_builds() {
+    # Ensure release directory exists; create if not present
+    mkdir -p ./release
+
+    ios_release_build
+    android_release_build
+}
 
 # Function to increment version components in pubspec.yaml
 increment_flutter_version() {
@@ -28,11 +58,11 @@ increment_flutter_version() {
     BUILD=$(echo "$CURRENT_VERSION" | cut -d+ -f2)
 
     if [ "$1" == "--major" ]; then
-        NEW_VERSION="$((MAJOR + 1)).0.0+0"
+        NEW_VERSION="$((MAJOR + 1)).0.0+$((BUILD + 1))"
     elif [ "$1" == "--minor" ]; then
-        NEW_VERSION="$MAJOR.$((MINOR + 1)).0+0"
+        NEW_VERSION="$MAJOR.$((MINOR + 1)).0+$((BUILD + 1))"
     elif [ "$1" == "--patch" ]; then
-        NEW_VERSION="$MAJOR.$MINOR.$((PATCH + 1))+0"
+        NEW_VERSION="$MAJOR.$MINOR.$((PATCH + 1))+$((BUILD + 1))"
     else
         NEW_VERSION="$MAJOR.$MINOR.$PATCH+$((BUILD + 1))"
     fi
@@ -42,21 +72,6 @@ increment_flutter_version() {
     "$PUBSPEC_FILE" > temp && mv temp "$PUBSPEC_FILE"
 
     echo "Flutter version incremented to $NEW_VERSION"
-}
-
-# Function to execute Flutter release builds for iOS and Android
-execute_flutter_release_builds() {
-    flutter build ipa --release
-    flutter build appbundle --release
-
-    # Ensure release directory exists; create if not present
-    mkdir -p ./release
-
-    # Copy IPA file to release directory
-    cp build/ios/ipa/*.ipa ./release
-
-    # Copy App Bundle file to release directory
-    cp build/app/outputs/bundle/release/*.aab ./release
 }
 
 # Increment version based on provided options

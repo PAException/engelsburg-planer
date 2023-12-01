@@ -25,13 +25,12 @@ import 'package:provider/provider.dart';
 /// Initialize and run app
 void main() async {
   Logger.rootLevel = Level.debug;
-  Logger.forType<EngelsburgPlaner>().info("Starting app...");
-
   WidgetsFlutterBinding.ensureInitialized();
 
   await InitializingPriority.instant.initialize();
   await InitializingPriority.afterInstant.initialize();
 
+  Logger.forType<EngelsburgPlaner>().info("Starting app...");
   runApp(wrapProvider(const EngelsburgPlaner()));
 }
 
