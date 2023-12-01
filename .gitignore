@@ -127,5 +127,8 @@ app.*.symbols
 **/*key.json
 **/*.p8
 **/*.p12
+.ipa
+.aab
+release/
 
 

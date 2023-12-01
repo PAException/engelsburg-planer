@@ -245,7 +245,15 @@ class ShareIconButton extends StatelessWidget {
     if (url == null) return Container();
 
     return TapDebouncer(
-      onTap: () => Share.share(url!),
+      onTap: () async {
+        final box = context.findRenderObject() as RenderBox?;
+
+        var result = await Share.shareWithResult(
+          url!,
+          sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+        );
+        if (result.status == ShareResultStatus.success) onShare?.call();
+      },
       builder: (context, onTap) => IconButton(
         onPressed: onTap,
         tooltip: context.l10n.share,

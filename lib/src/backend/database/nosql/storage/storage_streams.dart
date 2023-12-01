@@ -6,13 +6,13 @@ import 'dart:async';
 
 import 'package:engelsburg_planer/src/backend/database/nosql/base/references.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/storage/storage.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:engelsburg_planer/src/utils/logger.dart';
 
 typedef DocumentStreamSub = StreamSubscription<DocumentData?>;
 typedef CollectionStreamSub = StreamSubscription<CollectionData>;
 
 //TODO docs
-class StorageStreams {
+class StorageStreams with Logs<Storage> {
   /// Caches snapshot streams of documents (reference, streams)
   final Map<DocumentReference, List<StreamController>> _documentStreams = {};
   final Map<DocumentReference, DocumentStreamSub> _documentSubscriptions = {};
@@ -59,6 +59,8 @@ class StorageStreams {
     controllers.add(newController);
     streams[reference] = controllers;
 
+    logger.fine("Created stream controller for $reference");
+
     return newController;
   }
 
@@ -74,7 +76,7 @@ class StorageStreams {
     required Stream<DocumentData?> Function(String) createNativeStream,
     DocumentData? Function(DocumentData? data)? intercept,
   }) {
-    debugPrint("[${document.id}] creating new document stream");
+    logger.trace("Creating new document stream: $document");
 
     //Create new stream controller and add to list
     var newController = _createStreamController<DocumentData?>(
@@ -85,7 +87,7 @@ class StorageStreams {
 
     //Handles the data event that will be dispatched from the subscription
     void handleData(DocumentData? data) {
-      debugPrint("[${document.id}] handling new data of streamed document");
+      logger.trace("Handling new data of streamed document: $document");
 
       _latestDocumentData[document] = data;
 
@@ -102,11 +104,13 @@ class StorageStreams {
       var stream = createNativeStream.call(document.path);
       _documentSubscriptions[document] = stream.listen(handleData);
     } else {
-      _dispatchDocument(
-        document: document,
-        data: _latestDocumentData[document],
-        intercept: intercept,
-      );
+      Future.doWhile(() => _latestDocumentData[document] == null).then((_) {
+        _dispatchDocument(
+          document: document,
+          data: _latestDocumentData[document],
+          intercept: intercept,
+        );
+      });
     }
 
     return newController.stream;
@@ -123,7 +127,7 @@ class StorageStreams {
     required Stream<CollectionData> Function(String) createNativeStream,
     CollectionData Function(CollectionData collectionData)? intercept,
   }) {
-    debugPrint("[${collection.id}] creating new collection stream");
+    logger.trace("Creating new collection stream: $collection");
 
     //Create new stream controller and add to list
     var newController = _createStreamController<CollectionData>(
@@ -134,7 +138,7 @@ class StorageStreams {
 
     //Handles the data event that will be dispatched from the subscription
     void handleData(CollectionData collectionData) {
-      debugPrint("[${collection.id}] handling new data of streamed collection");
+      logger.trace("Handling new data of streamed collection: $collection");
 
       _latestCollectionData[collection] = collectionData;
 
@@ -153,11 +157,13 @@ class StorageStreams {
       //Save the stream subscription
       _collectionSubscriptions[collection] = stream.listen(handleData);
     } else {
-      _dispatchCollection(
-        collection: collection,
-        collectionData: _latestCollectionData[collection]!,
-        intercept: intercept,
-      );
+      Future.doWhile(() => _latestCollectionData[collection] == null).then((_) {
+        _dispatchCollection(
+          collection: collection,
+          collectionData: _latestCollectionData[collection]!,
+          intercept: intercept,
+        );
+      });
     }
 
     return newController.stream;
@@ -169,8 +175,7 @@ class StorageStreams {
     DocumentData? Function(DocumentData? data)? interceptDocument,
     CollectionData Function(CollectionData collectionData)? interceptCollection,
   }) {
-    debugPrint(
-        "[${document.id}] dispatching latest document and collections for document");
+    logger.trace("Dispatching latest for document to streams: $document");
 
     _dispatchDocument(
       document: document,
@@ -196,7 +201,7 @@ class StorageStreams {
     required DocumentData? data,
     DocumentData? Function(DocumentData? data)? intercept,
   }) {
-    debugPrint("[${document.id}] dispatching document: $data");
+    logger.trace("Dispatching document to streams: $document");
 
     if (intercept != null) data = intercept.call(data);
 
@@ -223,7 +228,7 @@ class StorageStreams {
     required CollectionData collectionData,
     CollectionData Function(CollectionData collectionData)? intercept,
   }) {
-    debugPrint("[${collection.id}] dispatching collection: $collectionData");
+    logger.trace("Dispatching collection to streams: $collection");
 
     if (intercept != null) collectionData = intercept.call(collectionData);
 
@@ -236,7 +241,7 @@ class StorageStreams {
 
   /// Force disposes all streams of a document.
   void dispose(DocumentReference document) {
-    debugPrint("[${document.id}] disposing streams for document");
+    logger.trace("Disposing streams for document: $document");
 
     _documentSubscriptions[document]?.cancel();
     _documentStreams[document]?.forEach((element) => element.close());

@@ -10,17 +10,20 @@ import 'package:engelsburg_planer/src/backend/database/cache/session_persistent_
 import 'package:engelsburg_planer/src/backend/database/nosql/model/settings/substitute_settings.dart';
 import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/utils/logger.dart';
 import 'package:engelsburg_planer/src/view/widgets/special/storage/stream_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:engelsburg_planer/src/view/pages/substitute/substitute_key_page.dart';
 import 'package:engelsburg_planer/src/view/pages/substitute/substitute_message_tab.dart';
 import 'package:engelsburg_planer/src/view/pages/substitute/substitute_tab.dart';
 
-class SubstitutesPage extends StatelessWidget {
+class SubstitutesPage extends StatelessWidget with Logs<SubstitutesPage> {
   const SubstitutesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    logger.debug("Building substitutes page...");
+
     return StreamSelector<SubstituteSettings, bool>(
       doc: SubstituteSettings.ref().defaultStorage(context),
       selector: (substituteSettings) => substituteSettings.password != null,
@@ -35,6 +38,8 @@ class SubstitutesPage extends StatelessWidget {
 
   void updateTeachers(SubstituteSettings settings) async {
     if (SessionPersistentData.isSet<Teachers>()) return;
+
+    logger.debug("Updating teachers...");
 
     var request = getTeacher(settings.password!).build();
     var response = await request.api<Teachers>(Teachers.fromJson);
@@ -84,7 +89,7 @@ class _SubstitutePageContentState extends State<SubstitutePageContent>
                     Text(
                       context.l10n.substitutes,
                       textAlign: TextAlign.center,
-                      textScaleFactor: 2,
+                      textScaler: const TextScaler.linear(2),
                     ),
                     const Expanded(child: SubstituteTab()),
                   ],
@@ -96,7 +101,7 @@ class _SubstitutePageContentState extends State<SubstitutePageContent>
                     Text(
                       context.l10n.substituteMessages,
                       textAlign: TextAlign.center,
-                      textScaleFactor: 2,
+                      textScaler: const TextScaler.linear(2),
                     ),
                     const Expanded(child: SubstituteMessageTab()),
                   ],

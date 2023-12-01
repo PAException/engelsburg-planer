@@ -90,7 +90,7 @@ class TaskCard extends StatelessWidget {
                                       child: Text(
                                         task.title,
                                         maxLines: 3,
-                                        textScaleFactor: 1.2,
+                                        textScaler: const TextScaler.linear(1.2),
                                         overflow: TextOverflow.fade,
                                       ),
                                     ),

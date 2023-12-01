@@ -79,7 +79,7 @@ class SelectSubjectPage extends CompactStatelessWidget {
                 ),
                 title: Text(
                   subject?.parsedName(context) ?? "Subject deleted",
-                  textScaleFactor: 1.2,
+                  textScaler: const TextScaler.linear(1.2),
                 ),
                 onTap: () => context.pop(result: subjects[index]),
               );

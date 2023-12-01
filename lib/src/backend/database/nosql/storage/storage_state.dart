@@ -8,10 +8,10 @@ import 'package:engelsburg_planer/src/backend/database/nosql/storage/storage.dar
 import 'package:engelsburg_planer/src/backend/database/nosql/storage/storage_cache.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/storage/storage_delayed_writer.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/storage/storage_streams.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:engelsburg_planer/src/utils/logger.dart';
 
 //TODO docs
-class StorageState {
+class StorageState with Logs<Storage> {
   late final StorageCache _cache;
   late final StorageStreams _streams;
   late final StorageDelayedWriter _delayedWriter;
@@ -66,7 +66,7 @@ class StorageState {
         _delayedWriteData.remove(document);
         if (result) return;
 
-        debugPrint("[${document.id}] delayed write failed");
+        logger.trace("Delayed write failed for document: $document");
 
         //Revert cache
         _cache.removeDocument(document);
@@ -100,7 +100,7 @@ class StorageState {
   List<DocumentReference<T>>? getCachedCollection<T>(
     CollectionReference<T> collection,
   ) {
-    return _cache.getCollection(collection);
+    return _cache.getCollection<T>(collection);
   }
 
   //TODO docs
@@ -117,7 +117,7 @@ class StorageState {
     required DocumentReference<T> document,
     required Stream<DocumentData?> Function(String path) createNativeStream,
   }) {
-    debugPrint("[${document.id}] issued new document stream");
+    logger.trace("Issued new stream for document: $document");
 
     return _streams.getDocumentStream(
       document: document,
@@ -134,6 +134,8 @@ class StorageState {
     required CollectionReference collection,
     required Stream<CollectionData> Function(String path) createNativeStream,
   }) {
+    logger.trace("Issued new stream for collection: $collection");
+
     return _streams.getCollectionStream(
       collection: collection,
       createNativeStream: createNativeStream,
@@ -180,13 +182,11 @@ class StorageState {
     _cache.setCollection(collection, collectionData); //TODO updates documents twice to cache
 
     return collectionData.map((key, value) {
-      debugPrint("$key, $value");
       value = _interceptDocumentStream(
         document: DocumentReference(key, collection.parser),
         data: value,
         updateIsLocal: updateIsLocal,
       )!;
-      debugPrint("AFTER: $key, $value");
 
       return MapEntry(key, value);
     });

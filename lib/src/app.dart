@@ -6,9 +6,9 @@ import 'package:engelsburg_planer/main.dart';
 import 'package:engelsburg_planer/src/backend/database/state/app_state.dart';
 import 'package:engelsburg_planer/src/backend/database/state/theme_state.dart';
 import 'package:engelsburg_planer/src/services/firebase/analytics.dart';
-import 'package:engelsburg_planer/src/services/firebase/crashlytics.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/utils/global_context.dart';
+import 'package:engelsburg_planer/src/utils/logger.dart';
 import 'package:engelsburg_planer/src/view/routing/route_generator.dart';
 import 'package:engelsburg_planer/src/view/widgets/util/util_widgets.dart';
 import 'package:flutter/material.dart' hide Router;
@@ -30,8 +30,8 @@ class EngelsburgPlaner extends StatelessWidget {
     return Consumer2<ThemeState, AppConfigState>(
       builder: (context, theme, config, _) {
         var router = AppRouter.router(context);
+        Logger.forType<EngelsburgPlaner>().info("Start building app...");
 
-        Crashlytics.log("Start building app..");
         return MaterialApp.router(
           builder: NoOverScrollEffect.get,
           debugShowCheckedModeBanner: false,

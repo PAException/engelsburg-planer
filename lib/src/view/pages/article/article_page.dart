@@ -7,6 +7,7 @@ import 'package:engelsburg_planer/src/backend/api/model/article.dart';
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
 import 'package:engelsburg_planer/src/services/promise.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/utils/logger.dart';
 import 'package:engelsburg_planer/src/view/pages/article/article_card.dart';
 import 'package:engelsburg_planer/src/view/pages/article/article_extended.dart';
 import 'package:engelsburg_planer/src/view/pages/home_page.dart';
@@ -26,7 +27,7 @@ class ArticlePage extends HomeScreenPage {
   Stream<Map<String, dynamic>> get update => createConnection("/article");
 }
 
-class _ArticlePageState extends HomeScreenPageState<ArticlePage> {
+class _ArticlePageState extends HomeScreenPageState<ArticlePage> with Logs<ArticlePage> {
   /// Controls the scroll of the list view inside of the paged promise
   final ScrollController scrollController = ScrollController();
 
@@ -44,6 +45,7 @@ class _ArticlePageState extends HomeScreenPageState<ArticlePage> {
   void onUpdate(Map<String, dynamic> update) {
     //Resets the offset of the scroll if the bottomNavigationBar item is pressed while on the page
     if (update["resetView"] ?? false) {
+      logger.debug("Resetting scroll view of article page...");
       scrollController.animateTo(
         0,
         duration: const Duration(milliseconds: 300),
@@ -71,6 +73,7 @@ class _ArticlePageState extends HomeScreenPageState<ArticlePage> {
         );
 
         if (context.isLandscape && constraints.maxWidth > 600) {
+          logger.debug("Building article page in landscape mode...");
           return StatefulBuilder(builder: (context, setState) {
             return Row(
               children: [
@@ -111,6 +114,7 @@ class _ArticlePageState extends HomeScreenPageState<ArticlePage> {
           });
         }
 
+        logger.debug("Building article page in portrait mode...");
         return Scaffold(
           floatingActionButton: floatingActionButton,
           body: PagedPromised<Article>(

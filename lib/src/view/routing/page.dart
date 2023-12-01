@@ -287,7 +287,7 @@ class Pages {
   );
 
   static final StyledRoute grades = StyledRoute.static(
-    page: const GradesPage(),
+    page: const GradePage(),
     path: "/grades",
     label: (l10n) => l10n.grades,
     icon: Icons.bar_chart,

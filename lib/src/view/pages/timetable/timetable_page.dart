@@ -6,6 +6,7 @@ import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/model/timetable.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/base/document.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:engelsburg_planer/src/backend/api/model/substitutes.dart';
 import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
@@ -25,7 +26,7 @@ class TimetablePage extends StatefulWidget {
   State<StatefulWidget> createState() => TimetablePageState();
 }
 
-class TimetablePageState extends State<TimetablePage> {
+class TimetablePageState extends State<TimetablePage> with Logs<TimetablePage> {
   late final ScrollController _scrollController;
   final _animatedList = GlobalKey<AdvancedAnimatedListState>();
 
@@ -45,7 +46,7 @@ class TimetablePageState extends State<TimetablePage> {
     if (_animating != null) return;
 
     //Remove all
-    _timetable.forIndexed(
+    List.of(_timetable).forIndexed(
       (index, element) {
         _timetable.removeAt(index);
         _animatedList.currentState?.removeItem(
@@ -314,6 +315,8 @@ class TimetablePageState extends State<TimetablePage> {
 
   @override
   Widget build(BuildContext context) {
+    logger.debug("Building substitutes page...");
+
     return LayoutBuilder(
       builder: (context, constraints) {
         if (context.isLandscape && constraints.maxWidth > 500) {
@@ -335,13 +338,13 @@ class TimetablePageState extends State<TimetablePage> {
                             children: [
                               Text(
                                 context.l10n.timetable,
-                                textScaleFactor: 2,
+                                textScaler: const TextScaler.linear(2),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(left: 4.0),
                                 child: Text(
                                   _getSubtitle(),
-                                  textScaleFactor: 1.2,
+                                  textScaler: const TextScaler.linear(1.2),
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ),
@@ -430,13 +433,13 @@ class TimetablePageState extends State<TimetablePage> {
                         children: [
                           Text(
                             context.l10n.timetable,
-                            textScaleFactor: 2,
+                            textScaler: const TextScaler.linear(2),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 4.0),
                             child: Text(
                               _getSubtitle(),
-                              textScaleFactor: 1.2,
+                              textScaler: const TextScaler.linear(1.2),
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ),

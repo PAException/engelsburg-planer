@@ -36,7 +36,7 @@ class SubstituteMessageCardState extends State<SubstituteMessageCard> {
                 padding: const EdgeInsets.all(10),
                 child: Text(
                   widget.substituteMessage.date!.formatEEEEddMM(context),
-                  textScaleFactor: 2,
+                  textScaler: const TextScaler.linear(2),
                 ),
               ),
               const Divider(height: 10, thickness: 5),
