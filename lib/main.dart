@@ -24,9 +24,9 @@ import 'package:provider/provider.dart';
 
 /// Initialize and run app
 void main() async {
-  Logger.rootLevel = Level.fine;
-
+  Logger.rootLevel = Level.debug;
   Logger.forType<EngelsburgPlaner>().info("Starting app...");
+
   WidgetsFlutterBinding.ensureInitialized();
 
   await InitializingPriority.instant.initialize();

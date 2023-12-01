@@ -9,6 +9,7 @@ import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/backend/database/state/app_state.dart';
 import 'package:engelsburg_planer/src/services/firebase/crashlytics.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/utils/logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
@@ -57,7 +58,7 @@ void sendUpdate(String identifier, Map<String, dynamic> data) {
   _connections[identifier]?.add(data);
 }
 
-class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, Logs<HomePage> {
   final pageViewKey = GlobalKey<State<PageView>>();
 
   late final PageController _pageController;
@@ -135,6 +136,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    logger.debug("Building home page...");
 
     return RouteModifier(
       child: Consumer<AppConfigState>(

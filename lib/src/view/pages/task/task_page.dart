@@ -4,6 +4,7 @@
 
 import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/utils/logger.dart';
 import 'package:engelsburg_planer/src/view/widgets/special/storage/collection_stream_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/model/tasks.dart';
@@ -19,12 +20,14 @@ class TaskPage extends StatefulWidget {
   State<StatefulWidget> createState() => _TaskPageState();
 }
 
-class _TaskPageState extends State<TaskPage> {
+class _TaskPageState extends State<TaskPage> with Logs<TaskPage> {
 
   bool showAll = false;
 
   @override
   Widget build(BuildContext context) {
+    logger.debug("Building task page...");
+
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         heroTag: StringUtils.randomAlphaNumeric(10),
