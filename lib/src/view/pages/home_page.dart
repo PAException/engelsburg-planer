@@ -265,7 +265,7 @@ class HomePageDrawer extends StatelessWidget {
                     Expanded(
                       child: Text(
                         context.l10n.appTitle,
-                        textScaleFactor: 1.5,
+                        textScaler: const TextScaler.linear(1.5),
                         textAlign: TextAlign.center,
                       ),
                     ),

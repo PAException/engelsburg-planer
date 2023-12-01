@@ -52,14 +52,14 @@ class SubstituteCard extends StatelessWidget {
                   children: [
                     Text(
                       lesson,
-                      textScaleFactor: 1.8,
+                      textScaler: const TextScaler.linear(1.8),
                     ),
                   ],
                 ),
               ),
               title: Text(
                 substitute.type.name(context),
-                textScaleFactor: 1.25,
+                textScaler: const TextScaler.linear(1.2),
               ),
               subtitle: SummarizedSubstituteText(substitute: substitute),
             ),

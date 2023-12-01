@@ -32,7 +32,6 @@ class Collection<T> extends CollectionReference<T> {
   //TODO docs
   Future<List<Document<T>>> documents() async {
     var cached = _storage.state.getCachedCollection<T>(this);
-    print(cached.runtimeType);
     if (cached != null) return cached.cast<DocumentReference<T>>().map((e) => e.storage(_storage)).cast<Document<T>>().toList();
 
     var collectionData = await _storage.getCollection(path);

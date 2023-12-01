@@ -31,7 +31,7 @@ class SubstituteSettingsPage extends StatelessWidget {
                   title: Text(
                     "${context.l10n.filterBy}:",
                     style: const TextStyle(fontWeight: FontWeight.bold),
-                    textScaleFactor: 1.2,
+                    textScaler: const TextScaler.linear(1.2),
                   ),
                 ),
                 SwitchExpandable(

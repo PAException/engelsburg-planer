@@ -27,7 +27,7 @@ class TimetableDate extends StatelessWidget {
       child: Center(
         child: Text(
           editing ? date.formatEEEE(context) : date.formatEEEEddMMToNow(context),
-          textScaleFactor: 2,
+          textScaler: const TextScaler.linear(2),
           textAlign: TextAlign.center,
         ),
       ),
@@ -50,7 +50,7 @@ class TimetableBreak extends StatelessWidget {
               color: Theme.of(context).colorScheme.background,
               child: Text(
                 context.l10n.break_,
-                textScaleFactor: 1.2,
+                textScaler: const TextScaler.linear(1.2),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
@@ -83,7 +83,7 @@ class TimetableFreeHour extends StatelessWidget {
         child: Center(
           child: Text(
             "$count $name",
-            textScaleFactor: 1.8,
+            textScaler: const TextScaler.linear(1.8),
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ),
@@ -110,7 +110,7 @@ class TimetableNoEntries extends StatelessWidget {
               Text(
                 context.l10n.noTimetable,
                 style: Theme.of(context).textTheme.bodySmall,
-                textScaleFactor: 1.2,
+                textScaler: const TextScaler.linear(1.2),
               ),
               Padding(
                 padding: const EdgeInsets.all(12),
@@ -167,12 +167,12 @@ class TimetableCard extends StatelessWidget {
                       minVerticalPadding: 8,
                       leading: Center(
                         widthFactor: 1,
-                        child: Text(entry.lesson.toString(), textScaleFactor: 1.8),
+                        child: Text(entry.lesson.toString(), textScaler: const TextScaler.linear(1.8)),
                       ),
                       title: subject != null
                           ? Text(
                             subject.parsedName(context),
-                            textScaleFactor: 1.25
+                            textScaler: const TextScaler.linear(1.2)
                           ) : null,
                       subtitle: TimetableSubtitle(
                         entry: entry,

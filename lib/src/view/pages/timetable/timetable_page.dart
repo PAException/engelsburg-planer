@@ -335,13 +335,13 @@ class TimetablePageState extends State<TimetablePage> {
                             children: [
                               Text(
                                 context.l10n.timetable,
-                                textScaleFactor: 2,
+                                textScaler: const TextScaler.linear(2),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(left: 4.0),
                                 child: Text(
                                   _getSubtitle(),
-                                  textScaleFactor: 1.2,
+                                  textScaler: const TextScaler.linear(1.2),
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ),
@@ -430,13 +430,13 @@ class TimetablePageState extends State<TimetablePage> {
                         children: [
                           Text(
                             context.l10n.timetable,
-                            textScaleFactor: 2,
+                            textScaler: const TextScaler.linear(2),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 4.0),
                             child: Text(
                               _getSubtitle(),
-                              textScaleFactor: 1.2,
+                              textScaler: const TextScaler.linear(1.2),
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ),

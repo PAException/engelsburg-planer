@@ -103,7 +103,7 @@ class _SubstituteTabState extends State<SubstituteTab> {
                                 substitutes[index]
                                     .date!
                                     .formatEEEEddMM(context),
-                                textScaleFactor: 2,
+                                textScaler: const TextScaler.linear(2),
                                 textAlign: TextAlign.start,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w500),
@@ -165,7 +165,7 @@ class SubstituteState extends StatelessWidget {
     return Center(
         child: Text(
       "${context.l10n.stateOf} ${date.format(context, "dd.MM., HH:mm")}",
-      textScaleFactor: 1.2,
+      textScaler: const TextScaler.linear(1.2),
     ));
   }
 }

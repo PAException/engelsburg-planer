@@ -53,7 +53,7 @@ class SavedArticlePage extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 30),
                         child: Text(
                           context.l10n.noArticlesSaved,
-                          textScaleFactor: 1.2,
+                          textScaler: const TextScaler.linear(1.2),
                           style: TextStyle(
                             color: DefaultTextStyle.of(context).style.color!.withOpacity(3 / 4),
                           ),
@@ -95,7 +95,7 @@ class SavedArticlePage extends StatelessWidget {
               padding: const EdgeInsets.only(top: 30),
               child: Text(
                 context.l10n.noArticlesSaved,
-                textScaleFactor: 1.2,
+                textScaler: const TextScaler.linear(1.2),
                 style: TextStyle(
                   color: DefaultTextStyle.of(context).style.color!.withOpacity(3 / 4),
                 ),

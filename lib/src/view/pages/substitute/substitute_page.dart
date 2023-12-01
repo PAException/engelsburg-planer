@@ -84,7 +84,7 @@ class _SubstitutePageContentState extends State<SubstitutePageContent>
                     Text(
                       context.l10n.substitutes,
                       textAlign: TextAlign.center,
-                      textScaleFactor: 2,
+                      textScaler: const TextScaler.linear(2),
                     ),
                     const Expanded(child: SubstituteTab()),
                   ],
@@ -96,7 +96,7 @@ class _SubstitutePageContentState extends State<SubstitutePageContent>
                     Text(
                       context.l10n.substituteMessages,
                       textAlign: TextAlign.center,
-                      textScaleFactor: 2,
+                      textScaler: const TextScaler.linear(2),
                     ),
                     const Expanded(child: SubstituteMessageTab()),
                   ],

@@ -36,7 +36,7 @@ class TaskCardLandscape extends StatelessWidget {
                   children: [
                     Text(
                       task.title,
-                      textScaleFactor: 1.6,
+                      textScaler: const TextScaler.linear(1.6),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),
@@ -69,7 +69,7 @@ class TaskCardLandscape extends StatelessWidget {
                         const SizedBox(width: 6),
                         Text(
                           subject.parsedName(context),
-                          textScaleFactor: 1.6,
+                          textScaler: const TextScaler.linear(1.6),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
@@ -83,7 +83,7 @@ class TaskCardLandscape extends StatelessWidget {
                 fit: FlexFit.tight,
                 child: Text(
                   context.l10n.fromDate(task.created.formatEEEEddMM(context)),
-                  textScaleFactor: 1.6,
+                  textScaler: const TextScaler.linear(1.6),
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
@@ -95,7 +95,7 @@ class TaskCardLandscape extends StatelessWidget {
                 child: task.due != null
                     ? Text(
                         context.l10n.toDate(task.due!.formatEEEEddMM(context)),
-                        textScaleFactor: 1.6,
+                        textScaler: const TextScaler.linear(1.6),
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,

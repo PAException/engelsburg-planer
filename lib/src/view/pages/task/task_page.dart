@@ -40,7 +40,7 @@ class _TaskPageState extends State<TaskPage> {
             onChanged: (value) => setState(() => showAll = value),
             title: Text(
               context.l10n.showDoneTasks,
-              textScaleFactor: 1.2,
+              textScaler: const TextScaler.linear(1.2),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               softWrap: false,
@@ -61,7 +61,7 @@ class _TaskPageState extends State<TaskPage> {
                       children: [
                         Text(
                           context.l10n.noTasksFound,
-                          textScaleFactor: 1.2,
+                          textScaler: const TextScaler.linear(1.2),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(12),

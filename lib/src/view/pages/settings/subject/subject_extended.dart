@@ -446,7 +446,7 @@ class _ExtendedSubjectPageState extends State<ExtendedSubjectPage>
                                   title: Text(grade.name ?? "${i + 1}. $gradeTypeName"),
                                   trailing: Text(
                                     grade.value(config.usePoints).toString(),
-                                    textScaleFactor: 1.5,
+                                    textScaler: const TextScaler.linear(1.5),
                                   ),
                                   subtitle: Text(grade.created.formatEEEEddMM(context)),
                                   onTap: () {

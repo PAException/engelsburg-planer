@@ -209,7 +209,6 @@ class GradesPage extends StatelessWidget {
                                             .roundToPlaces(2)
                                             .toString(),
                                         textAlign: TextAlign.right,
-                                        textScaleFactor: 1,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w600),
                                       )
