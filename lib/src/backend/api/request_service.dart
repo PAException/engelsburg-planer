@@ -46,12 +46,12 @@ class RequestService {
     var prepareTime = stopwatch.elapsedMilliseconds;
 
     //Execute request
-    return _request(request).timeout(timeout, onTimeout: () {
-      //On timeout return response with status = 999
-      return http.Response("", 999);
-
-      //TODO? create retry service? (callback?), exponential backoff?
-    }).then((response) {
+    //TODO? create retry service? (callback?), exponential backoff?
+    //On timeout or error return response with status = 999
+    return _request(request)
+        .onError((error, stackTrace) => http.Response("", 999))
+        .timeout(timeout, onTimeout: () => http.Response("", 999))
+        .then((response) {
       stopwatch.stop();
 
       RequestAnalysis analysis;
@@ -125,7 +125,15 @@ class RequestAnalysis {
   final int? responseSize;
   final bool timedOut;
 
-  const RequestAnalysis({required this.prepareTime, required this.responseTime, required this.responseSize, required this.timedOut,}) : assert(timedOut || responseTime != null);
+  const RequestAnalysis({
+    required this.prepareTime,
+    required this.responseTime,
+    required this.responseSize,
+    required this.timedOut,
+  }) : assert(timedOut || responseTime != null);
 
-  const RequestAnalysis.timedOut(this.prepareTime) : timedOut = true, responseTime = null, responseSize = null;
+  const RequestAnalysis.timedOut(this.prepareTime)
+      : timedOut = true,
+        responseTime = null,
+        responseSize = null;
 }

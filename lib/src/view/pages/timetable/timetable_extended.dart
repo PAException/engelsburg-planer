@@ -109,11 +109,9 @@ class _ExtendedTimetableCardState extends State<ExtendedTimetableCard> {
         _teacherController.text = entry.teacher ?? "";
         _roomController.text = entry.room ?? "";
 
-        return WillPopScope(
-          onWillPop: () async {
-            savePossibleChanges();
-            return true;
-          },
+        return PopScope(
+          canPop: true,
+          onPopInvoked: (_) => savePossibleChanges(),
           child: Scaffold(
             extendBodyBehindAppBar: true,
             appBar: AppBar(

@@ -4,6 +4,7 @@
 
 import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/utils/logger.dart';
 import 'package:engelsburg_planer/src/view/widgets/special/storage/collection_stream_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/model/tasks.dart';
@@ -19,12 +20,14 @@ class TaskPage extends StatefulWidget {
   State<StatefulWidget> createState() => _TaskPageState();
 }
 
-class _TaskPageState extends State<TaskPage> {
+class _TaskPageState extends State<TaskPage> with Logs<TaskPage> {
 
   bool showAll = false;
 
   @override
   Widget build(BuildContext context) {
+    logger.debug("Building task page...");
+
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         heroTag: StringUtils.randomAlphaNumeric(10),
@@ -40,7 +43,7 @@ class _TaskPageState extends State<TaskPage> {
             onChanged: (value) => setState(() => showAll = value),
             title: Text(
               context.l10n.showDoneTasks,
-              textScaleFactor: 1.2,
+              textScaler: const TextScaler.linear(1.2),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               softWrap: false,
@@ -61,7 +64,7 @@ class _TaskPageState extends State<TaskPage> {
                       children: [
                         Text(
                           context.l10n.noTasksFound,
-                          textScaleFactor: 1.2,
+                          textScaler: const TextScaler.linear(1.2),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(12),

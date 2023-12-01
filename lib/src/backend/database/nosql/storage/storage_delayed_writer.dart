@@ -6,10 +6,11 @@ import 'dart:async';
 
 import 'package:engelsburg_planer/src/backend/database/nosql/base/document.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/base/references.dart';
-import 'package:flutter/foundation.dart';
+import 'package:engelsburg_planer/src/backend/database/nosql/storage/storage.dart';
+import 'package:engelsburg_planer/src/utils/logger.dart';
 
 /// Handles any delayed writes of documents for a specific storage.
-class StorageDelayedWriter {
+class StorageDelayedWriter with Logs<Storage> {
   /// Caches timers for delayed document updates (reference, timer)
   final Map<DocumentReference, Timer> _submitted = {};
 
@@ -18,7 +19,7 @@ class StorageDelayedWriter {
   void dispose(DocumentReference document) {
     var write = _submitted[document];
     if (write != null) {
-      debugPrint("[${document.id}] disposing delayed write");
+      logger.trace("Disposing delayed write for document: $document");
 
       write.cancel();
       _submitted.remove(document);
@@ -38,9 +39,9 @@ class StorageDelayedWriter {
     T Function(T data)? preWrite,
     void Function(bool result)? postWrite,
   }) {
-    debugPrint("[${document.id}] submitted delayed write: $data");
+    logger.trace("Submitted delayed write for document: $document");
     delayedWrite() async {
-      debugPrint("[${document.id}] executing delayed write: $data");
+      logger.trace("Executing delayed write for document: $document");
       //Remove this timer from the submitted document writes
       _submitted.remove(document);
 

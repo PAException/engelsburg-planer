@@ -20,8 +20,6 @@ class NotificationSettingsPage extends StatelessWidget {
         doc: NotificationSettings.ref().defaultStorage(context),
         errorBuilder: (context, doc, error) => Text(error.toString()),
         itemBuilder: (context, doc, settings) {
-          print(settings);
-
           return ListView(
           padding: const EdgeInsets.all(8.0),
           children: [

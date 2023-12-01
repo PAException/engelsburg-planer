@@ -127,7 +127,4 @@ class Document<T> extends DocumentReference<T> {
   /// the operation was successful.
   Future<bool> copyTo(Storage target) async =>
       target.setDocument(path, tryParseTypedData(await load()));
-
-  @override
-  String toString() => 'Document{path: ${super.path}, data: $data}';
 }

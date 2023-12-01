@@ -105,7 +105,7 @@ class _SubjectTileState extends State<SubjectTile> {
     return ListTile(
       title: Text(
         subject?.data?.parsedName(context) ?? widget.baseSubject.l10n(context)!,
-        textScaleFactor: 1.2,
+        textScaler: const TextScaler.linear(1.2),
       ),
       leading: Disabled(
         disabled: !enabled,

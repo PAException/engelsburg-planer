@@ -2,6 +2,8 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
+import 'dart:ui';
+
 import 'package:engelsburg_planer/src/backend/database/nosql/base/collection.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/base/document.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/storage/storage.dart';
@@ -26,13 +28,16 @@ abstract class Reference<T> {
   String get id => path.split("/").last;
 
   @override
-  String toString() => 'Reference{path: $path}';
+  @keepToString
+  String toString() => path;
 
   @override
   bool operator ==(Object other) => other is Reference && path == other.path;
 
   @override
   int get hashCode => path.hashCode;
+
+  Reference<D> cast<D>(Parser<D> parser);
 }
 
 /// Same as Reference<T>, but only to documents.
@@ -55,6 +60,9 @@ class DocumentReference<T> extends Reference<T> {
     );
   }
 
+  @override
+  DocumentReference<D> cast<D>(Parser<D> parser) => DocumentReference<D>(path, parser);
+
   /// Makes the reference concrete, links a storage to the reference.
   @nonVirtual
   Document<T> storage(Storage storage) => Document<T>.ref(storage, this);
@@ -75,6 +83,9 @@ class CollectionReference<T> extends Reference<T> {
     path.substring(0, path.lastIndexOf("/")),
     parser,
   );
+
+  @override
+  CollectionReference<D> cast<D>(Parser<D> parser) => CollectionReference<D>(path, parser);
 
   /// Makes the reference concrete, links a storage to the reference.
   @nonVirtual

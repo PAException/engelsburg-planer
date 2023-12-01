@@ -17,13 +17,16 @@ import 'package:engelsburg_planer/src/services/firebase/firebase_config.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/services/data_service.dart';
 import 'package:engelsburg_planer/src/services/isolated_worker.dart';
+import 'package:engelsburg_planer/src/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
 /// Initialize and run app
 void main() async {
+  Logger.rootLevel = Level.debug;
+  Logger.forType<EngelsburgPlaner>().info("Starting app...");
+
   WidgetsFlutterBinding.ensureInitialized();
 
   await InitializingPriority.instant.initialize();
@@ -69,6 +72,8 @@ extension InitializingPriorityUtils on InitializingPriority{
   Future initialize() {
     return toInitialize.entries.where((entry) => entry.value == this).asyncMap(
           (entry) async => await Future.value(entry.key.call()),
-    );
+    ).then((value) {
+      Logger.forType<EngelsburgPlaner>().info("Initialized '$name' priority");
+    });
   }
 }

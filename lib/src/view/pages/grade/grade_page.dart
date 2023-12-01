@@ -17,6 +17,7 @@ import 'package:engelsburg_planer/src/backend/database/nosql/model/subjects.dart
 import 'package:engelsburg_planer/src/backend/database/state/user_state.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/base/document.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
+import 'package:engelsburg_planer/src/utils/logger.dart';
 import 'package:engelsburg_planer/src/view/pages/grade/grade_average_circle.dart';
 import 'package:engelsburg_planer/src/view/pages/grade/grade_extended.dart';
 import 'package:engelsburg_planer/src/view/pages/settings/subject/subject_extended.dart';
@@ -25,11 +26,13 @@ import 'package:engelsburg_planer/src/view/widgets/special/storage/stream_consum
 import 'package:engelsburg_planer/src/view/widgets/util/wrap_if.dart';
 import 'package:flutter/material.dart';
 
-class GradesPage extends StatelessWidget {
-  const GradesPage({super.key});
+class GradePage extends StatelessWidget with Logs<GradePage> {
+  const GradePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    logger.debug("Building grade page...");
+
     return StreamCollection<Subject>(
       collection: Subjects.entries().defaultStorage(context),
       itemBuilder: (context, doc, subjects) {
@@ -209,7 +212,6 @@ class GradesPage extends StatelessWidget {
                                             .roundToPlaces(2)
                                             .toString(),
                                         textAlign: TextAlign.right,
-                                        textScaleFactor: 1,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w600),
                                       )

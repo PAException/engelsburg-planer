@@ -51,7 +51,7 @@ class _AverageGradeCircleState extends State<AverageGradeCircle> with TickerProv
           child: Center(
             child: Text(
               (widget.average * animation).roundToPlaces(1).toString(),
-              textScaleFactor: 3,
+              textScaler: const TextScaler.linear(3),
               style: TextStyle(
                 color: widget.percent >= (1 / 3) ? null : Colors.red,
               ),

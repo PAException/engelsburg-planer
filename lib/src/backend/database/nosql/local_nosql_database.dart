@@ -102,7 +102,9 @@ class LocalNosqlDatabase {
     );
 
     //Save new stream and return
-    latest.then((value) => newController.add(value));
+    latest.then((value) {
+      if (!newController.isClosed) newController.add(value);
+    });
     return (_documentSnapshots[path] = newController).stream;
   }
 
@@ -124,7 +126,9 @@ class LocalNosqlDatabase {
     );
 
     //Save new stream and return
-    latest.then((value) => newController.add(value));
+    latest.then((value) {
+      if (!newController.isClosed) newController.add(value);
+    });
     return (_collectionSnapshots[path] = newController).stream;
   }
 }
