@@ -5,17 +5,17 @@
 import 'package:engelsburg_planer/src/backend/database/nosql/base/references.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/storage/storage.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
-import 'package:flutter/foundation.dart';
+import 'package:engelsburg_planer/src/utils/logger.dart';
 
 //TODO docs
-class StorageCache {
+class StorageCache with Logs<Storage> {
   final Map<DocumentReference, Map<String, dynamic>> _documentCache = {};
   final Map<CollectionReference, Set<DocumentReference>> _collectionCache = {};
 
   /// Writes the data of the document to the cache and also references the
   /// document in the collection cache if possible.
   void setDocument<T>(DocumentReference<T> document, Map<String, dynamic> data) {
-    debugPrint("[${document.id}] updating cached document: $data");
+    logger.trace("Updating cached document: $document");
     //Update document cache
     _documentCache[document] = data;
 
@@ -33,14 +33,14 @@ class StorageCache {
   //TODO docs
   Map<String, dynamic>? getDocument(DocumentReference document) {
     var data = _documentCache[document];
-    if (data != null) debugPrint("[${document.id}] getting cached document: $data");
+    if (data != null) logger.trace("getting cached document: $document");
 
     return data;
   }
 
   //TODO docs
   void removeDocument(DocumentReference document) {
-    debugPrint("[${document.id}] removing cached document");
+    logger.trace("removing cached document: $document");
     _documentCache.remove(document);
 
     //Update parent collection
@@ -61,7 +61,7 @@ class StorageCache {
 
   //TODO docs
   void setCollection<T>(CollectionReference<T> collection, CollectionData collectionData) {
-    debugPrint("[${collection.id}] setting cached collection: $collectionData");
+    logger.trace("setting cached collection: $collection");
 
     //Map collection data to document references
     var documents = collectionData.mapToList((key, value) {
@@ -78,7 +78,7 @@ class StorageCache {
 
   //TODO docs
   List<DocumentReference<T>>? getCollection<T>(CollectionReference<T> collection) {
-    debugPrint("[${collection.id}] getting cached collection");
+    logger.trace("getting cached collection: $collection");
 
     var refs = _collectionCache[collection];
 

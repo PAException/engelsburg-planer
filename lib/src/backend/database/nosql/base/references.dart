@@ -2,6 +2,8 @@
  * Copyright (c) Paul Huerkamp 2023. All rights reserved.
  */
 
+import 'dart:ui';
+
 import 'package:engelsburg_planer/src/backend/database/nosql/base/collection.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/base/document.dart';
 import 'package:engelsburg_planer/src/backend/database/nosql/storage/storage.dart';
@@ -26,7 +28,8 @@ abstract class Reference<T> {
   String get id => path.split("/").last;
 
   @override
-  String toString() => 'Reference{path: $path}';
+  @keepToString
+  String toString() => path;
 
   @override
   bool operator ==(Object other) => other is Reference && path == other.path;

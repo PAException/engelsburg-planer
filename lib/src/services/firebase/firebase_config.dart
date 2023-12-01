@@ -13,6 +13,7 @@ import 'package:engelsburg_planer/src/services/firebase/firebase_options.dart';
 import 'package:engelsburg_planer/src/backend/api/request.dart';
 import 'package:engelsburg_planer/src/backend/api/requests.dart';
 import 'package:engelsburg_planer/src/utils/global_context.dart';
+import 'package:engelsburg_planer/src/utils/logger.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -22,6 +23,8 @@ import 'package:go_router/go_router.dart';
 
 /// Util class for all firebase initializations and configurations.
 class FirebaseConfig {
+  static Logger<FirebaseConfig> get logger => Logger.forType<FirebaseConfig>();
+
   /// Initializes every used firebase service
   static Future<void> initialize() async {
     //Init the core firebaseApp
@@ -29,7 +32,7 @@ class FirebaseConfig {
         options: DefaultFirebaseOptions.currentPlatform,
     );
 
-    Crashlytics.log("Initializing firebase services");
+    logger.info("Initializing firebase services");
 
     //Init sub services
     Analytics.initialize();
@@ -39,6 +42,7 @@ class FirebaseConfig {
 
   /// Initialize FCM - initialNotification, tokenRefresh action
   static void initializeFCM() async {
+    logger.debug("Initializing FCM");
     //Check if app was opened via a notification
     FirebaseMessaging.instance
         .getInitialMessage()
@@ -75,7 +79,7 @@ class FirebaseConfig {
         ?.createNotificationChannel(channel);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      Crashlytics.log("Received notification while the app was opened");
+      logger.debug("FCM notification while opened");
       //On IOS the notification is also displayed when the app is opened
       if (Platform.isIOS) return;
 
@@ -102,6 +106,7 @@ class FirebaseConfig {
 
     //Push changes to server if token changes
     FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
+      logger.debug("FCM token got updated");
       var substituteSettings = await SubstituteSettings.ref().offline.load();
 
       updateNotificationSettings(
@@ -116,7 +121,7 @@ class FirebaseConfig {
 
   static void handleOpenedRemoteMessage(RemoteMessage? message) {
     if (message == null) return;
-    Crashlytics.log("Handling user click on notification");
+    logger.debug("FCM user opened notification");
     Crashlytics.set("notification_data", message.data);
     if (message.data.isNotEmpty) {
       String? link = message.data["link"];
@@ -128,6 +133,7 @@ class FirebaseConfig {
 
   /// Initialize the remote config service of firebase to use remote based configuration of the app.
   static Future<void> initializeRemoteConfig() async {
+    logger.debug("Initializing remote config");
     //First activate, then fetch the remote configuration to avoid loading times for users
     final remoteConfig = FirebaseRemoteConfig.instance;
 
@@ -135,8 +141,8 @@ class FirebaseConfig {
       //Set defaults that aren't fetched yet
       remoteConfig.setDefaults(const {
         "enable_firebase": false,
-        "app_store_url": "",
-        "play_store_url": "",
+        "app_store_url": "https://apps.apple.com/app/engelsburg-planer/id6469040581",
+        "play_store_url": "https://play.google.com/store/apps/details?id=de.paulhuerkamp.engelsburg_planer",
         "support_email": "engelsburg.planer@gmail.com",
       });
     }
@@ -154,12 +160,14 @@ class FirebaseConfig {
     Future.doWhile(() async {
       try {
         await remoteConfig.fetchAndActivate();
-
-        return true;
-      } catch (_) {
-        await Future.delayed(Duration(seconds: pow(2, backOff++).toInt()));
+        logger.debug("Fetched and activated remote config");
 
         return false;
+      } catch (_) {
+        logger.error("Couldn't fetch remote config");
+        await Future.delayed(Duration(seconds: pow(2, backOff++).toInt()));
+
+        return true;
       }
     });
   }
