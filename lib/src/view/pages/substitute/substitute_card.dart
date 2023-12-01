@@ -6,7 +6,6 @@ import 'package:engelsburg_planer/src/backend/api/model/substitutes.dart';
 import 'package:engelsburg_planer/src/utils/extensions.dart';
 import 'package:engelsburg_planer/src/view/pages/substitute/substitute_extended.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 
 class SubstituteCard extends StatelessWidget {
   const SubstituteCard({super.key, required this.substitute, this.endLesson});

@@ -19,7 +19,6 @@ import 'package:engelsburg_planer/src/services/data_service.dart';
 import 'package:engelsburg_planer/src/services/isolated_worker.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
 /// Initialize and run app

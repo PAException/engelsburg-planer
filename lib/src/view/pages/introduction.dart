@@ -147,6 +147,8 @@ class _IntroductionPageState extends State<IntroductionPage> {
         userType: selectedUserType!,
         extra: extra,
       );
+
+      GoRouter router = GoRouter.of(context);
       await config.configure(appConfiguration);
       NotificationSettings.ref()
           .defaultStorage(globalContext())
@@ -155,9 +157,9 @@ class _IntroductionPageState extends State<IntroductionPage> {
 
       Analytics.introduction.complete();
       if (appConfiguration.userType == UserType.student) {
-        globalContext().go("/settings/subject?callbackUrl=/article");
+        router.go("/settings/subject?callbackUrl=/article");
       } else {
-        globalContext().go("/article");
+        router.go("/article");
       }
     }
   }
